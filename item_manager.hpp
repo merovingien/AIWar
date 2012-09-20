@@ -36,14 +36,16 @@ namespace aiwar {
 	class Mineral;
 	class Fighter;
 
+	class GameManager;
+
+
 	class ItemManager
 	{
 	public:
+	    ItemManager(GameManager& gm);
 	    ~ItemManager();
 
 	    void update(unsigned int tick);
-
-	    void registerTeam(Playable::Team, Playable::PlayFunction pfBase, Playable::PlayFunction pfMiningShip, Playable::PlayFunction pfFighter);
 
 	    Missile* createMissile(Item* launcher, Living* target);
 	    Base* createBase(double px, double py, Playable::Team team);
@@ -57,21 +59,10 @@ namespace aiwar {
 	    std::set<Item*>::const_iterator end() const;
 	        
 	private:
-	    class TeamInfo;
-
 	    typedef std::set<Item*> ItemSet;
-	    typedef std::map<Playable::Team, TeamInfo> TeamMap;
     
+	    GameManager& _gm;
 	    ItemSet _itemSet;
-	    TeamMap _teamMap;
-	};
-
-	class ItemManager::TeamInfo
-	{
-	public:
-	    Playable::PlayFunction play_base;
-	    Playable::PlayFunction play_miningShip;
-	    Playable::PlayFunction play_fighter;
 	};
 
     } // namespace aiwar::core

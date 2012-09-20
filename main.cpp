@@ -31,6 +31,7 @@
 
 #include "item_manager.hpp"
 #include "draw_manager.hpp"
+#include "game_manager.hpp"
 
 #include "python_wrapper.hpp"
 #include "python_handler.hpp"
@@ -71,10 +72,11 @@ int main(int argc, char* argv[])
 
     initAiwarModule();
 
-    ItemManager im;
+    GameManager gm;
+    ItemManager im(gm);
 
-    im.registerTeam(TEAM_BLUE, &play_base, &play_miningship, &play_fighter);
-    im.registerTeam(TEAM_RED, get_Base_PyHandler(), get_MiningShip_PyHandler(), get_Fighter_PyHandler());
+    gm.registerTeam(TEAM_BLUE, &play_base, &play_miningship, &play_fighter);
+    gm.registerTeam(TEAM_RED, get_Base_PyHandler(), get_MiningShip_PyHandler(), get_Fighter_PyHandler());
 
     im.createBase(25,25, TEAM_BLUE);
     im.createFighter(250,250, TEAM_BLUE);
@@ -164,6 +166,8 @@ int main(int argc, char* argv[])
 	{
 	    im.update(tick);
 	    tick++;
+
+	    gm.printStat();
 	}
 
 	std::set<Item*>::const_iterator cit;

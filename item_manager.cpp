@@ -27,9 +27,13 @@
 #include "mineral.hpp"
 #include "fighter.hpp"
 
-#include <stdexcept>
+#include "game_manager.hpp"
 
 using namespace aiwar::core;
+
+ItemManager::ItemManager(GameManager& gm) : _gm(gm)
+{
+}
 
 ItemManager::~ItemManager()
 {
@@ -62,8 +66,9 @@ void ItemManager::update(unsigned int tick)
 	i = *tmp;
 	if(i->_toRemove())
 	{
+	    _gm.itemDestroyed(i);
 	    delete i;
-	    _itemSet.erase(tmp);  // this unvalidates tmp, but it has been created before
+	    _itemSet.erase(tmp);  // this unvalidates tmp, but 'it' has been updated before
 	}
     }
 }
@@ -72,37 +77,24 @@ Missile* ItemManager::createMissile(Item* launcher, Living* target)
 {
     Missile *m = new Missile(launcher->xpos(), launcher->ypos(), target);
     _itemSet.insert(m);
+    _gm.missileCreated(m);
     return m;
 }
 
 Base* ItemManager::createBase(double px, double py, Playable::Team team)
 {
-    TeamMap::const_iterator cit = _teamMap.find(team);
-    if(cit != _teamMap.end())
-    {
-	Base *b = new Base(this, px, py, team, cit->second.play_base);
-	_itemSet.insert(b);
-	return b;
-    }
-    else
-    {
-	throw std::runtime_error("Team not registered");
-    }
+    Base *b = new Base(this, px, py, team, _gm.getBasePF(team));
+    _itemSet.insert(b);
+    _gm.baseCreated(b);
+    return b;
 }
 
 MiningShip* ItemManager::createMiningShip(double px, double py, Playable::Team team)
 {
-    TeamMap::const_iterator cit = _teamMap.find(team);
-    if(cit != _teamMap.end())
-    {
-	MiningShip *t = new MiningShip(px, py, team, cit->second.play_miningShip);
-	_itemSet.insert(t);
-	return t;
-    }
-    else
-    {
-	throw std::runtime_error("Team not registered");
-    }
+    MiningShip *t = new MiningShip(px, py, team, _gm.getMiningShipPF(team));
+    _itemSet.insert(t);
+    _gm.miningShipCreated(t);
+    return t;
 }
 
 MiningShip* ItemManager::createMiningShip(Base* base)
@@ -114,35 +106,21 @@ Mineral* ItemManager::createMineral(double px, double py)
 {
     Mineral *m = new Mineral(px, py);
     _itemSet.insert(m);
+    _gm.mineralCreated(m);
     return m;
 }
 
 Fighter* ItemManager::createFighter(double px, double py, Playable::Team team)
 {
-    TeamMap::const_iterator cit = _teamMap.find(team);
-    if(cit != _teamMap.end())
-    {
-	Fighter *f = new Fighter(this, px, py, team, cit->second.play_fighter);
-	_itemSet.insert(f);
-	return f;
-    }
-    else
-    {
-	throw std::runtime_error("Team is not registered");
-    }
+    Fighter *f = new Fighter(this, px, py, team, _gm.getFighterPF(team));
+    _itemSet.insert(f);
+    _gm.fighterCreated(f);
+    return f;
 }
 
 Fighter* ItemManager::createFighter(Base *base)
 {
     return createFighter(base->xpos(), base->ypos(), base->team());
-}
-
-void ItemManager::registerTeam(Playable::Team team, Playable::PlayFunction pfBase, Playable::PlayFunction pfMiningShip, Playable::PlayFunction pfFighter)
-{
-    TeamInfo& ti = _teamMap[team];
-    ti.play_base = pfBase;
-    ti.play_miningShip = pfMiningShip;
-    ti.play_fighter = pfFighter;
 }
 
 std::set<Item*>::const_iterator ItemManager::begin() const

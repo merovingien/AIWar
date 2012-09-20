@@ -25,9 +25,9 @@
 namespace aiwar {
     namespace core {
 
-/**
- * \brief Abstract base class for all items on the plate
- */
+        /**
+	 * \brief Abstract base class for all items on the plate
+	 */
 	class Item
 	{
 	public:
