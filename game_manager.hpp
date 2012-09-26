@@ -41,11 +41,11 @@ namespace aiwar {
 	    GameManager();
 	    ~GameManager();
 	    
-	    void registerTeam(Playable::Team, Playable::PlayFunction pfBase, Playable::PlayFunction pfMiningShip, Playable::PlayFunction pfFighter);
+	    void registerTeam(Playable::Team, PlayFunction &pfBase, PlayFunction &pfMiningShip, PlayFunction &pfFighter);
 
-	    Playable::PlayFunction getBasePF(Playable::Team team) const;
-	    Playable::PlayFunction getMiningShipPF(Playable::Team team) const;
-	    Playable::PlayFunction getFighterPF(Playable::Team team) const;
+	    PlayFunction& getBasePF(Playable::Team team) const;
+	    PlayFunction& getMiningShipPF(Playable::Team team) const;
+	    PlayFunction& getFighterPF(Playable::Team team) const;
 
 	    // slots
 	    void baseCreated(const Base*);
@@ -75,11 +75,11 @@ namespace aiwar {
 	class GameManager::TeamInfo
 	{
 	public:
-	    TeamInfo();
+	    TeamInfo(PlayFunction& pfb = Playable::playNoOp, PlayFunction& pfm = Playable::playNoOp, PlayFunction& pff = Playable::playNoOp);
 
-	    Playable::PlayFunction play_base;
-	    Playable::PlayFunction play_miningShip;
-	    Playable::PlayFunction play_fighter;
+	    PlayFunction& play_base;
+	    PlayFunction& play_miningShip;
+	    PlayFunction& play_fighter;
 
 	    unsigned int nb_base;
 	    unsigned int nb_base_max;

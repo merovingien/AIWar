@@ -23,7 +23,7 @@
 
 using namespace aiwar::core;
 
-Fighter::Fighter(ItemManager* im, double px, double py, Team team, PlayFunction pf)
+Fighter::Fighter(ItemManager* im, double px, double py, Team team, PlayFunction& pf)
     : Item(px, py, FIGHTER_SIZE_X, FIGHTER_SIZE_Y, FIGHTER_DETECTION_RADIUS),
       Movable(FIGHTER_SPEED, FIGHTER_START_FUEL, FIGHTER_MAX_FUEL, FIGHTER_MOVE_CONSO),
       Living(FIGHTER_START_LIFE, FIGHTER_MAX_LIFE),
@@ -49,8 +49,7 @@ void Fighter::update(unsigned int tick)
     Movable::preUpdate();
     this->_preUpdate(tick);
 
-    if(_play)
-	_play(this);
+    _play(this);
 }
 
 unsigned int Fighter::missiles() const

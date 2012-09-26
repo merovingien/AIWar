@@ -34,7 +34,7 @@ namespace aiwar {
 	class Fighter : virtual public Item, public Movable, public Living, public Playable, public Memory
 	{
 	public:
-	    Fighter(ItemManager *im, double px, double py, Team team, PlayFunction pf);
+	    Fighter(ItemManager *im, double px, double py, Team team, PlayFunction& pf);
 	    ~Fighter();
 
 	    void update(unsigned int tick);

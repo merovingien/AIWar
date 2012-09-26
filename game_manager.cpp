@@ -130,25 +130,24 @@ void GameManager::printStat() const
 }
 
 
-void GameManager::registerTeam(Playable::Team team, Playable::PlayFunction pfBase, Playable::PlayFunction pfMiningShip, Playable::PlayFunction pfFighter)
+void GameManager::registerTeam(Playable::Team team, PlayFunction &pfBase, PlayFunction &pfMiningShip, PlayFunction &pfFighter)
 {
-    TeamInfo& ti = _teamMap[team];
-    ti.play_base = pfBase;
-    ti.play_miningShip = pfMiningShip;
-    ti.play_fighter = pfFighter;
+    TeamInfo t(pfBase, pfMiningShip, pfFighter);
+    _teamMap.insert(std::pair<Playable::Team, TeamInfo>(team, t));
+//    _teamMap[team] = t;
 }
 
-Playable::PlayFunction GameManager::getBasePF(Playable::Team team) const
+PlayFunction& GameManager::getBasePF(Playable::Team team) const
 {
     return _getTeamInfo(team).play_base;
 }
 
-Playable::PlayFunction GameManager::getMiningShipPF(Playable::Team team) const
+PlayFunction& GameManager::getMiningShipPF(Playable::Team team) const
 {
     return _getTeamInfo(team).play_miningShip;
 }
 
-Playable::PlayFunction GameManager::getFighterPF(Playable::Team team) const
+PlayFunction& GameManager::getFighterPF(Playable::Team team) const
 {
     return _getTeamInfo(team).play_fighter;
 }
@@ -162,8 +161,8 @@ const GameManager::TeamInfo& GameManager::_getTeamInfo(Playable::Team team) cons
 	throw std::runtime_error("Team is not registered");
 }
 
-GameManager::TeamInfo::TeamInfo()
-    : play_base(0), play_miningShip(0), play_fighter(0),
+GameManager::TeamInfo::TeamInfo(PlayFunction& pfb, PlayFunction& pfm, PlayFunction& pff)
+    : play_base(pfb), play_miningShip(pfm), play_fighter(pff),
       nb_base(0), nb_base_max(0),
       nb_miningShip(0), nb_miningShip_max(0),
       nb_fighter(0), nb_fighter_max(0)

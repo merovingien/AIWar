@@ -1365,7 +1365,8 @@ bool initPythonInterpreter(int /*argc*/, char* /*argv*/[])
     return true;
 }
 
-void initAiwarModule()
+// todo clean when an error occured
+bool initAiwarModule()
 {
     // init pItemBasedTuple
     pItemBasedTuple = PyTuple_New(8);
@@ -1373,7 +1374,7 @@ void initAiwarModule()
     {
 	std::cerr << "Fail to create pItemBasedTuple" << std::endl;
 	PyErr_Print();
-	return;
+	return false;
     }
     unsigned int i = 0;
     Py_INCREF(&MiningShipType);
@@ -1397,41 +1398,41 @@ void initAiwarModule()
 
     MiningShipType.tp_new = PyType_GenericNew;
     if(PyType_Ready(&MiningShipType) < 0)
-	return;
+	return false;
 
     MiningShipConstType.tp_new = PyType_GenericNew;
     if(PyType_Ready(&MiningShipConstType) < 0)
-	return;
+	return false;
 
     MineralType.tp_new = PyType_GenericNew;
     if(PyType_Ready(&MineralType) < 0)
-	return;
+	return false;
 
     MissileType.tp_new = PyType_GenericNew;
     if(PyType_Ready(&MissileType) < 0)
-	return;
+	return false;
 
     BaseType.tp_new = PyType_GenericNew;
     if(PyType_Ready(&BaseType) < 0)
-	return;
+	return false;
 
     BaseConstType.tp_new = PyType_GenericNew;
     if(PyType_Ready(&BaseConstType) < 0)
-	return;
+	return false;
 
     FighterType.tp_new = PyType_GenericNew;
     if(PyType_Ready(&FighterType) < 0)
-	return;
+	return false;
 
     FighterConstType.tp_new = PyType_GenericNew;
     if(PyType_Ready(&FighterConstType) < 0)
-	return;
+	return false;
 
     m = Py_InitModule3("aiwar", module_methods,
                        "Example module that creates an extension type.");
 
     if (m == NULL)
-      return;
+      return false;
 
     /* add MiningShip */
     Py_INCREF(&MiningShipType);
@@ -1464,6 +1465,8 @@ void initAiwarModule()
     /* add FighterConst */
     Py_INCREF(&FighterConstType);
     PyModule_AddObject(m, "Fighter", (PyObject*)&FighterConstType);
+
+    return true;
 }
 
 #ifndef PyMODINIT_FUNC	/* declarations for DLL import/export */

@@ -29,7 +29,7 @@
 
 using namespace aiwar::core;
 
-Base::Base(ItemManager* im, double xpos, double ypos, Team team, PlayFunction pf)
+Base::Base(ItemManager* im, double xpos, double ypos, Team team, PlayFunction& pf)
     : Item(xpos, ypos, BASE_SIZE_X, BASE_SIZE_Y, BASE_DETECTION_RADIUS),
       Living(BASE_START_LIFE, BASE_MAX_LIFE),
       Playable(team, pf),
@@ -54,8 +54,7 @@ void Base::update(unsigned int tick)
 {
     this->_preUpdate(tick);
 
-    if(_play)
-	_play(this);
+    _play(this);
 }
 
 void Base::launchMissile(Living* target)

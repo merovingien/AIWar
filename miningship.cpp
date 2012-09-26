@@ -27,7 +27,7 @@
 
 using namespace aiwar::core;
 
-MiningShip::MiningShip(double xpos, double ypos, Team team, PlayFunction pf)
+MiningShip::MiningShip(double xpos, double ypos, Team team, PlayFunction& pf)
     : Item(xpos, ypos, MININGSHIP_SIZE_X, MININGSHIP_SIZE_Y, MININGSHIP_DETECTION_RADIUS),
       Movable(MININGSHIP_SPEED, MININGSHIP_START_FUEL, MININGSHIP_MAX_FUEL, MININGSHIP_MOVE_CONSO),
       Living(MININGSHIP_START_LIFE, MININGSHIP_MAX_LIFE),
@@ -52,8 +52,7 @@ void MiningShip::update(unsigned int tick)
     Movable::preUpdate();
     this->_preUpdate(tick);
 
-    if(_play)
-	_play(this);
+    _play(this);
 }
 
 unsigned int MiningShip::extract(Mineral *m)

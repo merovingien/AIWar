@@ -48,7 +48,7 @@ static void play_miningship(Playable*);
 static void play_base(Playable*);
 static void play_fighter(Playable*);
 
-int main(int argc, char* argv[])
+int main(int , char* [])
 {
     SDL_Surface *screen = NULL;
     SDL_Event e;
@@ -62,21 +62,31 @@ int main(int argc, char* argv[])
     SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
     // Python interpreter init
-    Py_Initialize();
-    if(!initPythonInterpreter(argc, argv))
+    PythonHandler ph;
+    if(!ph.initialize())
+
+//    Py_Initialize();
+//    if(!initPythonInterpreter(argc, argv))
     {
 	std::cerr << "FATAL ERROR: fail to initiate Python Interpreter" << std::endl;
 	SDL_Quit();
 	return -1;
     }
 
-    initAiwarModule();
+//    initAiwarModule();
+
+    ph.load(TEAM_RED, "embtest");
 
     GameManager gm;
     ItemManager im(gm);
 
-    gm.registerTeam(TEAM_BLUE, &play_base, &play_miningship, &play_fighter);
-    gm.registerTeam(TEAM_RED, get_Base_PyHandler(), get_MiningShip_PyHandler(), get_Fighter_PyHandler());
+    // todo : create a handler
+    DefaultPlayFunction base_pf(play_base);
+    DefaultPlayFunction miningShip_pf(play_miningship);
+    DefaultPlayFunction fighter_pf(play_fighter);
+
+    gm.registerTeam(TEAM_BLUE, base_pf, miningShip_pf, fighter_pf);
+    gm.registerTeam(TEAM_RED, ph.get_BaseHandler(TEAM_RED), ph.get_MiningShipHandler(TEAM_RED), ph.get_FighterHandler(TEAM_RED));
 
     im.createBase(25,25, TEAM_BLUE);
     im.createFighter(250,250, TEAM_BLUE);
@@ -180,7 +190,8 @@ int main(int argc, char* argv[])
 	SDL_Delay(16); // about 60 FPS
     }
   
-    Py_Finalize();
+//    Py_Finalize();
+    ph.finalize();
 
     SDL_Quit();
   

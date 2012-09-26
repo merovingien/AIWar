@@ -20,14 +20,73 @@
 #ifndef PYHTON_HANDLER_HPP
 #define PYTHON_HANDLER_HPP
 
-#include "playable.hpp" // for Playable::PlayFunction
+#include "handler_interface.hpp"
 
-typedef aiwar::core::Playable::PlayFunction PF;
+#include <map>
 
-PF get_MiningShip_PyHandler();
+class PythonHandler : public HandlerInterface
+{
+public:
+    PythonHandler();
+    ~PythonHandler();
 
-PF get_Base_PyHandler();
+    bool initialize();
+    bool finalize();
 
-PF get_Fighter_PyHandler();
+    bool load(T team, const std::string &file);
+    bool unload(T team);
+
+    PF& get_BaseHandler(T team);
+    PF& get_MiningShipHandler(T team);
+    PF& get_FighterHandler(T team);
+
+private:
+    class TeamInfo;
+
+    typedef std::map<T, TeamInfo*> TeamMap;
+
+    PythonHandler(const PythonHandler&);
+    PythonHandler& operator= (const PythonHandler&);
+
+    static void play_base(PyObject *pHandler, aiwar::core::Playable *item);
+    static void play_miningShip(PyObject *pHandler, aiwar::core::Playable *item);
+    static void play_fighter(PyObject *pHandler, aiwar::core::Playable *item);
+
+
+    bool _initFlag;
+    TeamMap _teamMap;
+};
+
+typedef void (*PH_PF)(PyObject *h, aiwar::core::Playable *p);
+
+class PythonHandlerPlayFunction : public aiwar::core::PlayFunction
+{
+public:
+    PythonHandlerPlayFunction(PH_PF fn, PyObject *handler) : _fun(fn), _h(handler) {}
+    void operator()(aiwar::core::Playable* p) { _fun(_h, p); }
+    
+private:
+    PH_PF _fun;
+    PyObject *_h;
+};
+
+
+class PythonHandler::TeamInfo
+{
+public:
+    TeamInfo(PyObject *bh, PyObject *mh, PyObject *fh);
+
+    std::string moduleName;
+    PyObject* module;
+    PythonHandlerPlayFunction baseHandler;
+    PythonHandlerPlayFunction miningShipHandler;
+    PythonHandlerPlayFunction fighterHandler;
+};
+
+//PF get_MiningShip_PyHandler();
+
+//PF get_Base_PyHandler();
+
+//PF get_Fighter_PyHandler();
 
 #endif /* PYTHON_HANDLER_HPP */

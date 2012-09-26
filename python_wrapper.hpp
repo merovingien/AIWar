@@ -32,7 +32,7 @@
 bool initPythonInterpreter(int argc, char* argv[]);
 
 // initialize the aiwar module and MiningShip type
-void initAiwarModule();
+bool initAiwarModule();
 
 // return a New Reference of MiningShip python object
 PyObject* MiningShip_New(aiwar::core::MiningShip *m);

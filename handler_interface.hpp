@@ -17,26 +17,28 @@
  * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-#include "playable.hpp"
+#ifndef HANDLER_INTERFACE_HPP
+#define HANDLER_INTERFACE_HPP
 
-using namespace aiwar::core;
+#include "playable.hpp" // for Playable::PlayFunction
 
-DefaultPlayFunction Playable::playNoOp(0);
+#include <string>
 
-Playable::Playable(Team team, PlayFunction& play) : _team(team), _play(play)
+typedef aiwar::core::PlayFunction PF;
+typedef aiwar::core::Playable::Team T;
+
+class HandlerInterface
 {
-}
+public:
+    virtual ~HandlerInterface() {}
+    
+    virtual bool initialize() = 0;
+    virtual bool finalize() = 0;
 
-Playable::~Playable()
-{
-}
+    virtual PF& get_BaseHandler(T team) = 0;
+    virtual PF& get_MiningShipHandler(T team) = 0;
+    virtual PF& get_FighterHandler(T team) = 0;
+};
 
-Playable::Team Playable::team() const
-{
-    return _team;
-}
 
-bool Playable::isFriend(const Playable* p) const
-{
-    return p->_team == _team;
-}
+#endif /* HANDLER_INTERFACE_HPP */

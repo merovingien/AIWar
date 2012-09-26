@@ -20,26 +20,55 @@
 #ifndef PLAYABLE_HPP
 #define PLAYABLE_HPP
 
+#include <functional>
+
 namespace aiwar {
     namespace core {
+
+	class Playable;
+
+	class PlayFunction
+	{
+	public:
+	    PlayFunction() {}
+	    virtual ~PlayFunction() {}
+	    virtual void operator()(Playable*) = 0;
+	
+	private:
+	    PlayFunction(const PlayFunction&);
+	    PlayFunction& operator=(const PlayFunction&);
+	};
+	    
+
+	class DefaultPlayFunction : public PlayFunction
+	{
+	public:
+	    DefaultPlayFunction(void (*pf)(Playable*)) : _fun_ptr(pf) {}
+	    void operator()(Playable* p) { if(_fun_ptr) _fun_ptr(p); }
+		
+	private:
+	    void (*_fun_ptr)(Playable*);
+	};
 
 	class Playable
 	{
 	public:
 	    typedef unsigned int Team;
-	    typedef void (*PlayFunction)(Playable *);
-    
+
+	    static DefaultPlayFunction playNoOp;
+
 	    virtual ~Playable();
 
 	    Team team() const;
 	    bool isFriend(const Playable* p) const;
 
 	protected:
-	    Playable(Team team, PlayFunction play);
+	    Playable(Team team, PlayFunction& play);
 	    
 	    Team _team;
-	    PlayFunction _play;
+	    PlayFunction& _play;
 	};
+
 
     } /* namespace aiwar::core */
 } /* namespace aiwar */
