@@ -20,20 +20,24 @@
 #ifndef PYHTON_HANDLER_HPP
 #define PYTHON_HANDLER_HPP
 
-#include "handler_interface.hpp"
-
+#include <Python.h>
 #include <map>
 
-class PythonHandler : public HandlerInterface
+#include "handler_interface.hpp"
+
+class PythonHandler : public aiwar::core::HandlerInterface
 {
 public:
+    typedef aiwar::core::Playable::Team T;
+    typedef aiwar::core::PlayFunction PF;
+
     PythonHandler();
     ~PythonHandler();
 
     bool initialize();
     bool finalize();
 
-    bool load(T team, const std::string &file);
+    bool load(T team, const std::string &moduleName);
     bool unload(T team);
 
     PF& get_BaseHandler(T team);
@@ -57,11 +61,12 @@ private:
     TeamMap _teamMap;
 };
 
-typedef void (*PH_PF)(PyObject *h, aiwar::core::Playable *p);
 
 class PythonHandlerPlayFunction : public aiwar::core::PlayFunction
 {
 public:
+    typedef void (*PH_PF)(PyObject *h, aiwar::core::Playable *p);
+
     PythonHandlerPlayFunction(PH_PF fn, PyObject *handler) : _fun(fn), _h(handler) {}
     void operator()(aiwar::core::Playable* p) { _fun(_h, p); }
     
@@ -82,11 +87,5 @@ public:
     PythonHandlerPlayFunction miningShipHandler;
     PythonHandlerPlayFunction fighterHandler;
 };
-
-//PF get_MiningShip_PyHandler();
-
-//PF get_Base_PyHandler();
-
-//PF get_Fighter_PyHandler();
 
 #endif /* PYTHON_HANDLER_HPP */

@@ -24,21 +24,23 @@
 
 #include <string>
 
-typedef aiwar::core::PlayFunction PF;
-typedef aiwar::core::Playable::Team T;
+namespace aiwar {
+    namespace core {
 
-class HandlerInterface
-{
-public:
-    virtual ~HandlerInterface() {}
+	class HandlerInterface
+	{
+	public:
+	    virtual ~HandlerInterface() {}
     
-    virtual bool initialize() = 0;
-    virtual bool finalize() = 0;
+	    virtual bool initialize() = 0;
+	    virtual bool finalize() = 0;
 
-    virtual PF& get_BaseHandler(T team) = 0;
-    virtual PF& get_MiningShipHandler(T team) = 0;
-    virtual PF& get_FighterHandler(T team) = 0;
-};
+	    virtual PlayFunction& get_BaseHandler(Playable::Team team) = 0;
+	    virtual PlayFunction& get_MiningShipHandler(Playable::Team team) = 0;
+	    virtual PlayFunction& get_FighterHandler(Playable::Team team) = 0;
+	};
 
+    } // aiwar::core
+} // aiwar
 
 #endif /* HANDLER_INTERFACE_HPP */

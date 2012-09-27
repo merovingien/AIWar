@@ -17,8 +17,6 @@
  * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-#include <Python.h>
-
 #include "python_handler.hpp"
 #include "python_wrapper.hpp"
 
@@ -53,7 +51,7 @@ PythonHandler::~PythonHandler()
 bool PythonHandler::initialize()
 {
     // initialize Python interpreter
-    Py_Initialize();
+    Py_InitializeEx(0);
 
     // insert "." to the python path
     char *p = strdup("path");
@@ -191,7 +189,7 @@ bool PythonHandler::unload(T)
     return false;
 }
 
-PF& PythonHandler::get_BaseHandler(T team)
+PythonHandler::PF& PythonHandler::get_BaseHandler(T team)
 {
     TeamMap::iterator it = _teamMap.find(team);
     if(it != _teamMap.end())
@@ -204,7 +202,7 @@ PF& PythonHandler::get_BaseHandler(T team)
     }
 }
 
-PF& PythonHandler::get_MiningShipHandler(T team)
+PythonHandler::PF& PythonHandler::get_MiningShipHandler(T team)
 {
     TeamMap::iterator it = _teamMap.find(team);
     if(it != _teamMap.end())
@@ -217,7 +215,7 @@ PF& PythonHandler::get_MiningShipHandler(T team)
     }
 }
 
-PF& PythonHandler::get_FighterHandler(T team)
+PythonHandler::PF& PythonHandler::get_FighterHandler(T team)
 {
     TeamMap::iterator it = _teamMap.find(team);
     if(it != _teamMap.end())

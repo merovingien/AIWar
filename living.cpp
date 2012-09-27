@@ -19,6 +19,8 @@
 
 #include "living.hpp"
 
+#include <iostream>
+
 using namespace aiwar::core;
 
 Living::Living() : _maxLife(0), _life(0)
@@ -27,6 +29,11 @@ Living::Living() : _maxLife(0), _life(0)
 
 Living::Living(unsigned int life, unsigned int maxLife) : _maxLife(maxLife), _life(life)
 {
+}
+
+Living::~Living()
+{
+//    std::cout << "~Living: " << this << std::endl;
 }
 
 unsigned int Living::_takeLife(unsigned int v, bool kill)

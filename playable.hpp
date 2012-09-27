@@ -54,7 +54,8 @@ namespace aiwar {
 	{
 	public:
 	    typedef unsigned int Team;
-
+	    
+	    static Team NO_TEAM;
 	    static DefaultPlayFunction playNoOp;
 
 	    virtual ~Playable();

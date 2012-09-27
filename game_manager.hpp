@@ -27,6 +27,8 @@
 namespace aiwar {
     namespace core {
 
+	class HandlerInterface;
+
 	class Item;
 	class Base;
 	class MiningShip;
@@ -41,7 +43,7 @@ namespace aiwar {
 	    GameManager();
 	    ~GameManager();
 	    
-	    void registerTeam(Playable::Team, PlayFunction &pfBase, PlayFunction &pfMiningShip, PlayFunction &pfFighter);
+	    void registerTeam(Playable::Team, HandlerInterface &handler);
 
 	    PlayFunction& getBasePF(Playable::Team team) const;
 	    PlayFunction& getMiningShipPF(Playable::Team team) const;
@@ -61,6 +63,9 @@ namespace aiwar {
 	    void itemDestroyed(const Item*);
 
 	    void printStat() const;
+
+	    bool gameOver() const;
+	    Playable::Team getWinner() const;
 
 	private:
 	    class TeamInfo;

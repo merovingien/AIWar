@@ -19,6 +19,8 @@
 
 #include "game_manager.hpp"
 
+#include "handler_interface.hpp"
+
 #include "base.hpp"
 #include "miningship.hpp"
 #include "fighter.hpp"
@@ -130,11 +132,10 @@ void GameManager::printStat() const
 }
 
 
-void GameManager::registerTeam(Playable::Team team, PlayFunction &pfBase, PlayFunction &pfMiningShip, PlayFunction &pfFighter)
+void GameManager::registerTeam(Playable::Team team, HandlerInterface &handler)
 {
-    TeamInfo t(pfBase, pfMiningShip, pfFighter);
+    TeamInfo t(handler.get_BaseHandler(team), handler.get_MiningShipHandler(team), handler.get_FighterHandler(team));
     _teamMap.insert(std::pair<Playable::Team, TeamInfo>(team, t));
-//    _teamMap[team] = t;
 }
 
 PlayFunction& GameManager::getBasePF(Playable::Team team) const
@@ -152,6 +153,41 @@ PlayFunction& GameManager::getFighterPF(Playable::Team team) const
     return _getTeamInfo(team).play_fighter;
 }
 
+bool GameManager::gameOver() const
+{
+    int nbLivingTeam = 0;
+
+    TeamMap::const_iterator cit;
+    for(cit = _teamMap.begin() ; cit != _teamMap.end() ; ++cit)
+    {
+	if(cit->second.nb_base > 0)
+	    nbLivingTeam++;
+    }
+
+    return (nbLivingTeam < 2);
+}
+
+Playable::Team GameManager::getWinner() const
+{
+    Playable::Team winner = Playable::NO_TEAM;
+    int nbLivingTeam = 0;
+    
+    TeamMap::const_iterator cit;
+    for(cit = _teamMap.begin() ; cit != _teamMap.end() ; ++cit)
+    {
+	if(cit->second.nb_base > 0)
+	{
+	    nbLivingTeam++;
+	    winner = cit->first;
+	}
+    }
+
+    if(nbLivingTeam > 1) // game not over
+	return Playable::NO_TEAM;
+    else
+	return winner;
+}
+
 const GameManager::TeamInfo& GameManager::_getTeamInfo(Playable::Team team) const
 {
     TeamMap::const_iterator it = _teamMap.find(team);
@@ -160,6 +196,7 @@ const GameManager::TeamInfo& GameManager::_getTeamInfo(Playable::Team team) cons
     else
 	throw std::runtime_error("Team is not registered");
 }
+    
 
 GameManager::TeamInfo::TeamInfo(PlayFunction& pfb, PlayFunction& pfm, PlayFunction& pff)
     : play_base(pfb), play_miningShip(pfm), play_fighter(pff),

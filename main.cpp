@@ -17,36 +17,28 @@
  * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-#include <Python.h>
+#include <Python.h> // to define some constant before everything else
 
 #include <SDL/SDL.h>
-
 #include <iostream>
 
-#include "base.hpp"
-#include "miningship.hpp"
-#include "mineral.hpp"
-#include "missile.hpp"
-#include "fighter.hpp"
+#include <sys/resource.h>
 
 #include "item_manager.hpp"
 #include "draw_manager.hpp"
 #include "game_manager.hpp"
 
-#include "python_wrapper.hpp"
+#include "test_handler.hpp"
 #include "python_handler.hpp"
 
 #include "config.hpp"
+
 
 #define SCREEN_WIDTH 900
 #define SCREEN_HEIGHT 800
 #define SPEED 400
 
 using namespace aiwar::core;
-
-static void play_miningship(Playable*);
-static void play_base(Playable*);
-static void play_fighter(Playable*);
 
 int main(int , char* [])
 {
@@ -56,37 +48,45 @@ int main(int , char* [])
     bool play = false;
     bool manual = false;
     unsigned int tick = 0;
-    Uint32 startTime, ellapsedTime;
+    Uint32 startTime = 0, ellapsedTime;
 
-    SDL_Init(SDL_INIT_VIDEO);
-    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+    /***** rlimit *****/
+    rlimit rlim;
+    if(getrlimit(RLIMIT_CORE, &rlim) == -1)
+	std::cerr << "Cannot get CORE rlimit: " << strerror(errno) << std::endl;
+    else
+    {
+	rlim.rlim_cur = rlim.rlim_max;
+	if(setrlimit(RLIMIT_CORE, &rlim) == -1)
+	    std::cerr << "Cannot set new CORE rlimit: " << strerror(errno) << std::endl;
+    }
+    /******************/
 
     // Python interpreter init
     PythonHandler ph;
     if(!ph.initialize())
-
-//    Py_Initialize();
-//    if(!initPythonInterpreter(argc, argv))
     {
 	std::cerr << "FATAL ERROR: fail to initiate Python Interpreter" << std::endl;
-	SDL_Quit();
 	return -1;
     }
 
-//    initAiwarModule();
+    // load handlers for RED team
+    if(!ph.load(TEAM_RED, "embtest"))
+    {
+	std::cerr << "FATAL ERROR: fail to load TEAM_RED python handler" << std::endl;
+	return -1;
+    }
 
-    ph.load(TEAM_RED, "embtest");
+    // test handler
+    TestHandler th;
+    th.initialize();
+
 
     GameManager gm;
     ItemManager im(gm);
 
-    // todo : create a handler
-    DefaultPlayFunction base_pf(play_base);
-    DefaultPlayFunction miningShip_pf(play_miningship);
-    DefaultPlayFunction fighter_pf(play_fighter);
-
-    gm.registerTeam(TEAM_BLUE, base_pf, miningShip_pf, fighter_pf);
-    gm.registerTeam(TEAM_RED, ph.get_BaseHandler(TEAM_RED), ph.get_MiningShipHandler(TEAM_RED), ph.get_FighterHandler(TEAM_RED));
+    gm.registerTeam(TEAM_BLUE, th);
+    gm.registerTeam(TEAM_RED, ph);
 
     im.createBase(25,25, TEAM_BLUE);
     im.createFighter(250,250, TEAM_BLUE);
@@ -108,14 +108,15 @@ int main(int , char* [])
     im.createMineral(420,200);
     im.createMineral(410,205);
 
-  
+    // SDL init
+    SDL_Init(SDL_INIT_VIDEO);
+    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
     /****** TEST HARDWARE ******/
 //    const SDL_VideoInfo *info = SDL_GetVideoInfo();
 //    printf("hardware surfaces? %d\n", info->hw_available);
 //    printf("window manager available ? %d\n", info->wm_available);
     /*******/
-
 
     screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_HWSURFACE);
     SDL_WM_SetCaption("AIWar", NULL);
@@ -171,13 +172,27 @@ int main(int , char* [])
 	/* actualisation de l'écran */
 	SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format,0,0,0));
 	dm.preDraw();
-	
+
+	// update game
 	if(play)
 	{
-	    im.update(tick);
-	    tick++;
+	    if(gm.gameOver())
+	    {
+		Playable::Team winner = gm.getWinner();
+		std::cout << "********** GameOver *********\n";
+		if(winner == Playable::NO_TEAM)
+		    std::cout << "Egality !\n";
+		else
+		    std::cout << "Winner is TEAM: " << ((winner == TEAM_BLUE) ? "BLUE" : "RED") << std::endl;
+		done = true;
+	    }
+	    else
+	    {
+		im.update(tick);
+		tick++;
 
-	    gm.printStat();
+		gm.printStat();
+	    }
 	}
 
 	std::set<Item*>::const_iterator cit;
@@ -189,114 +204,14 @@ int main(int , char* [])
 
 	SDL_Delay(16); // about 60 FPS
     }
-  
-//    Py_Finalize();
+
+    // SDL exit
+    SDL_Quit();
+ 
+
+    // Handlers exit
+    th.finalize();
     ph.finalize();
 
-    SDL_Quit();
-  
     return 0;
-}
-
-void play_miningship(Playable *item)
-{
-    using std::cout;
-    using std::endl;
-
-    aiwar::core::MiningShip *self = dynamic_cast<aiwar::core::MiningShip*>(item);
-
-    Item::ItemSet neighbours = self->neighbours();
-    cout << *self <<  ": Number of neighbours: " << neighbours.size() << endl;
-
-    Item::ItemSet::iterator it;
-    for(it = neighbours.begin() ; it != neighbours.end() ; it++)
-    {
-	Mineral *m = dynamic_cast<Mineral*>(*it);
-	if(m) // m is a Mineral
-	{
-	    double d = self->distanceTo(m);
-	    if(d <= MININGSHIP_MINING_RADIUS)
-	    {
-		unsigned int e = self->extract(m);
-		cout << *self << ": Meet a Mineral, extracted: " << e << endl;
-	    }
-	    else
-	    {
-		self->rotateTo(m);
-		self->move();
-	    }
-	}
-    }
-
-    self->rotateOf(15);
-    self->move();
-
-    cout << *self << ": Life: " << self->life() << endl;
-}
-
-void play_base(Playable *item)
-{
-    using std::cout;
-    using std::endl;
-
-    Base *self = dynamic_cast<Base*>(item);
-
-    Item::ItemSet neighbours = self->neighbours();
-    cout << *self << ": Number of neighbours: " << neighbours.size() << endl;
-
-    Item::ItemSet::iterator it;
-    for(it = neighbours.begin() ; it != neighbours.end() ; ++it)
-    {
-	aiwar::core::MiningShip *s = dynamic_cast<aiwar::core::MiningShip*>(*it);
-	if(s)
-	{
-	    if(! self->isFriend(s))
-	    {
-		self->launchMissile(s);
-		cout << *self << ": launch a missile to " << *s << endl;
-	    }
-	    else
-	    {
-		self->setMemory(0, 5, s);
-		int i = self->getMemory<int>(0, s);
-		cout << *self << ": get Memory from " << *s << ": " << i << endl;
-	    }
-	}
-    }
-
-    if(self->mineralStorage() > BASE_MININGSHIP_PRICE*2)
-    {
-	self->createMiningShip();
-	cout << *self << ": create a new MiningShip" << endl;
-    }
-
-    cout << *self << ": Life: " << self->life() << endl;
-
-    self->setMemory(1, 1);
-    cout << *self << ": getMemory<float>(self, 1): " << self->getMemory<float>(1, self) << endl;
-}
-
-void play_fighter(Playable* item)
-{
-    using std::cout;
-    using std::endl;
-
-    aiwar::core::Fighter * self = dynamic_cast<aiwar::core::Fighter*>(item);
-
-    Item::ItemSet neighbours = self->neighbours();
-//    cout << *self << ": Number of neighbours: " << neighbours.size() << endl;
-
-    Item::ItemSet::iterator it;
-    for(it = neighbours.begin() ; it != neighbours.end() ; ++it)
-    {
-	aiwar::core::MiningShip *s = dynamic_cast<aiwar::core::MiningShip*>(*it);
-	if(s)
-	{
-	    if(! self->isFriend(s))
-	    {
-		self->launchMissile(s);
-//		cout << *self << ": launch a missile to " << *s << endl;
-	    }
-	}
-    }  
 }

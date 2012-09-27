@@ -25,6 +25,7 @@ cxxsrc = item.cpp \
 	item_manager.cpp \
 	draw_manager.cpp \
 	game_manager.cpp \
+	test_handler.cpp \
 	python_wrapper.cpp \
 	python_handler.cpp \
 	main.cpp

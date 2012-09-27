@@ -24,6 +24,7 @@ const double       WORLD_SIZE_X = 800;
 const double       WORLD_SIZE_Y = 800;
 const bool         DRAW_DEBUG = false;
 
+// TEAM number 0 is reserved
 const unsigned int TEAM_BLUE = 1;
 const unsigned int TEAM_RED  = 2;
 

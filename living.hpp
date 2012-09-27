@@ -29,6 +29,8 @@ namespace aiwar {
 	{
 	public:
 
+	    virtual ~Living();
+
 	    /**
 	     * \brief Get the current number of life points
 	     * \return The current number of life points

@@ -21,6 +21,7 @@
 
 using namespace aiwar::core;
 
+Playable::Team Playable::NO_TEAM(0);
 DefaultPlayFunction Playable::playNoOp(0);
 
 Playable::Playable(Team team, PlayFunction& play) : _team(team), _play(play)
