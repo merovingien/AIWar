@@ -83,3 +83,8 @@ bool Item::_toRemove() const
 {
     return _toRemoveFlag;
 }
+
+Item::Key Item::_getKey() const
+{
+    return _key;
+}

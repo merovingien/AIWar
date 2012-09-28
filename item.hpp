@@ -73,6 +73,8 @@ namespace aiwar {
 	     */
 	    bool _toRemove() const;
 
+	    Key _getKey() const;
+
 	protected:
 	    Item(ItemManager &im, Key k, double px = 0.0, double py = 0.0, double sx = 0.0, double sy = 0.0, double detection = 0.0);
 

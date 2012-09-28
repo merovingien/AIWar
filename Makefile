@@ -12,7 +12,8 @@ RM = rm -f
 
 ############################
 
-cxxsrc = item.cpp \
+cxxsrc = config.cpp \
+	item.cpp \
 	living.cpp \
 	movable.cpp \
 	playable.cpp \

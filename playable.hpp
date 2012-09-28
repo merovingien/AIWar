@@ -20,8 +20,6 @@
 #ifndef PLAYABLE_HPP
 #define PLAYABLE_HPP
 
-#include <functional>
-
 namespace aiwar {
     namespace core {
 

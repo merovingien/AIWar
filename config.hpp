@@ -20,6 +20,9 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
+#include <string>
+
+
 const double       WORLD_SIZE_X = 800;
 const double       WORLD_SIZE_Y = 800;
 const bool         DRAW_DEBUG = false;
@@ -83,5 +86,32 @@ const double       BASE_REPAIR_RADIUS = 30.0;
 const double       BASE_REFUEL_RADIUS = 30.0;
 
 const double       COMMUNICATION_RADIUS = 60;
+
+class Config
+{
+public:
+
+    static Config& instance();
+
+    std::string usage() const;
+    bool parseCmdLine(int argc, char* argv[]);
+
+    bool help;
+    bool debug;
+    bool manual;
+
+private:
+    Config();
+
+    static Config _instance;
+
+    // no copy
+    Config(const Config&);
+    Config& operator=(const Config&);
+
+    
+
+    std::string _programName;
+};
 
 #endif /* CONFIG_HPP */

@@ -29,7 +29,7 @@ Missile::Missile(ItemManager& im, Key k, double px, double py, Living* target)
     : Item(im, k, px, py, MISSILE_SIZE_X, MISSILE_SIZE_Y),
       Movable(im, k, MISSILE_SPEED, MISSILE_START_FUEL, MISSILE_MAX_FUEL, MISSILE_MOVE_CONSO),
       Living(im, k, MISSILE_LIFE, MISSILE_LIFE),
-      _target(target->_key)
+      _target(target->_getKey())
 {
 }
 
@@ -42,9 +42,8 @@ void Missile::update(unsigned int)
     Movable::preUpdate();
 
     // check if the target is still alive
-//    std::cout << "Missile[" << this << "]: check target " << _target << std::endl;
     Living *target = dynamic_cast<Living*>(_im.get(_target));
-    if(! target)
+    if(!target || target->_toRemove())
     {
 	// no more target, auto destruction
 	_toRemoveFlag = true;
@@ -55,7 +54,7 @@ void Missile::update(unsigned int)
 	rotateTo(target);
 	double d = distanceTo(target);
 	bool reached = false;
-	if(d < _speed)
+	if(d <= _speed)
 	{
 	    _speed = d;
 	    reached = true;

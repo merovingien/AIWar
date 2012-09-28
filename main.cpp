@@ -40,7 +40,7 @@
 
 using namespace aiwar::core;
 
-int main(int , char* [])
+int main(int argc, char* argv[])
 {
     SDL_Surface *screen = NULL;
     SDL_Event e;
@@ -61,6 +61,25 @@ int main(int , char* [])
 	    std::cerr << "Cannot set new CORE rlimit: " << strerror(errno) << std::endl;
     }
     /******************/
+    
+    /*** read configuration ***/
+    Config &cfg = Config::instance();
+
+    if(!cfg.parseCmdLine(argc, argv))
+    {
+	std::cerr << "Bad options\n" << cfg.usage();
+	return 1;
+    }
+    
+    if(cfg.help)
+    {
+	std::cout << cfg.usage();
+	return 0;
+    }
+
+    manual = cfg.manual;
+
+    /*** Start handlers ***/
 
     // Python interpreter init
     PythonHandler ph;
@@ -122,7 +141,8 @@ int main(int , char* [])
     SDL_WM_SetCaption("AIWar", NULL);
 
     aiwar::renderer::DrawManager dm(screen);
-  
+    dm.debug(cfg.debug);
+
     while(!done)
     {
 	play = false;
