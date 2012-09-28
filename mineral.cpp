@@ -25,9 +25,9 @@
 
 using namespace aiwar::core;
 
-Mineral::Mineral(double px, double py)
-    : Item(px, py, MINERAL_SIZE_X, MINERAL_SIZE_Y),
-      Living(MINERAL_LIFE, MINERAL_LIFE)
+Mineral::Mineral(ItemManager& im, Key k, double px, double py)
+    : Item(im, k, px, py, MINERAL_SIZE_X, MINERAL_SIZE_Y),
+      Living(im, k, MINERAL_LIFE, MINERAL_LIFE)
 {
 }
 

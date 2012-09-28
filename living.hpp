@@ -59,8 +59,8 @@ namespace aiwar {
 	    unsigned int _putLife(unsigned int value);
 
 	protected:
-	    Living();
-	    Living(unsigned int life, unsigned int maxLife);
+	    Living(ItemManager& im, Key k);
+	    Living(ItemManager& im, Key k, unsigned int life, unsigned int maxLife);
 
 	    bool _isDead() const;
 

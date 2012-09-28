@@ -19,7 +19,6 @@
 
 #include "base.hpp"
 
-#include "item_manager.hpp"
 #include "miningship.hpp"
 #include "fighter.hpp"
 
@@ -29,12 +28,11 @@
 
 using namespace aiwar::core;
 
-Base::Base(ItemManager* im, double xpos, double ypos, Team team, PlayFunction& pf)
-    : Item(xpos, ypos, BASE_SIZE_X, BASE_SIZE_Y, BASE_DETECTION_RADIUS),
-      Living(BASE_START_LIFE, BASE_MAX_LIFE),
+Base::Base(ItemManager &im, Key k, double xpos, double ypos, Team team, PlayFunction& pf)
+    : Item(im, k, xpos, ypos, BASE_SIZE_X, BASE_SIZE_Y, BASE_DETECTION_RADIUS),
+      Living(im, k, BASE_START_LIFE, BASE_MAX_LIFE),
       Playable(team, pf),
-      Memory(BASE_MEMORY_SIZE),
-      _im(im),
+      Memory(im, k, BASE_MEMORY_SIZE),
       _mineralStorage(BASE_START_MINERAL_STORAGE),
       _hasLaunch(false)
 {
@@ -63,7 +61,7 @@ void Base::launchMissile(Living* target)
     {
 	if(_mineralStorage >= BASE_MISSILE_PRICE)
 	{
-	    _im->createMissile(this, target);
+	    _im.createMissile(this, target);
 	    _mineralStorage -= BASE_MISSILE_PRICE;
 	    _hasLaunch = true;
 	}
@@ -74,7 +72,7 @@ void Base::createMiningShip()
 {
     if(_mineralStorage >= BASE_MININGSHIP_PRICE)
     {
-	_im->createMiningShip(this);
+	_im.createMiningShip(this);
 	_mineralStorage -= BASE_MININGSHIP_PRICE;
     }
 }
@@ -174,7 +172,7 @@ void Base::createFighter()
 {
    if(_mineralStorage >= BASE_FIGHTER_PRICE)
     {
-	_im->createFighter(this);
+	_im.createFighter(this);
 	_mineralStorage -= BASE_FIGHTER_PRICE;
     }
 }

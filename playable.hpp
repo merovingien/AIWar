@@ -39,7 +39,6 @@ namespace aiwar {
 	    PlayFunction& operator=(const PlayFunction&);
 	};
 	    
-
 	class DefaultPlayFunction : public PlayFunction
 	{
 	public:

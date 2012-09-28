@@ -42,6 +42,9 @@ namespace aiwar {
 	class ItemManager
 	{
 	public:
+	    typedef unsigned long ItemKey;
+	    typedef std::map<ItemKey, Item*> ItemMap;
+
 	    ItemManager(GameManager& gm);
 	    ~ItemManager();
 
@@ -55,14 +58,21 @@ namespace aiwar {
 	    Fighter* createFighter(double px, double py, Playable::Team team);
 	    Fighter* createFighter(Base* base);
 
-	    std::set<Item*>::const_iterator begin() const;
-	    std::set<Item*>::const_iterator end() const;
+	    bool exists(ItemKey key) const;
+	    Item* get(ItemKey key) const;
+	    ItemMap::const_iterator begin() const;
+	    ItemMap::const_iterator end() const;
 	        
 	private:
-	    typedef std::set<Item*> ItemSet;
+	    // no copy
+	    ItemManager(const ItemManager&);
+	    ItemManager& operator=(const ItemManager&);
+
+	    ItemKey _getNextItemKey();
     
 	    GameManager& _gm;
-	    ItemSet _itemSet;
+	    ItemKey _currentItemId;
+	    ItemMap _itemMap;
 	};
 
     } // namespace aiwar::core

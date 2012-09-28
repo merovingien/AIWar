@@ -195,9 +195,9 @@ int main(int , char* [])
 	    }
 	}
 
-	std::set<Item*>::const_iterator cit;
+	ItemManager::ItemMap::const_iterator cit;
 	for(cit = im.begin() ; cit != im.end() ; cit++)
-	    dm.draw(*cit);
+	    dm.draw(cit->second);
 
 	dm.postDraw();
 	SDL_Flip(screen);

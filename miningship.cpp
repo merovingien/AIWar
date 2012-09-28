@@ -27,12 +27,12 @@
 
 using namespace aiwar::core;
 
-MiningShip::MiningShip(double xpos, double ypos, Team team, PlayFunction& pf)
-    : Item(xpos, ypos, MININGSHIP_SIZE_X, MININGSHIP_SIZE_Y, MININGSHIP_DETECTION_RADIUS),
-      Movable(MININGSHIP_SPEED, MININGSHIP_START_FUEL, MININGSHIP_MAX_FUEL, MININGSHIP_MOVE_CONSO),
-      Living(MININGSHIP_START_LIFE, MININGSHIP_MAX_LIFE),
+MiningShip::MiningShip(ItemManager& im, Key k, double xpos, double ypos, Team team, PlayFunction& pf)
+    : Item(im, k, xpos, ypos, MININGSHIP_SIZE_X, MININGSHIP_SIZE_Y, MININGSHIP_DETECTION_RADIUS),
+      Movable(im, k, MININGSHIP_SPEED, MININGSHIP_START_FUEL, MININGSHIP_MAX_FUEL, MININGSHIP_MOVE_CONSO),
+      Living(im, k, MININGSHIP_START_LIFE, MININGSHIP_MAX_LIFE),
       Playable(team, pf),
-      Memory(MININGSHIP_MEMORY_SIZE),
+      Memory(im, k, MININGSHIP_MEMORY_SIZE),
       _mineralStorage(0),
       _hasExtracted(false)
 {

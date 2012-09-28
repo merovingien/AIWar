@@ -30,13 +30,13 @@ namespace aiwar {
 	class Missile : virtual public Item, public Movable, public Living
 	{
 	public:
-	    Missile(double px, double py, Living* target);
+	    Missile(ItemManager& im, Key k, double px, double py, Living* target);
 	    ~Missile();
 
 	    void update(unsigned int tick);
 
 	private:
-	    Living* _target;
+	    const Key _target;
 
 	};
 

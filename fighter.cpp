@@ -19,17 +19,14 @@
 
 #include "fighter.hpp"
 
-#include "item_manager.hpp"
-
 using namespace aiwar::core;
 
-Fighter::Fighter(ItemManager* im, double px, double py, Team team, PlayFunction& pf)
-    : Item(px, py, FIGHTER_SIZE_X, FIGHTER_SIZE_Y, FIGHTER_DETECTION_RADIUS),
-      Movable(FIGHTER_SPEED, FIGHTER_START_FUEL, FIGHTER_MAX_FUEL, FIGHTER_MOVE_CONSO),
-      Living(FIGHTER_START_LIFE, FIGHTER_MAX_LIFE),
+Fighter::Fighter(ItemManager &im, Key k, double px, double py, Team team, PlayFunction& pf)
+    : Item(im, k, px, py, FIGHTER_SIZE_X, FIGHTER_SIZE_Y, FIGHTER_DETECTION_RADIUS),
+      Movable(im, k, FIGHTER_SPEED, FIGHTER_START_FUEL, FIGHTER_MAX_FUEL, FIGHTER_MOVE_CONSO),
+      Living(im, k, FIGHTER_START_LIFE, FIGHTER_MAX_LIFE),
       Playable(team, pf),
-      Memory(FIGHTER_MEMORY_SIZE),
-      _im(im),
+      Memory(im, k, FIGHTER_MEMORY_SIZE),
       _missiles(FIGHTER_START_MISSILE),
       _hasLaunch(false)
 {
@@ -63,7 +60,7 @@ void Fighter::launchMissile(Living* target)
     {
 	if(_missiles > 0)
 	{
-	    _im->createMissile(this, target);
+	    _im.createMissile(this, target);
 	    _missiles--;
 	    _hasLaunch = true;
 	}

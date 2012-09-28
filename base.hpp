@@ -30,7 +30,6 @@
 namespace aiwar {
     namespace core {
 
-	class ItemManager;
 	class MiningShip;
 	class Movable;
 	class Fighter;
@@ -38,7 +37,7 @@ namespace aiwar {
 	class Base : virtual public Item, public Living, public Playable, public Memory
 	{
 	public:
-	    Base(ItemManager* im, double xpos, double ypos, Team team, PlayFunction& pf);
+	    Base(ItemManager &im, Key k, double xpos, double ypos, Team team, PlayFunction& pf);
 	    ~Base();
 
 	    void update(unsigned int tick);
@@ -101,8 +100,6 @@ namespace aiwar {
 	private:
 	    void _preUpdate(unsigned int tick);
 	    
-	    ItemManager* _im;
-
 	    unsigned int _mineralStorage;
 	    bool _hasLaunch;
 	};

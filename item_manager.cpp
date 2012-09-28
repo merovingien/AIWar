@@ -31,68 +31,71 @@
 
 using namespace aiwar::core;
 
-ItemManager::ItemManager(GameManager& gm) : _gm(gm)
+ItemManager::ItemManager(GameManager& gm) : _gm(gm), _currentItemId(0)
 {
 }
 
 ItemManager::~ItemManager()
 {
-    ItemSet::iterator it;
+    ItemMap::iterator it;
     // delete all items
-    for(it = _itemSet.begin() ; it != _itemSet.end() ; ++it)
+    for(it = _itemMap.begin() ; it != _itemMap.end() ; ++it)
     {
-	delete *it;
+	delete it->second;
     }
 }
 
 void ItemManager::update(unsigned int tick)
 {
-    ItemSet::iterator it, tmp;
+    ItemMap::iterator it, tmp;
     Item* i;
     // update all items if not to remove
-    for(it = _itemSet.begin() ; it != _itemSet.end() ; ++it)
+    for(it = _itemMap.begin() ; it != _itemMap.end() ; ++it)
     {
-	i = *it;
+	i = it->second;
 	if(!i->_toRemove())
 	    i->update(tick);
     }
 
     // remove some items
-    for(it = _itemSet.begin() ; it != _itemSet.end() ; )
+    for(it = _itemMap.begin() ; it != _itemMap.end() ; )
     {
 	// keep trace of the current iterator *before* increment
 	tmp = it++;
 	
-	i = *tmp;
+	i = tmp->second;
 	if(i->_toRemove())
 	{
 	    _gm.itemDestroyed(i);
 	    delete i;
-	    _itemSet.erase(tmp);  // this unvalidates tmp, but 'it' has been updated before
+	    _itemMap.erase(tmp);  // this unvalidates tmp, but 'it' has been updated before
 	}
     }
 }
 
 Missile* ItemManager::createMissile(Item* launcher, Living* target)
 {
-    Missile *m = new Missile(launcher->xpos(), launcher->ypos(), target);
-    _itemSet.insert(m);
+    ItemKey k = _getNextItemKey();
+    Missile *m = new Missile(*this, k, launcher->xpos(), launcher->ypos(), target);
+    _itemMap.insert(ItemMap::value_type(k, m));
     _gm.missileCreated(m);
     return m;
 }
 
 Base* ItemManager::createBase(double px, double py, Playable::Team team)
 {
-    Base *b = new Base(this, px, py, team, _gm.getBasePF(team));
-    _itemSet.insert(b);
+    ItemKey k = _getNextItemKey();
+    Base *b = new Base(*this, k, px, py, team, _gm.getBasePF(team));
+    _itemMap.insert(ItemMap::value_type(k, b));
     _gm.baseCreated(b);
     return b;
 }
 
 MiningShip* ItemManager::createMiningShip(double px, double py, Playable::Team team)
 {
-    MiningShip *t = new MiningShip(px, py, team, _gm.getMiningShipPF(team));
-    _itemSet.insert(t);
+    ItemKey k = _getNextItemKey();
+    MiningShip *t = new MiningShip(*this, k, px, py, team, _gm.getMiningShipPF(team));
+    _itemMap.insert(ItemMap::value_type(k, t));
     _gm.miningShipCreated(t);
     return t;
 }
@@ -104,16 +107,18 @@ MiningShip* ItemManager::createMiningShip(Base* base)
 
 Mineral* ItemManager::createMineral(double px, double py)
 {
-    Mineral *m = new Mineral(px, py);
-    _itemSet.insert(m);
+    ItemKey k = _getNextItemKey();
+    Mineral *m = new Mineral(*this, k, px, py);
+    _itemMap.insert(ItemMap::value_type(k, m));
     _gm.mineralCreated(m);
     return m;
 }
 
 Fighter* ItemManager::createFighter(double px, double py, Playable::Team team)
 {
-    Fighter *f = new Fighter(this, px, py, team, _gm.getFighterPF(team));
-    _itemSet.insert(f);
+    ItemKey k = _getNextItemKey();
+    Fighter *f = new Fighter(*this, k, px, py, team, _gm.getFighterPF(team));
+    _itemMap.insert(ItemMap::value_type(k, f));
     _gm.fighterCreated(f);
     return f;
 }
@@ -123,13 +128,32 @@ Fighter* ItemManager::createFighter(Base *base)
     return createFighter(base->xpos(), base->ypos(), base->team());
 }
 
-std::set<Item*>::const_iterator ItemManager::begin() const
+bool ItemManager::exists(ItemKey key) const
 {
-    return _itemSet.begin();
+    return (get(key) != NULL);
 }
 
-std::set<Item*>::const_iterator ItemManager::end() const
+Item* ItemManager::get(ItemKey key) const
 {
-    return _itemSet.end();
+    ItemMap::const_iterator cit = _itemMap.find(key);
+    if(cit != _itemMap.end())
+	return cit->second;
+    else
+	return NULL;
+}
+
+ItemManager::ItemMap::const_iterator ItemManager::begin() const
+{
+    return _itemMap.begin();
+}
+
+ItemManager::ItemMap::const_iterator ItemManager::end() const
+{
+    return _itemMap.end();
 }
 	    
+ItemManager::ItemKey ItemManager::_getNextItemKey()
+{
+    ItemKey k = _currentItemId++;
+    return k;
+}

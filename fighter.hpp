@@ -29,12 +29,10 @@
 namespace aiwar {
     namespace core {
 
-	class ItemManager;
-
 	class Fighter : virtual public Item, public Movable, public Living, public Playable, public Memory
 	{
 	public:
-	    Fighter(ItemManager *im, double px, double py, Team team, PlayFunction& pf);
+	    Fighter(ItemManager &im, Key k, double px, double py, Team team, PlayFunction& pf);
 	    ~Fighter();
 
 	    void update(unsigned int tick);
@@ -46,8 +44,6 @@ namespace aiwar {
 
 	private:
 	    void _preUpdate(unsigned int tick);
-
-	    ItemManager* _im;
 
 	    unsigned int _missiles;
 	    bool _hasLaunch;

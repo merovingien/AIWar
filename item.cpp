@@ -24,17 +24,13 @@
 
 using namespace aiwar::core;
 
-std::set<Item*> Item::_itemSet;
-
-Item::Item(double px, double py, double sx, double sy, double detection) : _toRemoveFlag(false), _xpos(px), _ypos(py), _xsize(sx), _ysize(sy), _detection_radius(detection)
+Item::Item(ItemManager &im, Key k, double px, double py, double sx, double sy, double detection) : _im(im), _key(k), _toRemoveFlag(false), _xpos(px), _ypos(py), _xsize(sx), _ysize(sy), _detection_radius(detection)
 {
 //    std::cout << "Ctr Item(" << px << "," << py << ") -> " << this << std::endl;
-    _itemSet.insert(this);
 }
 
 Item::~Item()
 {
-    _itemSet.erase(this);
 }
 
 double Item::xpos() const
@@ -52,12 +48,11 @@ Item::ItemSet Item::neighbours() const
 //    std::cout << "getNeighbours, size=" << _itemSet.size() << " this=" << this << std::endl;
 
     ItemSet res;
-    ItemSet::const_iterator cit;
-    for(cit = _itemSet.begin() ; cit != _itemSet.end() ; cit++)
+    ItemManager::ItemMap::const_iterator cit;
+    for(cit = _im.begin() ; cit != _im.end() ; cit++)
     {
-	Item* i = *cit;
-//	std::cout << "Item " << i << std::endl;
-	if(i == this)
+	Item* i = cit->second;
+	if(i->_key == this->_key)
 	    continue;
 
 	if(i->_toRemove())
@@ -87,14 +82,4 @@ double Item::distanceTo(double px, double py) const
 bool Item::_toRemove() const
 {
     return _toRemoveFlag;
-}
-
-bool Item::_exists(Item* item)
-{
-//    std::cout << "_exists(" << item << ")" << std::endl;
-    ItemSet::const_iterator cit = _itemSet.find(item);
-    if(cit != _itemSet.end())
-	return !(*cit)->_toRemove();
-    else
-	return false;
 }

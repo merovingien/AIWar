@@ -25,11 +25,11 @@
 
 using namespace aiwar::core;
 
-Missile::Missile(double px, double py, Living* target)
-    : Item(px, py, MISSILE_SIZE_X, MISSILE_SIZE_Y),
-      Movable(MISSILE_SPEED, MISSILE_START_FUEL, MISSILE_MAX_FUEL, MISSILE_MOVE_CONSO),
-      Living(MISSILE_LIFE, MISSILE_LIFE),
-      _target(target)
+Missile::Missile(ItemManager& im, Key k, double px, double py, Living* target)
+    : Item(im, k, px, py, MISSILE_SIZE_X, MISSILE_SIZE_Y),
+      Movable(im, k, MISSILE_SPEED, MISSILE_START_FUEL, MISSILE_MAX_FUEL, MISSILE_MOVE_CONSO),
+      Living(im, k, MISSILE_LIFE, MISSILE_LIFE),
+      _target(target->_key)
 {
 }
 
@@ -43,7 +43,8 @@ void Missile::update(unsigned int)
 
     // check if the target is still alive
 //    std::cout << "Missile[" << this << "]: check target " << _target << std::endl;
-    if(! _exists(_target))
+    Living *target = dynamic_cast<Living*>(_im.get(_target));
+    if(! target)
     {
 	// no more target, auto destruction
 	_toRemoveFlag = true;
@@ -51,8 +52,8 @@ void Missile::update(unsigned int)
     else
     {
 	// move to the target
-	rotateTo(_target);
-	double d = distanceTo(_target);
+	rotateTo(target);
+	double d = distanceTo(target);
 	bool reached = false;
 	if(d < _speed)
 	{
@@ -64,7 +65,7 @@ void Missile::update(unsigned int)
 	// target reached ?
 	if(reached)
 	{
-	    _target->_takeLife(MISSILE_DAMAGE, true);	    
+	    target->_takeLife(MISSILE_DAMAGE, true);	    
 	    _toRemoveFlag = true;
 	}
     }

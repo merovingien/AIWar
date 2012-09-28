@@ -22,6 +22,8 @@
 
 #include <set>
 
+#include "item_manager.hpp" // for ItemManager::ItemMap
+
 namespace aiwar {
     namespace core {
 
@@ -31,11 +33,8 @@ namespace aiwar {
 	class Item
 	{
 	public:
-	    /**
-	     * \brief Set of Item pointers
-	     */
 	    typedef std::set<Item*> ItemSet;
-
+	    typedef ItemManager::ItemKey Key;
 
 	    virtual ~Item();
 
@@ -75,7 +74,10 @@ namespace aiwar {
 	    bool _toRemove() const;
 
 	protected:
-	    Item(double px = 0.0, double py = 0.0, double sx = 0.0, double sy = 0.0, double detection = 0.0);
+	    Item(ItemManager &im, Key k, double px = 0.0, double py = 0.0, double sx = 0.0, double sy = 0.0, double detection = 0.0);
+
+	    ItemManager &_im;
+	    const Key _key;
 
 	    bool _toRemoveFlag; ///< set to true when the item must be deleted by the game manager
 
@@ -87,15 +89,10 @@ namespace aiwar {
 
 	    double _detection_radius; ///< radius of vision for the item
 
-	    static bool _exists(Item* item);
-
 	private:
 	    // no copy
 	    Item(const Item&);
 	    Item& operator= (const Item&);
-
-	    // pointer on all existing items
-	    static ItemSet _itemSet;
 	};
 
     } // namespace aiwar::core
