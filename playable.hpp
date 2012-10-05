@@ -20,6 +20,8 @@
 #ifndef PLAYABLE_HPP
 #define PLAYABLE_HPP
 
+#include "config.hpp" // for Team
+
 namespace aiwar {
     namespace core {
 
@@ -50,9 +52,8 @@ namespace aiwar {
 	class Playable
 	{
 	public:
-	    typedef unsigned int Team;
+//	    typedef unsigned int Team;
 	    
-	    static Team NO_TEAM;
 	    static DefaultPlayFunction playNoOp;
 
 	    virtual ~Playable();

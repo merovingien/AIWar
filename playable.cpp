@@ -21,7 +21,6 @@
 
 using namespace aiwar::core;
 
-Playable::Team Playable::NO_TEAM(0);
 DefaultPlayFunction Playable::playNoOp(0);
 
 Playable::Playable(Team team, PlayFunction& play) : _team(team), _play(play)
@@ -32,7 +31,7 @@ Playable::~Playable()
 {
 }
 
-Playable::Team Playable::team() const
+Team Playable::team() const
 {
     return _team;
 }

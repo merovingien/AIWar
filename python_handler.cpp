@@ -27,7 +27,6 @@
 #include <stdexcept>
 
 
-
 PythonHandler::PythonHandler() : _initFlag(false)
 {
 }
@@ -36,15 +35,15 @@ PythonHandler::~PythonHandler()
 {
     if(_initFlag)
     {
-	// do unload for each team, or do it in team map
+	// do unload for each player, or do it in player map
 
 	
 	finalize();
     }
 
     // clean memory, should not be there but in finalyse or unload
-    TeamMap::iterator it;
-    for(it = _teamMap.begin() ; it != _teamMap.end() ; ++it)
+    PlayerMap::iterator it;
+    for(it = _playerMap.begin() ; it != _playerMap.end() ; ++it)
 	delete it->second;
 }
 
@@ -91,13 +90,13 @@ bool PythonHandler::finalize()
 {
     // todo do some clean action before finalizing python interpreter
 
-    // unload every team
+    // unload every player
 
     Py_Finalize();
     return true;
 }
 
-bool PythonHandler::load(T team, const std::string &moduleName)
+bool PythonHandler::load(P player, const std::string &moduleName)
 {
     // load module
     PyObject *pName = PyString_FromString(moduleName.c_str());
@@ -172,149 +171,61 @@ bool PythonHandler::load(T team, const std::string &moduleName)
 	return false;
     }
 
-    // add handlers to team map
-    TeamInfo *info = new TeamInfo(pBase_Handler, pMiningShip_Handler, pFighter_Handler);
+    // add handlers to player map
+    PlayerInfo *info = new PlayerInfo(pBase_Handler, pMiningShip_Handler, pFighter_Handler);
     info->moduleName = moduleName;
     info->module = pModule;
-    _teamMap[team] = info;
+    _playerMap[player] = info;
 
     return true;
 }
 
 
-bool PythonHandler::unload(T)
+bool PythonHandler::unload(P)
 {
     // todo
 
     return false;
 }
 
-PythonHandler::PF& PythonHandler::get_BaseHandler(T team)
+PythonHandler::PF& PythonHandler::get_BaseHandler(P player)
 {
-    TeamMap::iterator it = _teamMap.find(team);
-    if(it != _teamMap.end())
+    PlayerMap::iterator it = _playerMap.find(player);
+    if(it != _playerMap.end())
     {
 	return it->second->baseHandler;
     }
     else
     {
-	throw std::runtime_error("Team not registered");
+	throw std::runtime_error("Player not registered");
     }
 }
 
-PythonHandler::PF& PythonHandler::get_MiningShipHandler(T team)
+PythonHandler::PF& PythonHandler::get_MiningShipHandler(P player)
 {
-    TeamMap::iterator it = _teamMap.find(team);
-    if(it != _teamMap.end())
+    PlayerMap::iterator it = _playerMap.find(player);
+    if(it != _playerMap.end())
     {
 	return it->second->miningShipHandler;
     }
     else
     {
-	throw std::runtime_error("Team not registered");
+	throw std::runtime_error("Player not registered");
     }
 }
 
-PythonHandler::PF& PythonHandler::get_FighterHandler(T team)
+PythonHandler::PF& PythonHandler::get_FighterHandler(P player)
 {
-    TeamMap::iterator it = _teamMap.find(team);
-    if(it != _teamMap.end())
+    PlayerMap::iterator it = _playerMap.find(player);
+    if(it != _playerMap.end())
     {
 	return it->second->fighterHandler;
     }
     else
     {
-	throw std::runtime_error("Team not registered");
+	throw std::runtime_error("Player not registered");
     }
 }
-
-/*
-
-static PyObject *pMiningShip_Handler = NULL;
-static PyObject *pBase_Handler = NULL;
-static PyObject *pFighter_Handler = NULL;
-
-static bool loadHandlers()
-{
-    // load module 'embtest'
-    PyObject *pName = PyString_FromString("embtest");
-    if(!pName)
-    {
-	PyErr_Print();
-	return false;
-    }
-
-    PyObject *pModule = PyImport_Import(pName);
-    Py_DECREF(pName);
-    if(!pModule)
-    {
-	PyErr_Print();
-	return false;
-    }
-    
-    // load and check MiningShipHandler
-    pMiningShip_Handler = PyObject_GetAttrString(pModule, "play_miningship");
-    if(!pMiningShip_Handler)
-    {
-	Py_DECREF(pModule);
-	PyErr_Print();
-	return false;
-    }
-
-    if(!PyCallable_Check(pMiningShip_Handler))
-    {
-	Py_CLEAR(pMiningShip_Handler);
-	Py_DECREF(pModule);
-	PyErr_Print();
-	return false;
-    }
-
-
-    // load and check Base Handler
-    pBase_Handler = PyObject_GetAttrString(pModule, "play_base");
-    if(!pBase_Handler)
-    {
-	Py_CLEAR(pMiningShip_Handler);
-	Py_DECREF(pModule);
-	PyErr_Print();
-	return false;
-    }
-
-    if(!PyCallable_Check(pMiningShip_Handler))
-    {
-	Py_CLEAR(pMiningShip_Handler);
-	Py_CLEAR(pBase_Handler);
-	Py_DECREF(pModule);
-	PyErr_Print();
-	return false;
-    }
-
-    // load and check Fighter Handler
-    pFighter_Handler = PyObject_GetAttrString(pModule, "play_fighter");
-    if(!pFighter_Handler)
-    {
-	Py_CLEAR(pMiningShip_Handler);
-	Py_CLEAR(pBase_Handler);
-	Py_DECREF(pModule);
-	PyErr_Print();
-	return false;
-    }
-
-    if(!PyCallable_Check(pFighter_Handler))
-    {
-	Py_CLEAR(pMiningShip_Handler);
-	Py_CLEAR(pBase_Handler);
-	Py_CLEAR(pFighter_Handler);
-	Py_DECREF(pModule);
-	PyErr_Print();
-	return false;
-    }
-    
-    std::cout << "Python handlers found" << std::endl;
-
-    return true;
-}
-*/
 
 void PythonHandler::play_miningShip(PyObject *pHandler, aiwar::core::Playable *item)
 {
@@ -405,47 +316,9 @@ void PythonHandler::play_fighter(PyObject *pHandler, aiwar::core::Playable *item
     Py_DECREF(pResult);
 }
 
-PythonHandler::TeamInfo::TeamInfo(PyObject *bh, PyObject *mh, PyObject *fh)
+PythonHandler::PlayerInfo::PlayerInfo(PyObject *bh, PyObject *mh, PyObject *fh)
     : baseHandler(&PythonHandler::play_base, bh),
       miningShipHandler(&PythonHandler::play_miningShip, mh),
       fighterHandler(&PythonHandler::play_fighter, fh)
 {
 }
-
-
-
-
-
-
-
-
-/*
-
-PF get_MiningShip_PyHandler()
-{
-    if(!pMiningShip_Handler)
-	if(!loadHandlers())
-	    return NULL;
-
-    return &play_miningShip_py;
-}
-
-PF get_Base_PyHandler()
-{
-    if(!pBase_Handler)
-	if(!loadHandlers())
-	    return NULL;
-
-    return &play_base_py;
-}
-
-PF get_Fighter_PyHandler()
-{
-    if(!pFighter_Handler)
-	if(!loadHandlers())
-	    return NULL;
-
-    return &play_fighter_py;
-}
-
-*/

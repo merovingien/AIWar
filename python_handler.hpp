@@ -28,7 +28,7 @@
 class PythonHandler : public aiwar::core::HandlerInterface
 {
 public:
-    typedef aiwar::core::Playable::Team T;
+    typedef aiwar::core::Config::Player P;
     typedef aiwar::core::PlayFunction PF;
 
     PythonHandler();
@@ -37,17 +37,17 @@ public:
     bool initialize();
     bool finalize();
 
-    bool load(T team, const std::string &moduleName);
-    bool unload(T team);
+    bool load(P player, const std::string &moduleName);
+    bool unload(P player);
 
-    PF& get_BaseHandler(T team);
-    PF& get_MiningShipHandler(T team);
-    PF& get_FighterHandler(T team);
+    PF& get_BaseHandler(P player);
+    PF& get_MiningShipHandler(P player);
+    PF& get_FighterHandler(P player);
 
 private:
-    class TeamInfo;
+    class PlayerInfo;
 
-    typedef std::map<T, TeamInfo*> TeamMap;
+    typedef std::map<P, PlayerInfo*> PlayerMap;
 
     PythonHandler(const PythonHandler&);
     PythonHandler& operator= (const PythonHandler&);
@@ -58,7 +58,7 @@ private:
 
 
     bool _initFlag;
-    TeamMap _teamMap;
+    PlayerMap _playerMap;
 };
 
 
@@ -76,10 +76,10 @@ private:
 };
 
 
-class PythonHandler::TeamInfo
+class PythonHandler::PlayerInfo
 {
 public:
-    TeamInfo(PyObject *bh, PyObject *mh, PyObject *fh);
+    PlayerInfo(PyObject *bh, PyObject *mh, PyObject *fh);
 
     std::string moduleName;
     PyObject* module;

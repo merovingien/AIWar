@@ -51,11 +51,11 @@ namespace aiwar {
 	    void update(unsigned int tick);
 
 	    Missile* createMissile(Item* launcher, Living* target);
-	    Base* createBase(double px, double py, Playable::Team team);
-	    MiningShip* createMiningShip(double px, double py, Playable::Team team);  // for debug only
+	    Base* createBase(double px, double py, Team team);
+	    MiningShip* createMiningShip(double px, double py, Team team);  // for debug only
 	    MiningShip* createMiningShip(Base* base);
 	    Mineral* createMineral(double px, double py);
-	    Fighter* createFighter(double px, double py, Playable::Team team);
+	    Fighter* createFighter(double px, double py, Team team);
 	    Fighter* createFighter(Base* base);
 
 	    bool exists(ItemKey key) const;

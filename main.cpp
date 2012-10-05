@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
     /******************/
     
     /*** read configuration ***/
-    Config &cfg = Config::instance();
+    aiwar::core::Config &cfg = aiwar::core::Config::instance();
 
     if(!cfg.parseCmdLine(argc, argv))
     {
@@ -77,45 +77,98 @@ int main(int argc, char* argv[])
 	return 0;
     }
 
+    if(!cfg.loadConfigFile())
+    {
+	std::cerr << "Bad config file\n";
+	return 1;
+    }
+
+    std::cout << cfg.dump();
+
     manual = cfg.manual;
 
     /*** Start handlers ***/
 
-    // Python interpreter init
+    TestHandler th;
+    if(!th.initialize())
+    {
+	std::cerr << "Fail to initialize test handler\n";
+	return -1;
+    }
+
     PythonHandler ph;
     if(!ph.initialize())
     {
-	std::cerr << "FATAL ERROR: fail to initiate Python Interpreter" << std::endl;
+	std::cerr << "Fail to initialize python handler\n";
+	th.finalize();
 	return -1;
     }
 
-    // load handlers for RED team
-    if(!ph.load(TEAM_RED, "embtest"))
+    /*** Load teams ***/
+
+    // load blue Team
+    aiwar::core::Config::PlayerInfo &pblue = cfg.players[cfg.blue];
+    HandlerInterface *hblue = NULL;
+    if(pblue.handler == "test")
+	hblue = &th;
+    else if(pblue.handler == "python")
+	hblue = &ph;
+    else
     {
-	std::cerr << "FATAL ERROR: fail to load TEAM_RED python handler" << std::endl;
+	std::cerr << "Unknown handler name for blue player: " << pblue.handler << std::endl;
+	th.finalize();
+	ph.finalize();
 	return -1;
     }
 
-    // test handler
-    TestHandler th;
-    th.initialize();
+    if(!hblue->load(cfg.blue, pblue.params))
+    {
+	std::cerr << "Fail to load blue handler\n";
+	th.finalize();
+	ph.finalize();
+	return -1;
+    }
 
+    // load red Team
+    aiwar::core::Config::PlayerInfo &pred = cfg.players[cfg.red];
+    HandlerInterface *hred = NULL;
+    if(pred.handler == "test")
+	hred = &th;
+    else if(pred.handler == "python")
+	hred = &ph;
+    else
+    {
+	std::cerr << "Unknown handler name for red team: " << pred.handler << std::endl;
+	th.finalize();
+	ph.finalize();
+	return -1;
+    }
+
+    if(!hred->load(cfg.red, pred.params))
+    {
+	std::cerr << "Fail to load red handler\n";
+	th.finalize();
+	ph.finalize();
+	return -1;
+    }
+    
+    /*** Init the game ***/
 
     GameManager gm;
     ItemManager im(gm);
 
-    gm.registerTeam(TEAM_BLUE, th);
-    gm.registerTeam(TEAM_RED, ph);
+    gm.registerTeam(BLUE_TEAM, hblue->get_BaseHandler(cfg.blue), hblue->get_MiningShipHandler(cfg.blue), hblue->get_FighterHandler(cfg.blue));
+    gm.registerTeam(RED_TEAM, hred->get_BaseHandler(cfg.red), hred->get_MiningShipHandler(cfg.red), hred->get_FighterHandler(cfg.red));
 
-    im.createBase(25,25, TEAM_BLUE);
-    im.createFighter(250,250, TEAM_BLUE);
+    im.createBase(25,25, BLUE_TEAM);
+    im.createFighter(250,250, BLUE_TEAM);
 
-    im.createBase(500,400, TEAM_RED);
-    im.createMiningShip(450,400, TEAM_RED);
-    im.createFighter(300,200, TEAM_RED);
-    im.createFighter(300,220, TEAM_RED);
-    im.createFighter(300,240, TEAM_RED);
-    im.createFighter(300,180, TEAM_RED);
+    im.createBase(500,400, RED_TEAM);
+    im.createMiningShip(450,400, RED_TEAM);
+    im.createFighter(300,200, RED_TEAM);
+    im.createFighter(300,220, RED_TEAM);
+    im.createFighter(300,240, RED_TEAM);
+    im.createFighter(300,180, RED_TEAM);
 
     im.createMineral(300,300);
     im.createMineral(300,295);
@@ -198,12 +251,12 @@ int main(int argc, char* argv[])
 	{
 	    if(gm.gameOver())
 	    {
-		Playable::Team winner = gm.getWinner();
+		Team winner = gm.getWinner();
 		std::cout << "********** GameOver *********\n";
-		if(winner == Playable::NO_TEAM)
+		if(winner == NO_TEAM)
 		    std::cout << "Egality !\n";
 		else
-		    std::cout << "Winner is TEAM: " << ((winner == TEAM_BLUE) ? "BLUE" : "RED") << std::endl;
+		    std::cout << "Winner is: " << ((winner == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name) << std::endl;
 		done = true;
 	    }
 	    else
@@ -229,9 +282,13 @@ int main(int argc, char* argv[])
     SDL_Quit();
  
 
-    // Handlers exit
+    // unload teams
+    hred->unload(cfg.red);
+    hblue->unload(cfg.blue);
+
+    // finalize handlers
     th.finalize();
     ph.finalize();
-
+	
     return 0;
 }

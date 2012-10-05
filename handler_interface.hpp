@@ -20,6 +20,7 @@
 #ifndef HANDLER_INTERFACE_HPP
 #define HANDLER_INTERFACE_HPP
 
+#include "config.hpp" // for Config::Player
 #include "playable.hpp" // for Playable::PlayFunction
 
 #include <string>
@@ -35,9 +36,12 @@ namespace aiwar {
 	    virtual bool initialize() = 0;
 	    virtual bool finalize() = 0;
 
-	    virtual PlayFunction& get_BaseHandler(Playable::Team team) = 0;
-	    virtual PlayFunction& get_MiningShipHandler(Playable::Team team) = 0;
-	    virtual PlayFunction& get_FighterHandler(Playable::Team team) = 0;
+	    virtual bool load(Config::Player player, const std::string& params) = 0;
+	    virtual bool unload(Config::Player player) = 0;
+
+	    virtual PlayFunction& get_BaseHandler(Config::Player player) = 0;
+	    virtual PlayFunction& get_MiningShipHandler(Config::Player player) = 0;
+	    virtual PlayFunction& get_FighterHandler(Config::Player player) = 0;
 	};
 
     } // aiwar::core

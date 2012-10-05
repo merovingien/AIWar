@@ -25,7 +25,7 @@
 class TestHandler : public aiwar::core::HandlerInterface
 {
 public:
-    typedef aiwar::core::Playable::Team T;
+    typedef aiwar::core::Config::Player P;
     typedef aiwar::core::PlayFunction PF;
 
     TestHandler();
@@ -33,9 +33,12 @@ public:
     bool initialize();
     bool finalize();
 
-    PF& get_BaseHandler(T team);
-    PF& get_MiningShipHandler(T team);
-    PF& get_FighterHandler(T team);
+    bool load(P player, const std::string& params);
+    bool unload(P player);
+
+    PF& get_BaseHandler(P player);
+    PF& get_MiningShipHandler(P player);
+    PF& get_FighterHandler(P player);
 
 private:
     aiwar::core::DefaultPlayFunction _pf_Base;

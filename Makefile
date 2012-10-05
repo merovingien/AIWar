@@ -6,7 +6,7 @@ INCLUDE = -I/usr/include/SDL -I/usr/include/python2.7
 LD=clang++
 LDFLAGS=
 #LDFLAGS=-Wl,-O1
-LIBS = -lSDL -lSDL_gfx -ldl -lutil -lm -lpython2.7
+LIBS = -lSDL -lSDL_gfx -ldl -lutil -lm -lpython2.7 -ltinyxml
 
 RM = rm -f
 

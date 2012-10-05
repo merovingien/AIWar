@@ -82,7 +82,7 @@ Missile* ItemManager::createMissile(Item* launcher, Living* target)
     return m;
 }
 
-Base* ItemManager::createBase(double px, double py, Playable::Team team)
+Base* ItemManager::createBase(double px, double py, Team team)
 {
     ItemKey k = _getNextItemKey();
     Base *b = new Base(*this, k, px, py, team, _gm.getBasePF(team));
@@ -91,7 +91,7 @@ Base* ItemManager::createBase(double px, double py, Playable::Team team)
     return b;
 }
 
-MiningShip* ItemManager::createMiningShip(double px, double py, Playable::Team team)
+MiningShip* ItemManager::createMiningShip(double px, double py, Team team)
 {
     ItemKey k = _getNextItemKey();
     MiningShip *t = new MiningShip(*this, k, px, py, team, _gm.getMiningShipPF(team));
@@ -114,7 +114,7 @@ Mineral* ItemManager::createMineral(double px, double py)
     return m;
 }
 
-Fighter* ItemManager::createFighter(double px, double py, Playable::Team team)
+Fighter* ItemManager::createFighter(double px, double py, Team team)
 {
     ItemKey k = _getNextItemKey();
     Fighter *f = new Fighter(*this, k, px, py, team, _gm.getFighterPF(team));

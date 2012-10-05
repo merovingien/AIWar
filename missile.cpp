@@ -26,9 +26,9 @@
 using namespace aiwar::core;
 
 Missile::Missile(ItemManager& im, Key k, double px, double py, Living* target)
-    : Item(im, k, px, py, MISSILE_SIZE_X, MISSILE_SIZE_Y),
-      Movable(im, k, MISSILE_SPEED, MISSILE_START_FUEL, MISSILE_MAX_FUEL, MISSILE_MOVE_CONSO),
-      Living(im, k, MISSILE_LIFE, MISSILE_LIFE),
+    : Item(im, k, px, py, Config::instance().MISSILE_SIZE_X, Config::instance().MISSILE_SIZE_Y),
+      Movable(im, k, Config::instance().MISSILE_SPEED, Config::instance().MISSILE_START_FUEL, Config::instance().MISSILE_MAX_FUEL, Config::instance().MISSILE_MOVE_CONSO),
+      Living(im, k, Config::instance().MISSILE_LIFE, Config::instance().MISSILE_LIFE),
       _target(target->_getKey())
 {
 }
@@ -64,7 +64,7 @@ void Missile::update(unsigned int)
 	// target reached ?
 	if(reached)
 	{
-	    target->_takeLife(MISSILE_DAMAGE, true);	    
+	    target->_takeLife(Config::instance().MISSILE_DAMAGE, true);
 	    _toRemoveFlag = true;
 	}
     }

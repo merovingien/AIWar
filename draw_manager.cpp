@@ -33,37 +33,61 @@
 #include <SDL/SDL_rotozoom.h>
 
 using namespace aiwar::renderer;
+using aiwar::core::BLUE_TEAM;
+using aiwar::core::RED_TEAM;
 
-DrawManager::DrawManager(SDL_Surface *screen) : _debug(DRAW_DEBUG), _screen(screen)
+DrawManager::DrawManager(SDL_Surface *screen) : _cfg(core::Config::instance()), _debug(_cfg.debug), _screen(screen)
 {
     _world_rect = new SDL_Rect();
     _world_rect->x = 0;
     _world_rect->y = 0;
-    _world_rect->w = WORLD_SIZE_X;
-    _world_rect->h = WORLD_SIZE_Y;
+    _world_rect->w = _cfg.WORLD_SIZE_X;
+    _world_rect->h = _cfg.WORLD_SIZE_Y;
 
-    _world_surface = SDL_CreateRGBSurface(_screen->flags, WORLD_SIZE_X, WORLD_SIZE_Y, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
+    _world_surface = SDL_CreateRGBSurface(_screen->flags, _cfg.WORLD_SIZE_X, _cfg.WORLD_SIZE_Y, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
 
     // create item surfaces
 
     // red miningShip
-    SDL_Surface* tmp = SDL_CreateRGBSurface(_world_surface->flags, MININGSHIP_SIZE_X, MININGSHIP_SIZE_Y, _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
+    SDL_Surface* tmp = SDL_CreateRGBSurface(_world_surface->flags, _cfg.MININGSHIP_SIZE_X, _cfg.MININGSHIP_SIZE_Y, _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
 
     // transparent background
     SDL_FillRect(tmp, NULL, SDL_MapRGBA(_world_surface->format, 0,0,0,255));
     // red triangle
-    filledTrigonRGBA(tmp, 0,0, 0,MININGSHIP_SIZE_Y, MININGSHIP_SIZE_X,MININGSHIP_SIZE_Y/2, 255,0,0,255);
+    filledTrigonRGBA(tmp, 0,0, 0,_cfg.MININGSHIP_SIZE_Y, _cfg.MININGSHIP_SIZE_X,_cfg.MININGSHIP_SIZE_Y/2, 255,0,0,255);
     _addSurface(RED_MININGSHIP, tmp);
 
     // blue miningShip
-    tmp = SDL_CreateRGBSurface(_world_surface->flags, MININGSHIP_SIZE_X, MININGSHIP_SIZE_Y, _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
+    tmp = SDL_CreateRGBSurface(_world_surface->flags, _cfg.MININGSHIP_SIZE_X, _cfg.MININGSHIP_SIZE_Y, _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
 
     // transparent background
     SDL_FillRect(tmp, NULL, SDL_MapRGBA(_world_surface->format, 0,0,0,255));
     // blue triangle
-    filledTrigonRGBA(tmp, 0,0, 0,MININGSHIP_SIZE_Y, MININGSHIP_SIZE_X,MININGSHIP_SIZE_Y/2, 0,0,255,255);
+    filledTrigonRGBA(tmp, 0,0, 0,_cfg.MININGSHIP_SIZE_Y, _cfg.MININGSHIP_SIZE_X,_cfg.MININGSHIP_SIZE_Y/2, 0,0,255,255);
     _addSurface(BLUE_MININGSHIP, tmp);
-    
+
+    // red fighter
+    tmp = SDL_CreateRGBSurface(_world_surface->flags, _cfg.FIGHTER_SIZE_X, _cfg.FIGHTER_SIZE_Y, _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
+
+    // transparent background
+    SDL_FillRect(tmp, NULL, SDL_MapRGBA(_world_surface->format, 0,0,0,255));
+    // red triangle
+    filledTrigonRGBA(tmp, 0,0, 0,_cfg.FIGHTER_SIZE_Y/3, _cfg.FIGHTER_SIZE_X,0, 255,0,0,255);
+    filledTrigonRGBA(tmp, 0,_cfg.FIGHTER_SIZE_Y, 0,_cfg.FIGHTER_SIZE_Y/3*2, _cfg.FIGHTER_SIZE_X,_cfg.FIGHTER_SIZE_Y, 255,0,0,255);
+    filledTrigonRGBA(tmp, 0,0, 0,_cfg.FIGHTER_SIZE_Y, _cfg.FIGHTER_SIZE_X/2,_cfg.FIGHTER_SIZE_Y/2, 255,0,0,255);
+    _addSurface(RED_FIGHTER, tmp);
+
+    // blue fighter
+    tmp = SDL_CreateRGBSurface(_world_surface->flags, _cfg.FIGHTER_SIZE_X, _cfg.FIGHTER_SIZE_Y, _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
+
+    // transparent background
+    SDL_FillRect(tmp, NULL, SDL_MapRGBA(_world_surface->format, 0,0,0,255));
+    // red triangle
+    filledTrigonRGBA(tmp, 0,0, 0,_cfg.FIGHTER_SIZE_Y, _cfg.FIGHTER_SIZE_X,0, 0,0,255,255);
+    filledTrigonRGBA(tmp, 0,_cfg.FIGHTER_SIZE_Y, 0,0, _cfg.FIGHTER_SIZE_X,_cfg.FIGHTER_SIZE_Y, 0,0,255,255);
+    _addSurface(BLUE_FIGHTER, tmp);
+
+
 }
 
 DrawManager::~DrawManager()
@@ -132,25 +156,25 @@ void DrawManager::toggleDebug()
 void DrawManager::_drawMineral(const aiwar::core::Mineral *m)
 {
     SDL_Rect r;
-    r.x = m->xpos() - MINERAL_SIZE_X/2;
-    r.y = m->ypos() - MINERAL_SIZE_Y/2;
-    r.w = MINERAL_SIZE_X;
-    r.h = MINERAL_SIZE_Y;
+    r.x = m->xpos() - _cfg.MINERAL_SIZE_X/2;
+    r.y = m->ypos() - _cfg.MINERAL_SIZE_Y/2;
+    r.w = _cfg.MINERAL_SIZE_X;
+    r.h = _cfg.MINERAL_SIZE_Y;
     SDL_FillRect(_world_surface, &r, SDL_MapRGB(_world_surface->format, 0,255,128));
 }
 
 void DrawManager::_drawBase(const core::Base *b)
 {
     SDL_Rect r;
-    r.x = b->xpos() - BASE_SIZE_X/2;
-    r.y = b->ypos() - BASE_SIZE_Y/2;
-    r.w = BASE_SIZE_X;
-    r.h = BASE_SIZE_Y;
+    r.x = b->xpos() - _cfg.BASE_SIZE_X/2;
+    r.y = b->ypos() - _cfg.BASE_SIZE_Y/2;
+    r.w = _cfg.BASE_SIZE_X;
+    r.h = _cfg.BASE_SIZE_Y;
 
     Uint32 color = SDL_MapRGB(_world_surface->format, 0,255,0);
-    if(b->team() == TEAM_BLUE)
+    if(b->team() == BLUE_TEAM)
 	color = SDL_MapRGB(_world_surface->format, 0,0,255);
-    else if(b->team() == TEAM_RED)
+    else if(b->team() == RED_TEAM)
 	color = SDL_MapRGB(_world_surface->format, 255,0,0);
 
     SDL_FillRect(_world_surface, &r, color);
@@ -161,9 +185,9 @@ void DrawManager::_drawMiningShip(const core::MiningShip *m)
     SDL_Surface *rs = NULL;
 
     // rotate the ship
-    if(m->team() == TEAM_RED)
+    if(m->team() == RED_TEAM)
 	rs = rotozoomSurface(_getSurface(RED_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
-    else if(m->team() == TEAM_BLUE)
+    else if(m->team() == BLUE_TEAM)
 	rs = rotozoomSurface(_getSurface(BLUE_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
 
     SDL_Rect r;
@@ -180,19 +204,19 @@ void DrawManager::_drawMiningShip(const core::MiningShip *m)
     if(_debug)
     {
 	// draw vision circle
-	circleRGBA(_world_surface, m->xpos(), m->ypos(), MININGSHIP_DETECTION_RADIUS, 255,255,0,255);
+	circleRGBA(_world_surface, m->xpos(), m->ypos(), _cfg.MININGSHIP_DETECTION_RADIUS, 255,255,0,255);
 
 	// draw mining circle
-	circleRGBA(_world_surface, m->xpos(), m->ypos(), MININGSHIP_MINING_RADIUS, 190,192,192,255);
+	circleRGBA(_world_surface, m->xpos(), m->ypos(), _cfg.MININGSHIP_MINING_RADIUS, 190,192,192,255);
 
 	// draw communication circle
-	circleRGBA(_world_surface, m->xpos(), m->ypos(), COMMUNICATION_RADIUS, 0,192,128,255);
+	circleRGBA(_world_surface, m->xpos(), m->ypos(), _cfg.COMMUNICATION_RADIUS, 0,192,128,255);
     }
 }
 
 void DrawManager::_drawMissile(const core::Missile *m)
 {
-    SDL_Surface* tmp = SDL_CreateRGBSurface(_world_surface->flags, MISSILE_SIZE_X, MISSILE_SIZE_Y, _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
+    SDL_Surface* tmp = SDL_CreateRGBSurface(_world_surface->flags, _cfg.MISSILE_SIZE_X, _cfg.MISSILE_SIZE_Y, _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
 
     SDL_FillRect(tmp, NULL, SDL_MapRGB(_world_surface->format, 255,0,255));
   
@@ -212,17 +236,29 @@ void DrawManager::_drawMissile(const core::Missile *m)
 
 void DrawManager::_drawFighter(const core::Fighter *f)
 {
+    SDL_Surface *rs = NULL;
+
+    // rotate the ship
+    if(f->team() == RED_TEAM)
+	rs = rotozoomSurface(_getSurface(RED_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+    else if(f->team() == BLUE_TEAM)
+	rs = rotozoomSurface(_getSurface(BLUE_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+
     SDL_Rect r;
-    r.x = f->xpos() - FIGHTER_SIZE_X/2;
-    r.y = f->ypos() - FIGHTER_SIZE_Y/2;
-    r.w = FIGHTER_SIZE_X;
-    r.h = FIGHTER_SIZE_Y;
+    r.x = f->xpos() - rs->w/2;
+    r.y = f->ypos() - rs->h/2;
+    r.w = rs->w;
+    r.h = rs->h;
 
-    Uint32 color = SDL_MapRGB(_world_surface->format, 0,255,0);
-    if(f->team() == TEAM_BLUE)
-	color = SDL_MapRGB(_world_surface->format, 0,0,255);
-    else if(f->team() == TEAM_RED)
-	color = SDL_MapRGB(_world_surface->format, 255,0,0);
+    SDL_BlitSurface(rs, NULL, _world_surface, &r);
+    SDL_FreeSurface(rs);
 
-    SDL_FillRect(_world_surface, &r, color);
+    if(_debug)
+    {
+	// draw vision circle
+	circleRGBA(_world_surface, f->xpos(), f->ypos(), _cfg.FIGHTER_DETECTION_RADIUS, 255,255,0,255);
+
+	// draw communication circle
+	circleRGBA(_world_surface, f->xpos(), f->ypos(), _cfg.COMMUNICATION_RADIUS, 0,192,128,255);
+    }
 }

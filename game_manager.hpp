@@ -20,14 +20,13 @@
 #ifndef GAME_MANAGER_HPP
 #define GAME_MANAGER_HPP
 
+#include "config.hpp"
 #include "playable.hpp"
 
 #include <map>
 
 namespace aiwar {
     namespace core {
-
-	class HandlerInterface;
 
 	class Item;
 	class Base;
@@ -43,11 +42,11 @@ namespace aiwar {
 	    GameManager();
 	    ~GameManager();
 	    
-	    void registerTeam(Playable::Team, HandlerInterface &handler);
+	    void registerTeam(Team team, PlayFunction& pfBase, PlayFunction& pfMiningShip, PlayFunction& pfFighter);
 
-	    PlayFunction& getBasePF(Playable::Team team) const;
-	    PlayFunction& getMiningShipPF(Playable::Team team) const;
-	    PlayFunction& getFighterPF(Playable::Team team) const;
+	    PlayFunction& getBasePF(Team team) const;
+	    PlayFunction& getMiningShipPF(Team team) const;
+	    PlayFunction& getFighterPF(Team team) const;
 
 	    // slots
 	    void baseCreated(const Base*);
@@ -65,16 +64,16 @@ namespace aiwar {
 	    void printStat() const;
 
 	    bool gameOver() const;
-	    Playable::Team getWinner() const;
+	    Team getWinner() const;
 
 	private:
 	    class TeamInfo;
 
-	    typedef std::map<Playable::Team, TeamInfo> TeamMap;
+	    typedef std::map<Team, TeamInfo> TeamMap;
 
-	    const TeamInfo& _getTeamInfo(Playable::Team team) const;
+	    const TeamInfo& _getTeamInfo(Team team) const;
 
-	    TeamMap _teamMap;    
+	    TeamMap _teamMap;
 	};
 
 	class GameManager::TeamInfo

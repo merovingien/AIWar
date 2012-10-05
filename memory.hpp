@@ -69,7 +69,7 @@ namespace aiwar {
 	T Memory::getMemory(unsigned int index, const Memory *other) const
 	{
 	    // check distance to the other item
-	    if(distanceTo(other) > COMMUNICATION_RADIUS)
+	    if(distanceTo(other) > Config::instance().COMMUNICATION_RADIUS)
 	    {
 		std::cout << "Memory: other item is too far to communicate" << std::endl;
 		return T();
@@ -102,7 +102,7 @@ namespace aiwar {
 	void Memory::setMemory(unsigned int index, T value, Memory *other)
 	{
 	    // check distance to the other item
-	    if(distanceTo(other) > COMMUNICATION_RADIUS)
+	    if(distanceTo(other) > Config::instance().COMMUNICATION_RADIUS)
 	    {
 		std::cout << "Memory: other item is too far to communicate" << std::endl;
 		return;

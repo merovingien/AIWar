@@ -28,6 +28,7 @@ struct SDL_Rect;
 namespace aiwar {
 
     namespace core {
+	class Config;
 	class Item;
 	class Mineral;
 	class Missile;
@@ -72,6 +73,8 @@ namespace aiwar {
 
 	    void _addSurface(ItemType, SDL_Surface* surf);
 	    SDL_Surface* _getSurface(ItemType) const;
+
+	    core::Config& _cfg;
 
 	    bool _debug;
 	    SDL_Surface *_screen;

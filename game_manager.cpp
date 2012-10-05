@@ -19,8 +19,6 @@
 
 #include "game_manager.hpp"
 
-#include "handler_interface.hpp"
-
 #include "base.hpp"
 #include "miningship.hpp"
 #include "fighter.hpp"
@@ -132,23 +130,23 @@ void GameManager::printStat() const
 }
 
 
-void GameManager::registerTeam(Playable::Team team, HandlerInterface &handler)
+void GameManager::registerTeam(Team team, PlayFunction& pfBase, PlayFunction& pfMiningShip, PlayFunction& pfFighter)
 {
-    TeamInfo t(handler.get_BaseHandler(team), handler.get_MiningShipHandler(team), handler.get_FighterHandler(team));
-    _teamMap.insert(std::pair<Playable::Team, TeamInfo>(team, t));
+    TeamInfo t(pfBase, pfMiningShip, pfFighter);
+    _teamMap.insert(std::pair<Team, TeamInfo>(team, t));
 }
 
-PlayFunction& GameManager::getBasePF(Playable::Team team) const
+PlayFunction& GameManager::getBasePF(Team team) const
 {
     return _getTeamInfo(team).play_base;
 }
 
-PlayFunction& GameManager::getMiningShipPF(Playable::Team team) const
+PlayFunction& GameManager::getMiningShipPF(Team team) const
 {
     return _getTeamInfo(team).play_miningShip;
 }
 
-PlayFunction& GameManager::getFighterPF(Playable::Team team) const
+PlayFunction& GameManager::getFighterPF(Team team) const
 {
     return _getTeamInfo(team).play_fighter;
 }
@@ -167,9 +165,9 @@ bool GameManager::gameOver() const
     return (nbLivingTeam < 2);
 }
 
-Playable::Team GameManager::getWinner() const
+Team GameManager::getWinner() const
 {
-    Playable::Team winner = Playable::NO_TEAM;
+    Team winner = NO_TEAM;
     int nbLivingTeam = 0;
     
     TeamMap::const_iterator cit;
@@ -183,12 +181,12 @@ Playable::Team GameManager::getWinner() const
     }
 
     if(nbLivingTeam > 1) // game not over
-	return Playable::NO_TEAM;
+	return NO_TEAM;
     else
 	return winner;
 }
 
-const GameManager::TeamInfo& GameManager::_getTeamInfo(Playable::Team team) const
+const GameManager::TeamInfo& GameManager::_getTeamInfo(Team team) const
 {
     TeamMap::const_iterator it = _teamMap.find(team);
     if(it != _teamMap.end())

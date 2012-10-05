@@ -29,11 +29,11 @@
 using namespace aiwar::core;
 
 Base::Base(ItemManager &im, Key k, double xpos, double ypos, Team team, PlayFunction& pf)
-    : Item(im, k, xpos, ypos, BASE_SIZE_X, BASE_SIZE_Y, BASE_DETECTION_RADIUS),
-      Living(im, k, BASE_START_LIFE, BASE_MAX_LIFE),
+    : Item(im, k, xpos, ypos, Config::instance().BASE_SIZE_X, Config::instance().BASE_SIZE_Y, Config::instance().BASE_DETECTION_RADIUS),
+      Living(im, k, Config::instance().BASE_START_LIFE, Config::instance().BASE_MAX_LIFE),
       Playable(team, pf),
-      Memory(im, k, BASE_MEMORY_SIZE),
-      _mineralStorage(BASE_START_MINERAL_STORAGE),
+      Memory(im, k, Config::instance().BASE_MEMORY_SIZE),
+      _mineralStorage(Config::instance().BASE_START_MINERAL_STORAGE),
       _hasLaunch(false)
 {
 //    std::cout << "Ctr Base(" << xpos << "," << ypos << ")" << std::endl;
@@ -59,10 +59,10 @@ void Base::launchMissile(Living* target)
 {
     if(!_hasLaunch)
     {
-	if(_mineralStorage >= BASE_MISSILE_PRICE)
+	if(_mineralStorage >= Config::instance().BASE_MISSILE_PRICE)
 	{
 	    _im.createMissile(this, target);
-	    _mineralStorage -= BASE_MISSILE_PRICE;
+	    _mineralStorage -= Config::instance().BASE_MISSILE_PRICE;
 	    _hasLaunch = true;
 	}
     }
@@ -70,10 +70,10 @@ void Base::launchMissile(Living* target)
 
 void Base::createMiningShip()
 {
-    if(_mineralStorage >= BASE_MININGSHIP_PRICE)
+    if(_mineralStorage >= Config::instance().BASE_MININGSHIP_PRICE)
     {
 	_im.createMiningShip(this);
-	_mineralStorage -= BASE_MININGSHIP_PRICE;
+	_mineralStorage -= Config::instance().BASE_MININGSHIP_PRICE;
     }
 }
 
@@ -86,7 +86,7 @@ unsigned int Base::pullMineral(MiningShip *ship, unsigned int mineralPoint)
 {
     unsigned int p = 0;
 
-    if(distanceTo(ship) > MININGSHIP_MINING_RADIUS)
+    if(distanceTo(ship) > Config::instance().MININGSHIP_MINING_RADIUS)
     {
 	std::cout << "Ship is too far to pull Mineral" << std::endl;
 	return p;
@@ -95,8 +95,8 @@ unsigned int Base::pullMineral(MiningShip *ship, unsigned int mineralPoint)
     if(isFriend(ship))
     {
 	p = mineralPoint;
-	if(p > (BASE_MAX_MINERAL_STORAGE - _mineralStorage))
-	    p = BASE_MAX_MINERAL_STORAGE - _mineralStorage;
+	if(p > (Config::instance().BASE_MAX_MINERAL_STORAGE - _mineralStorage))
+	    p = Config::instance().BASE_MAX_MINERAL_STORAGE - _mineralStorage;
 
 	p = ship->_release(p);
 	_mineralStorage += p;
@@ -115,7 +115,7 @@ unsigned int Base::repair(unsigned int points)
 unsigned int Base::repair(unsigned int points, Living *item)
 {
     // repect the distance for repairing
-    if(distanceTo(item) > BASE_REPAIR_RADIUS)
+    if(distanceTo(item) > Config::instance().BASE_REPAIR_RADIUS)
     {
 	std::cout << "Item is to far to be repaired" << std::endl;
 	return 0;
@@ -143,7 +143,7 @@ unsigned int Base::repair(unsigned int points, Living *item)
 unsigned int Base::refuel(unsigned int points, Movable *item)
 {
    // respect the distance for refueling
-    if(distanceTo(item) > BASE_REFUEL_RADIUS)
+    if(distanceTo(item) > Config::instance().BASE_REFUEL_RADIUS)
     {
 	std::cout << "Item is to far to be refueled" << std::endl;
 	return 0;
@@ -170,10 +170,10 @@ unsigned int Base::refuel(unsigned int points, Movable *item)
 
 void Base::createFighter()
 {
-   if(_mineralStorage >= BASE_FIGHTER_PRICE)
+   if(_mineralStorage >= Config::instance().BASE_FIGHTER_PRICE)
     {
 	_im.createFighter(this);
-	_mineralStorage -= BASE_FIGHTER_PRICE;
+	_mineralStorage -= Config::instance().BASE_FIGHTER_PRICE;
     }
 }
 
@@ -186,13 +186,13 @@ unsigned int Base::giveMissiles(unsigned int nb, Fighter* fighter)
     }
 
     unsigned int p = nb;
-    if(p*BASE_MISSILE_PRICE > _mineralStorage)
+    if(p * Config::instance().BASE_MISSILE_PRICE > _mineralStorage)
     {
-	p = _mineralStorage / BASE_MISSILE_PRICE;
+	p = _mineralStorage / Config::instance().BASE_MISSILE_PRICE;
     }
     
     p = fighter->_addMissiles(p);
-    _mineralStorage -= p*BASE_MISSILE_PRICE;
+    _mineralStorage -= p * Config::instance().BASE_MISSILE_PRICE;
 
     return p;
 }

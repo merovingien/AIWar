@@ -28,11 +28,11 @@
 using namespace aiwar::core;
 
 MiningShip::MiningShip(ItemManager& im, Key k, double xpos, double ypos, Team team, PlayFunction& pf)
-    : Item(im, k, xpos, ypos, MININGSHIP_SIZE_X, MININGSHIP_SIZE_Y, MININGSHIP_DETECTION_RADIUS),
-      Movable(im, k, MININGSHIP_SPEED, MININGSHIP_START_FUEL, MININGSHIP_MAX_FUEL, MININGSHIP_MOVE_CONSO),
-      Living(im, k, MININGSHIP_START_LIFE, MININGSHIP_MAX_LIFE),
+    : Item(im, k, xpos, ypos, Config::instance().MININGSHIP_SIZE_X, Config::instance().MININGSHIP_SIZE_Y, Config::instance().MININGSHIP_DETECTION_RADIUS),
+      Movable(im, k, Config::instance().MININGSHIP_SPEED, Config::instance().MININGSHIP_START_FUEL, Config::instance().MININGSHIP_MAX_FUEL, Config::instance().MININGSHIP_MOVE_CONSO),
+      Living(im, k, Config::instance().MININGSHIP_START_LIFE, Config::instance().MININGSHIP_MAX_LIFE),
       Playable(team, pf),
-      Memory(im, k, MININGSHIP_MEMORY_SIZE),
+      Memory(im, k, Config::instance().MININGSHIP_MEMORY_SIZE),
       _mineralStorage(0),
       _hasExtracted(false)
 {
@@ -60,9 +60,9 @@ unsigned int MiningShip::extract(Mineral *m)
     unsigned int extracted = 0;
     if(!_hasExtracted)
     {
-	if(distanceTo(m) <= MININGSHIP_MINING_RADIUS)
+	if(distanceTo(m) <= Config::instance().MININGSHIP_MINING_RADIUS)
 	{
-	    unsigned int toExtract = ( (MININGSHIP_MAX_MINERAL_STORAGE-_mineralStorage) < MININGSHIP_MINERAL_EXTRACT ) ? (MININGSHIP_MAX_MINERAL_STORAGE-_mineralStorage) : MININGSHIP_MINERAL_EXTRACT;
+	    unsigned int toExtract = ( (Config::instance().MININGSHIP_MAX_MINERAL_STORAGE-_mineralStorage) < Config::instance().MININGSHIP_MINERAL_EXTRACT ) ? (Config::instance().MININGSHIP_MAX_MINERAL_STORAGE-_mineralStorage) : Config::instance().MININGSHIP_MINERAL_EXTRACT;
 	    extracted = m->_takeLife(toExtract);
 	    _mineralStorage += extracted;
 	}

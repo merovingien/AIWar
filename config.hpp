@@ -21,97 +21,130 @@
 #define CONFIG_HPP
 
 #include <string>
+#include <map>
 
+namespace aiwar {
+    namespace core {
 
-const double       WORLD_SIZE_X = 800;
-const double       WORLD_SIZE_Y = 800;
-const bool         DRAW_DEBUG = false;
+	/**
+	 * \brief Team identifiant
+	 */
+	enum Team
+	{
+	    NO_TEAM,
+	    BLUE_TEAM,
+	    RED_TEAM
+	};
 
-// TEAM number 0 is reserved
-const unsigned int TEAM_BLUE = 1;
-const unsigned int TEAM_RED  = 2;
+	class Config
+	{
+	public:
+	    typedef unsigned int Player;
+	    class PlayerInfo;
+	    typedef std::map<Player, PlayerInfo> PlayerMap;
 
-const double       MINERAL_SIZE_X = 4.0;
-const double       MINERAL_SIZE_Y = 4.0;
-const unsigned int MINERAL_LIFE = 2000;
+	    static Config& instance();
 
-const double       MININGSHIP_SIZE_X = 16.0;
-const double       MININGSHIP_SIZE_Y = 16.0;
-const double       MININGSHIP_SPEED = 5.0;
-const double       MININGSHIP_DETECTION_RADIUS = 160.0; //160.0;
-const unsigned int MININGSHIP_MAX_LIFE = 1000;
-const unsigned int MININGSHIP_START_LIFE = 600;
-const unsigned int MININGSHIP_START_FUEL = 600;
-const unsigned int MININGSHIP_MAX_FUEL = 600;
-const unsigned int MININGSHIP_MOVE_CONSO = 5;
-const double       MININGSHIP_MINING_RADIUS = 30;
-const unsigned int MININGSHIP_MINERAL_EXTRACT = 50;
-const unsigned int MININGSHIP_MAX_MINERAL_STORAGE = 2000;
-const unsigned int MININGSHIP_MEMORY_SIZE = 4;
+	    std::string usage() const;
+	    bool parseCmdLine(int argc, char* argv[]);
+	    bool loadConfigFile();
+	    std::string dump() const;
 
-const double       FIGHTER_SIZE_X = 16.0;
-const double       FIGHTER_SIZE_Y = 16.0;
-const double       FIGHTER_SPEED = 5.0;
-const double       FIGHTER_DETECTION_RADIUS = 160.0; //160.0;
-const unsigned int FIGHTER_MAX_LIFE = 1000;
-const unsigned int FIGHTER_START_LIFE = 600;
-const unsigned int FIGHTER_MOVE_CONSO = 5;
-const unsigned int FIGHTER_START_FUEL = 600;
-const unsigned int FIGHTER_MAX_FUEL = 600;
-const unsigned int FIGHTER_MEMORY_SIZE = 4;
-const unsigned int FIGHTER_START_MISSILE = 8;
-const unsigned int FIGHTER_MAX_MISSILE = 12;
+	    bool help;
+	    bool debug;
+	    bool manual;
 
-const double       MISSILE_SIZE_X = 5.0;
-const double       MISSILE_SIZE_Y = 1.0;
-const unsigned int MISSILE_LIFE = 10;
-const unsigned int MISSILE_MOVE_CONSO = 2;
-const unsigned int MISSILE_START_FUEL = 50;
-const unsigned int MISSILE_MAX_FUEL = 50;
-const double       MISSILE_SPEED = 20.0;
-const unsigned int MISSILE_DAMAGE = 200;
+	    Player blue;
+	    Player red;
 
-const double       BASE_SIZE_X = 25.0;
-const double       BASE_SIZE_Y = 25.0;
-const double       BASE_DETECTION_RADIUS = 200.0;
-const unsigned int BASE_MAX_LIFE = 10000;
-const unsigned int BASE_START_LIFE = 5000;
-const unsigned int BASE_MISSILE_PRICE = 60;
-const unsigned int BASE_MININGSHIP_PRICE = 300;
-const unsigned int BASE_FIGHTER_PRICE = 100 + BASE_MISSILE_PRICE * FIGHTER_START_MISSILE; // ie 580
-const unsigned int BASE_START_MINERAL_STORAGE = 1000;
-const unsigned int BASE_MAX_MINERAL_STORAGE = 50000;
-const unsigned int BASE_MEMORY_SIZE = 6;
-const double       BASE_REPAIR_RADIUS = 30.0;
-const double       BASE_REFUEL_RADIUS = 30.0;
+	    PlayerMap players;
 
-const double       COMMUNICATION_RADIUS = 60;
+	    double WORLD_SIZE_X;
+	    double WORLD_SIZE_Y;
 
-class Config
-{
-public:
+	    double MINERAL_SIZE_X;
+	    double MINERAL_SIZE_Y;
+	    unsigned int MINERAL_LIFE;
 
-    static Config& instance();
+	    double MININGSHIP_SIZE_X;
+	    double MININGSHIP_SIZE_Y;
+	    double MININGSHIP_SPEED;
+	    double MININGSHIP_DETECTION_RADIUS;
+	    unsigned int MININGSHIP_MAX_LIFE;
+	    unsigned int MININGSHIP_START_LIFE;
+	    unsigned int MININGSHIP_START_FUEL;
+	    unsigned int MININGSHIP_MAX_FUEL;
+	    unsigned int MININGSHIP_MOVE_CONSO;
+	    double MININGSHIP_MINING_RADIUS;
+	    unsigned int MININGSHIP_MINERAL_EXTRACT;
+	    unsigned int MININGSHIP_MAX_MINERAL_STORAGE;
+	    unsigned int MININGSHIP_MEMORY_SIZE;
 
-    std::string usage() const;
-    bool parseCmdLine(int argc, char* argv[]);
+	    double FIGHTER_SIZE_X;
+	    double FIGHTER_SIZE_Y;
+	    double FIGHTER_SPEED;
+	    double FIGHTER_DETECTION_RADIUS;
+	    unsigned int FIGHTER_MAX_LIFE;
+	    unsigned int FIGHTER_START_LIFE;
+	    unsigned int FIGHTER_MOVE_CONSO;
+	    unsigned int FIGHTER_START_FUEL;
+	    unsigned int FIGHTER_MAX_FUEL;
+	    unsigned int FIGHTER_MEMORY_SIZE;
+	    unsigned int FIGHTER_START_MISSILE;
+	    unsigned int FIGHTER_MAX_MISSILE;
 
-    bool help;
-    bool debug;
-    bool manual;
+	    double MISSILE_SIZE_X;
+	    double MISSILE_SIZE_Y;
+	    unsigned int MISSILE_LIFE;
+	    unsigned int MISSILE_MOVE_CONSO;
+	    unsigned int MISSILE_START_FUEL;
+	    unsigned int MISSILE_MAX_FUEL;
+	    double MISSILE_SPEED;
+	    unsigned int MISSILE_DAMAGE;
 
-private:
-    Config();
+	    double BASE_SIZE_X;
+	    double BASE_SIZE_Y;
+	    double BASE_DETECTION_RADIUS;
+	    unsigned int BASE_MAX_LIFE;
+	    unsigned int BASE_START_LIFE;
+	    unsigned int BASE_MISSILE_PRICE;
+	    unsigned int BASE_MININGSHIP_PRICE;
+	    unsigned int BASE_FIGHTER_PRICE;
+	    unsigned int BASE_START_MINERAL_STORAGE;
+	    unsigned int BASE_MAX_MINERAL_STORAGE;
+	    unsigned int BASE_MEMORY_SIZE;
+	    double BASE_REPAIR_RADIUS;
+	    double BASE_REFUEL_RADIUS;
 
-    static Config _instance;
+	    double COMMUNICATION_RADIUS;
 
-    // no copy
-    Config(const Config&);
-    Config& operator=(const Config&);
+	private:
+	    Config(); // singleton
 
-    
+	    static Config _instance;
 
-    std::string _programName;
-};
+	    // no copy
+	    Config(const Config&);
+	    Config& operator=(const Config&);
+
+	    std::string _programName;
+	    std::string _configFile;
+
+	    bool _cl_debug;
+	    bool _cl_manual;
+	    std::string _cl_blue;
+	    std::string _cl_red;
+	};
+
+	class Config::PlayerInfo
+	{
+	public:
+	    std::string name;
+	    std::string handler;
+	    std::string params;
+	};
+
+    } // aiwar::core
+} // aiwar
 
 #endif /* CONFIG_HPP */

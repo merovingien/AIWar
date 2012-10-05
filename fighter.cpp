@@ -22,12 +22,12 @@
 using namespace aiwar::core;
 
 Fighter::Fighter(ItemManager &im, Key k, double px, double py, Team team, PlayFunction& pf)
-    : Item(im, k, px, py, FIGHTER_SIZE_X, FIGHTER_SIZE_Y, FIGHTER_DETECTION_RADIUS),
-      Movable(im, k, FIGHTER_SPEED, FIGHTER_START_FUEL, FIGHTER_MAX_FUEL, FIGHTER_MOVE_CONSO),
-      Living(im, k, FIGHTER_START_LIFE, FIGHTER_MAX_LIFE),
+    : Item(im, k, px, py, Config::instance().FIGHTER_SIZE_X, Config::instance().FIGHTER_SIZE_Y, Config::instance().FIGHTER_DETECTION_RADIUS),
+      Movable(im, k, Config::instance().FIGHTER_SPEED, Config::instance().FIGHTER_START_FUEL, Config::instance().FIGHTER_MAX_FUEL, Config::instance().FIGHTER_MOVE_CONSO),
+      Living(im, k, Config::instance().FIGHTER_START_LIFE, Config::instance().FIGHTER_MAX_LIFE),
       Playable(team, pf),
-      Memory(im, k, FIGHTER_MEMORY_SIZE),
-      _missiles(FIGHTER_START_MISSILE),
+      Memory(im, k, Config::instance().FIGHTER_MEMORY_SIZE),
+      _missiles(Config::instance().FIGHTER_START_MISSILE),
       _hasLaunch(false)
 {
 }
@@ -70,8 +70,8 @@ void Fighter::launchMissile(Living* target)
 unsigned int Fighter::_addMissiles(unsigned int nb)
 {
     unsigned int p = nb;
-    if(p > FIGHTER_MAX_MISSILE - _missiles)
-	p = FIGHTER_MAX_MISSILE - _missiles;
+    if(p > Config::instance().FIGHTER_MAX_MISSILE - _missiles)
+	p = Config::instance().FIGHTER_MAX_MISSILE - _missiles;
     
     _missiles += p;
 

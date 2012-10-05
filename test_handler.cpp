@@ -27,6 +27,8 @@
 
 #include <iostream>
 
+using namespace aiwar;
+
 TestHandler::TestHandler()
     : _pf_Base(&play_base), _pf_MiningShip(&play_miningship), _pf_Fighter(&play_fighter)
 {
@@ -42,17 +44,27 @@ bool TestHandler::finalize()
     return true;
 }
 
-TestHandler::PF& TestHandler::get_BaseHandler(T)
+bool TestHandler::load(P, const std::string&)
+{
+    return true;
+}
+
+bool TestHandler::unload(P)
+{
+    return true;
+}
+
+TestHandler::PF& TestHandler::get_BaseHandler(P)
 {
     return _pf_Base;
 }
 
-TestHandler::PF& TestHandler::get_MiningShipHandler(T)
+TestHandler::PF& TestHandler::get_MiningShipHandler(P)
 {
     return _pf_MiningShip;
 }
 
-TestHandler::PF& TestHandler::get_FighterHandler(T)
+TestHandler::PF& TestHandler::get_FighterHandler(P)
 {
     return _pf_Fighter;
 }
@@ -75,7 +87,7 @@ void TestHandler::play_miningship(aiwar::core::Playable* item)
 	if(m) // m is a Mineral
 	{
 	    double d = self->distanceTo(m);
-	    if(d <= MININGSHIP_MINING_RADIUS)
+	    if(d <= Config::instance().MININGSHIP_MINING_RADIUS)
 	    {
 		unsigned int e = self->extract(m);
 		cout << *self << ": Meet a Mineral, extracted: " << e << endl;
@@ -126,7 +138,7 @@ void TestHandler::play_base(aiwar::core::Playable* item)
 	}
     }
 
-    if(self->mineralStorage() > BASE_MININGSHIP_PRICE*2)
+    if(self->mineralStorage() > Config::instance().BASE_MININGSHIP_PRICE*2)
     {
 	self->createMiningShip();
 	cout << *self << ": create a new MiningShip" << endl;
