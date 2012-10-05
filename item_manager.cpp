@@ -29,6 +29,9 @@
 
 #include "game_manager.hpp"
 
+#include <tinyxml.h>
+
+
 using namespace aiwar::core;
 
 ItemManager::ItemManager(GameManager& gm) : _gm(gm), _currentItemId(0)
@@ -157,3 +160,83 @@ ItemManager::ItemKey ItemManager::_getNextItemKey()
     ItemKey k = _currentItemId++;
     return k;
 }
+
+bool ItemManager::loadMap(const std::string& mapFile)
+{
+    TiXmlDocument doc(mapFile.c_str());
+    if(!doc.LoadFile())
+    {
+	std::cerr << "Cannot load map file: \"" << mapFile << "\"\n";
+	return false;
+    }
+
+    TiXmlElement *pRoot, *pElem;
+
+    // root: items
+    pRoot = doc.RootElement();
+    if(!pRoot || pRoot->ValueStr() != "items")
+    {
+	std::cerr << "Parse error - Bad root element tag, must be \"items\"\n";
+	return false;
+    }
+
+    // read all items
+    std::string stype, steam;
+    double x, y;
+    Team team;
+    pElem = 0;
+    for(pElem=pRoot->FirstChildElement("item") ; pElem ; pElem=pElem->NextSiblingElement("item"))
+    {
+	if(pElem->QueryDoubleAttribute("x", &x) != TIXML_SUCCESS)
+	{
+	    std::cerr << "Parse error - No or bad \"x\" attribute\n";
+	    return false;
+	}
+
+	if(pElem->QueryDoubleAttribute("y", &y) != TIXML_SUCCESS)
+	{
+	    std::cerr << "Parse error - No or bad \"y\" attribute\n";
+	    return false;
+	}
+
+	if(pElem->QueryStringAttribute("type", &stype) != TIXML_SUCCESS)
+	{
+	    std::cerr << "Parse error - No \"type\" attribute\n";
+	    return false;
+	}
+	
+	if(stype == "MINERAL")
+	{
+	    // load a mineral
+	    createMineral(x, y);
+	}
+	else if(stype == "BASE" || stype == "MININGSHIP" || stype == "FIGHTER")
+	{
+	    // get team
+	    if(pElem->QueryStringAttribute("team", &steam) != TIXML_SUCCESS)
+	    {
+		std::cerr << "Parse error - No \"team\" attribute\n";
+		return false;
+	    }
+	    if(steam == "BLUE")
+		team = BLUE_TEAM;
+	    else if(steam == "RED")
+		team = RED_TEAM;
+	    else
+	    {
+		std::cerr << "Parse error - Bad \"team\" attribute\n";
+		return false;
+	    }
+
+	    if(stype == "BASE")
+		createBase(x, y, team);
+	    else if(stype == "MININGSHIP")
+		createMiningShip(x, y, team);
+	    else
+		createFighter(x, y, team);
+	}
+    }
+
+    return true;
+}
+

@@ -155,30 +155,19 @@ int main(int argc, char* argv[])
     /*** Init the game ***/
 
     GameManager gm;
-    ItemManager im(gm);
 
     gm.registerTeam(BLUE_TEAM, hblue->get_BaseHandler(cfg.blue), hblue->get_MiningShipHandler(cfg.blue), hblue->get_FighterHandler(cfg.blue));
     gm.registerTeam(RED_TEAM, hred->get_BaseHandler(cfg.red), hred->get_MiningShipHandler(cfg.red), hred->get_FighterHandler(cfg.red));
 
-    im.createBase(25,25, BLUE_TEAM);
-    im.createFighter(250,250, BLUE_TEAM);
+    ItemManager im(gm);
 
-    im.createBase(500,400, RED_TEAM);
-    im.createMiningShip(450,400, RED_TEAM);
-    im.createFighter(300,200, RED_TEAM);
-    im.createFighter(300,220, RED_TEAM);
-    im.createFighter(300,240, RED_TEAM);
-    im.createFighter(300,180, RED_TEAM);
-
-    im.createMineral(300,300);
-    im.createMineral(300,295);
-    im.createMineral(305,305);
-    im.createMineral(150,35);
-    im.createMineral(145,45);
-    im.createMineral(165,40);
-    im.createMineral(400,200);
-    im.createMineral(420,200);
-    im.createMineral(410,205);
+    if(!im.loadMap(cfg.mapFile))
+    {
+	std::cerr << "Error while loading map file\n";
+	th.finalize();
+	ph.finalize();
+	return -1;
+    }
 
     // SDL init
     SDL_Init(SDL_INIT_VIDEO);

@@ -156,6 +156,7 @@ std::string Config::usage() const
 	<< "\t--debug\t\t\tRun in debug mode\n"
 	<< "\t--manual\t\tDo not automatically play\n"
 	<< "\t--file config_file\tConfiguration file [config.xml]\n"
+	<< "\t--map map_file\t\tMap file [map.xml]\n"
 	<< "\t--blue player_name\tBlue player name\n"
 	<< "\t--red player_name\tRed player name\n";
 
@@ -193,6 +194,12 @@ bool Config::parseCmdLine(int argc, char* argv[])
 		return false;
 	    _configFile = argv[++i];
 	}
+	else if(arg == "map")
+	{
+	    if(i == argc-1)
+		return false;
+	    _cl_mapFile = argv[++i];
+	}
 	else if(arg == "blue")
 	{
 	    if(i == argc-1)
@@ -206,7 +213,10 @@ bool Config::parseCmdLine(int argc, char* argv[])
 	    _cl_red = argv[++i];
 	}
 	else
+	{
+	    std::cerr << "Bad option: " << arg << "\n";
 	    return false;
+	}
     }
 
     return true;
@@ -240,6 +250,7 @@ bool Config::loadConfigFile()
 	// options
 	debug = get<bool>(hDoc, "options/debug");
 	manual = get<bool>(hDoc, "options/manual");
+	mapFile = get<std::string>(hDoc, "options/map");
 
 	blue_name = get<std::string>(hDoc, "options/blue");
 	red_name = get<std::string>(hDoc, "options/red");
@@ -360,6 +371,7 @@ bool Config::loadConfigFile()
     // replace options with command line values
     if(_cl_debug) debug = _cl_debug;
     if(_cl_manual) manual = _cl_manual;
+    if(!_cl_mapFile.empty()) mapFile = _cl_mapFile;
 
     return true;
 }

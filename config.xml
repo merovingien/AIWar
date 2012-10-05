@@ -1,8 +1,9 @@
 <?xml version="1.0" ?>
 <aiwar>
   <options>
-    <debug>true</debug>
+    <debug>false</debug>
     <manual>false</manual>
+    <map>map.xml</map>
     <blue>TEST_TEAM</blue>
     <red>PYTHON_TEAM</red>
   </options>

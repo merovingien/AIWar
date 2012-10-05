@@ -53,6 +53,7 @@ namespace aiwar {
 	    bool help;
 	    bool debug;
 	    bool manual;
+	    std::string mapFile;
 
 	    Player blue;
 	    Player red;
@@ -132,6 +133,7 @@ namespace aiwar {
 
 	    bool _cl_debug;
 	    bool _cl_manual;
+	    std::string _cl_mapFile;
 	    std::string _cl_blue;
 	    std::string _cl_red;
 	};

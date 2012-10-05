@@ -23,7 +23,7 @@
 #include <set>
 #include <map>
 
-#include "playable.hpp" // for Playable::Team
+#include "config.hpp" // for Team
 
 namespace aiwar {
     namespace core {
@@ -63,6 +63,8 @@ namespace aiwar {
 	    ItemMap::const_iterator begin() const;
 	    ItemMap::const_iterator end() const;
 	        
+	    bool loadMap(const std::string& mapFile);
+
 	private:
 	    // no copy
 	    ItemManager(const ItemManager&);
