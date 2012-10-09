@@ -78,7 +78,7 @@ void TestHandler::play_miningship(aiwar::core::Playable* item)
     MiningShip *self = dynamic_cast<aiwar::core::MiningShip*>(item);
 
     Item::ItemSet neighbours = self->neighbours();
-    cout << *self <<  ": Number of neighbours: " << neighbours.size() << endl;
+//    cout << *self <<  ": Number of neighbours: " << neighbours.size() << endl;
 
     Item::ItemSet::iterator it;
     for(it = neighbours.begin() ; it != neighbours.end() ; it++)
@@ -90,7 +90,7 @@ void TestHandler::play_miningship(aiwar::core::Playable* item)
 	    if(d <= Config::instance().MININGSHIP_MINING_RADIUS)
 	    {
 		unsigned int e = self->extract(m);
-		cout << *self << ": Meet a Mineral, extracted: " << e << endl;
+//		cout << *self << ": Meet a Mineral, extracted: " << e << endl;
 	    }
 	    else
 	    {
@@ -103,7 +103,7 @@ void TestHandler::play_miningship(aiwar::core::Playable* item)
     self->rotateOf(15);
     self->move();
 
-    cout << *self << ": Life: " << self->life() << endl;
+//    cout << *self << ": Life: " << self->life() << endl;
 }
 
 
@@ -116,7 +116,7 @@ void TestHandler::play_base(aiwar::core::Playable* item)
     Base *self = dynamic_cast<Base*>(item);
 
     Item::ItemSet neighbours = self->neighbours();
-    cout << *self << ": Number of neighbours: " << neighbours.size() << endl;
+//    cout << *self << ": Number of neighbours: " << neighbours.size() << endl;
 
     Item::ItemSet::iterator it;
     for(it = neighbours.begin() ; it != neighbours.end() ; ++it)
@@ -127,13 +127,13 @@ void TestHandler::play_base(aiwar::core::Playable* item)
 	    if(! self->isFriend(s))
 	    {
 		self->launchMissile(s);
-		cout << *self << ": launch a missile to " << *s << endl;
+//		cout << *self << ": launch a missile to " << *s << endl;
 	    }
 	    else
 	    {
 		self->setMemory(0, 5, s);
 		int i = self->getMemory<int>(0, s);
-		cout << *self << ": get Memory from " << *s << ": " << i << endl;
+//		cout << *self << ": get Memory from " << *s << ": " << i << endl;
 	    }
 	}
     }
@@ -141,13 +141,13 @@ void TestHandler::play_base(aiwar::core::Playable* item)
     if(self->mineralStorage() > Config::instance().BASE_MININGSHIP_PRICE*2)
     {
 	self->createMiningShip();
-	cout << *self << ": create a new MiningShip" << endl;
+//	cout << *self << ": create a new MiningShip" << endl;
     }
 
-    cout << *self << ": Life: " << self->life() << endl;
+//    cout << *self << ": Life: " << self->life() << endl;
 
     self->setMemory(1, 1);
-    cout << *self << ": getMemory<float>(self, 1): " << self->getMemory<float>(1, self) << endl;
+//    cout << *self << ": getMemory<float>(self, 1): " << self->getMemory<float>(1, self) << endl;
 }
 
 
