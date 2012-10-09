@@ -5,5 +5,5 @@ cxxsrc = ["config.cpp", "item.cpp", "living.cpp", "movable.cpp", "playable.cpp",
 
 setup(name="aiwar", version="1.0-beta1",
       ext_modules=[
-        Extension("aiwar", cxxsrc)
+        Extension("aiwar", cxxsrc, libraries=["tinyxml"])
         ])

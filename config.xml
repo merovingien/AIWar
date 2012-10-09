@@ -18,6 +18,11 @@
       <handler>test</handler>
       <params/>
     </player>
+    <player>
+      <name>print_config</name>
+      <handler>python</handler>
+      <params>print_config</params>
+    </player>
   </players>
   <constants>
     <WORLD_SIZE_X>800.0</WORLD_SIZE_X>

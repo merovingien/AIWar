@@ -22,6 +22,8 @@
 
 #include "python_wrapper.hpp"
 
+#include "config.hpp"
+
 /*** Generic Item Object ***/
 
 typedef struct {
@@ -1330,9 +1332,126 @@ Base_giveMissiles(Item* self, PyObject *args)
 
 
 
+/* getter for all config constants */
+static PyObject* Config_WORLD_SIZE_X(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().WORLD_SIZE_X); }
+static PyObject* Config_WORLD_SIZE_Y(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().WORLD_SIZE_Y); }
 
+static PyObject* Config_MINERAL_SIZE_X(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().MINERAL_SIZE_X); }
+static PyObject* Config_MINERAL_SIZE_Y(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().MINERAL_SIZE_Y); }
+static PyObject* Config_MINERAL_LIFE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().MINERAL_LIFE); }
+
+static PyObject* Config_MININGSHIP_SIZE_X(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().MININGSHIP_SIZE_X); }
+static PyObject* Config_MININGSHIP_SIZE_Y(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().MININGSHIP_SIZE_Y); }
+static PyObject* Config_MININGSHIP_SPEED(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().MININGSHIP_SPEED); }
+static PyObject* Config_MININGSHIP_DETECTION_RADIUS(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().MININGSHIP_DETECTION_RADIUS); }
+static PyObject* Config_MININGSHIP_MAX_LIFE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().MININGSHIP_MAX_LIFE); }
+static PyObject* Config_MININGSHIP_START_LIFE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().MININGSHIP_START_LIFE); }
+static PyObject* Config_MININGSHIP_START_FUEL(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().MININGSHIP_START_FUEL); }
+static PyObject* Config_MININGSHIP_MAX_FUEL(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().MININGSHIP_MAX_FUEL); }
+static PyObject* Config_MININGSHIP_MOVE_CONSO(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().MININGSHIP_MOVE_CONSO); }
+static PyObject* Config_MININGSHIP_MINING_RADIUS(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().MININGSHIP_MINING_RADIUS); }
+static PyObject* Config_MININGSHIP_MINERAL_EXTRACT(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().MININGSHIP_MINERAL_EXTRACT); }
+static PyObject* Config_MININGSHIP_MAX_MINERAL_STORAGE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().MININGSHIP_MAX_MINERAL_STORAGE); }
+static PyObject* Config_MININGSHIP_MEMORY_SIZE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().MININGSHIP_MEMORY_SIZE); }
+
+static PyObject* Config_FIGHTER_SIZE_X(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().FIGHTER_SIZE_X); }
+static PyObject* Config_FIGHTER_SIZE_Y(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().FIGHTER_SIZE_Y); }
+static PyObject* Config_FIGHTER_SPEED(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().FIGHTER_SPEED); }
+static PyObject* Config_FIGHTER_DETECTION_RADIUS(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().FIGHTER_DETECTION_RADIUS); }
+static PyObject* Config_FIGHTER_MAX_LIFE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().FIGHTER_MAX_LIFE); }
+static PyObject* Config_FIGHTER_START_LIFE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().FIGHTER_START_LIFE); }
+static PyObject* Config_FIGHTER_MOVE_CONSO(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().FIGHTER_MOVE_CONSO); }
+static PyObject* Config_FIGHTER_START_FUEL(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().FIGHTER_START_FUEL); }
+static PyObject* Config_FIGHTER_MAX_FUEL(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().FIGHTER_MAX_FUEL); }
+static PyObject* Config_FIGHTER_MEMORY_SIZE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().FIGHTER_MEMORY_SIZE); }
+static PyObject* Config_FIGHTER_START_MISSILE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().FIGHTER_START_MISSILE); }
+static PyObject* Config_FIGHTER_MAX_MISSILE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().FIGHTER_MAX_MISSILE); }
+
+static PyObject* Config_MISSILE_SIZE_X(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().MISSILE_SIZE_X); }
+static PyObject* Config_MISSILE_SIZE_Y(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().MISSILE_SIZE_Y); }
+static PyObject* Config_MISSILE_LIFE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().MISSILE_LIFE); }
+static PyObject* Config_MISSILE_MOVE_CONSO(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().MISSILE_MOVE_CONSO); }
+static PyObject* Config_MISSILE_START_FUEL(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().MISSILE_START_FUEL); }
+static PyObject* Config_MISSILE_MAX_FUEL(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().MISSILE_MAX_FUEL); }
+static PyObject* Config_MISSILE_SPEED(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().MISSILE_SPEED); }
+static PyObject* Config_MISSILE_DAMAGE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().MISSILE_DAMAGE); }
+
+static PyObject* Config_BASE_SIZE_X(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().BASE_SIZE_X); }
+static PyObject* Config_BASE_SIZE_Y(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().BASE_SIZE_Y); }
+static PyObject* Config_BASE_DETECTION_RADIUS(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().BASE_DETECTION_RADIUS); }
+static PyObject* Config_BASE_MAX_LIFE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().BASE_MAX_LIFE); }
+static PyObject* Config_BASE_START_LIFE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().BASE_START_LIFE); }
+static PyObject* Config_BASE_MISSILE_PRICE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().BASE_MISSILE_PRICE); }
+static PyObject* Config_BASE_MININGSHIP_PRICE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().BASE_MININGSHIP_PRICE); }
+static PyObject* Config_BASE_FIGHTER_PRICE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().BASE_FIGHTER_PRICE); }
+static PyObject* Config_BASE_START_MINERAL_STORAGE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().BASE_START_MINERAL_STORAGE); }
+static PyObject* Config_BASE_MAX_MINERAL_STORAGE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().BASE_MAX_MINERAL_STORAGE); }
+static PyObject* Config_BASE_MEMORY_SIZE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().BASE_MEMORY_SIZE); }
+static PyObject* Config_BASE_REPAIR_RADIUS(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().BASE_REPAIR_RADIUS); }
+static PyObject* Config_BASE_REFUEL_RADIUS(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().BASE_REFUEL_RADIUS); }
+
+static PyObject* Config_COMMUNICATION_RADIUS(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().COMMUNICATION_RADIUS); }
 
 static PyMethodDef module_methods[] = {
+    {"WORLD_SIZE_X", (PyCFunction)Config_WORLD_SIZE_X, METH_NOARGS, "Return the horizontal world size"},
+    {"WORLD_SIZE_Y", (PyCFunction)Config_WORLD_SIZE_Y, METH_NOARGS, "Return the vertical world size"},
+
+    {"MINERAL_SIZE_X", (PyCFunction)Config_MINERAL_SIZE_X, METH_NOARGS, "Return horizontal size of a mineral"},
+    {"MINERAL_SIZE_Y", (PyCFunction)Config_MINERAL_SIZE_Y, METH_NOARGS, "Return vertical size of a mineral"},
+    {"MINERAL_LIFE", (PyCFunction)Config_MINERAL_LIFE, METH_NOARGS, "Return mineral start life"},
+   
+    {"MININGSHIP_SIZE_X", (PyCFunction)Config_MININGSHIP_SIZE_X, METH_NOARGS, "Return horizontal size of a MiningShip"},
+    {"MININGSHIP_SIZE_Y", (PyCFunction)Config_MININGSHIP_SIZE_Y, METH_NOARGS, "Return vertical size of a MiningShip"},
+    {"MININGSHIP_SPEED", (PyCFunction)Config_MININGSHIP_SPEED, METH_NOARGS, "Return speed of a MiningShip"},
+    {"MININGSHIP_DETECTION_RADIUS", (PyCFunction)Config_MININGSHIP_DETECTION_RADIUS, METH_NOARGS, "Return detection radius of a MiningShip"},
+    {"MININGSHIP_MAX_LIFE", (PyCFunction)Config_MININGSHIP_MAX_LIFE, METH_NOARGS, "Return max life of a MiningShip"},
+    {"MININGSHIP_START_LIFE", (PyCFunction)Config_MININGSHIP_START_LIFE, METH_NOARGS, "Return start life of a MiningShip"},
+    {"MININGSHIP_START_FUEL", (PyCFunction)Config_MININGSHIP_START_FUEL, METH_NOARGS, "Return start fuel of a MiningShip"},
+    {"MININGSHIP_MAX_FUEL", (PyCFunction)Config_MININGSHIP_MAX_FUEL, METH_NOARGS, "Return start fuel of a MiningShip"},
+    {"MININGSHIP_MOVE_CONSO", (PyCFunction)Config_MININGSHIP_MOVE_CONSO, METH_NOARGS, "Return fuel consumption of one move for a MiningShip"},
+    {"MININGSHIP_MINING_RADIUS", (PyCFunction)Config_MININGSHIP_MINING_RADIUS, METH_NOARGS, "Return mining radius of a MiningShip"},
+    {"MININGSHIP_MINERAL_EXTRACT", (PyCFunction)Config_MININGSHIP_MINERAL_EXTRACT, METH_NOARGS, "Return max number of taken mineral per extraction for a MiningShip"},
+    {"MININGSHIP_MAX_MINERAL_STORAGE", (PyCFunction)Config_MININGSHIP_MAX_MINERAL_STORAGE, METH_NOARGS, "Return mineral maximal capacity of storage for a MiningShip"},
+    {"MININGSHIP_MEMORY_SIZE", (PyCFunction)Config_MININGSHIP_MEMORY_SIZE, METH_NOARGS, "Return number of memory slot for a MiningShip"},
+
+    {"FIGHTER_SIZE_X", (PyCFunction)Config_FIGHTER_SIZE_X, METH_NOARGS, "Return horizontal size of a Fighter"},
+    {"FIGHTER_SIZE_Y", (PyCFunction)Config_FIGHTER_SIZE_Y, METH_NOARGS, "Return vertical size of a Fighter"},
+    {"FIGHTER_SPEED", (PyCFunction)Config_FIGHTER_SPEED, METH_NOARGS, "Return speed of a Fighter"},
+    {"FIGHTER_DETECTION_RADIUS", (PyCFunction)Config_FIGHTER_DETECTION_RADIUS, METH_NOARGS, "Return detection radius of a Fighter"},
+    {"FIGHTER_MAX_LIFE", (PyCFunction)Config_FIGHTER_MAX_LIFE, METH_NOARGS, "Return maximal life of a Fighter"},
+    {"FIGHTER_START_LIFE", (PyCFunction)Config_FIGHTER_START_LIFE, METH_NOARGS, "Return start life of a Fighter"},
+    {"FIGHTER_MOVE_CONSO", (PyCFunction)Config_FIGHTER_MOVE_CONSO, METH_NOARGS, "Return fule consumption of one move for a Fighter"},
+    {"FIGHTER_START_FUEL", (PyCFunction)Config_FIGHTER_START_FUEL, METH_NOARGS, "Return start fuel of a Fighter"},
+    {"FIGHTER_MAX_FUEL", (PyCFunction)Config_FIGHTER_MAX_FUEL, METH_NOARGS, "Return maximal fuel of a Fighter"},
+    {"FIGHTER_MEMORY_SIZE", (PyCFunction)Config_FIGHTER_MEMORY_SIZE, METH_NOARGS, "Return number of memory slots of a Fighter"},
+    {"FIGHTER_START_MISSILE", (PyCFunction)Config_FIGHTER_START_MISSILE, METH_NOARGS, "Return number of missiles in a new Fighter"},
+    {"FIGHTER_MAX_MISSILE", (PyCFunction)Config_FIGHTER_MAX_MISSILE, METH_NOARGS, "Return maximal number of missiles that a Fighter can contain"},
+
+    {"MISSILE_SIZE_X", (PyCFunction)Config_MISSILE_SIZE_X, METH_NOARGS, "Return horizontal size of a Missile"},
+    {"MISSILE_SIZE_Y", (PyCFunction)Config_MISSILE_SIZE_Y, METH_NOARGS, "Return vertical size of a Missile"},
+    {"MISSILE_LIFE", (PyCFunction)Config_MISSILE_LIFE, METH_NOARGS, "Return number of life points of a Missile"},
+    {"MISSILE_MOVE_CONSO", (PyCFunction)Config_MISSILE_MOVE_CONSO, METH_NOARGS, "Return fuel consumption of one move for a Missile"},
+    {"MISSILE_START_FUEL", (PyCFunction)Config_MISSILE_START_FUEL, METH_NOARGS, "Return fuel capacity of a new Missile"},
+    {"MISSILE_MAX_FUEL", (PyCFunction)Config_MISSILE_MAX_FUEL, METH_NOARGS, "Return maximal fuel capacity of a Missile"},
+    {"MISSILE_SPEED", (PyCFunction)Config_MISSILE_SPEED, METH_NOARGS, "Return speed of a Missile"},
+    {"MISSILE_DAMAGE", (PyCFunction)Config_MISSILE_DAMAGE, METH_NOARGS, "Return number of life points taken by a Missile when he reaches its target"},
+
+    {"BASE_SIZE_X", (PyCFunction)Config_BASE_SIZE_X, METH_NOARGS, "Return horizontal size of a Base"},
+    {"BASE_SIZE_Y", (PyCFunction)Config_BASE_SIZE_Y, METH_NOARGS, "Return vertical size of a Base"},
+    {"BASE_DETECTION_RADIUS", (PyCFunction)Config_BASE_DETECTION_RADIUS, METH_NOARGS, "Return detection radius of a Base"},
+    {"BASE_MAX_LIFE", (PyCFunction)Config_BASE_MAX_LIFE, METH_NOARGS, "Return maximum number of life points for a Base"},
+    {"BASE_START_LIFE", (PyCFunction)Config_BASE_START_LIFE, METH_NOARGS, "Return number of life points of a new Base"},
+    {"BASE_MISSILE_PRICE", (PyCFunction)Config_BASE_MISSILE_PRICE, METH_NOARGS, "Return price of a Missile"},
+    {"BASE_MININGSHIP_PRICE", (PyCFunction)Config_BASE_MININGSHIP_PRICE, METH_NOARGS, "Return price of a MiningShip"},
+    {"BASE_FIGHTER_PRICE", (PyCFunction)Config_BASE_FIGHTER_PRICE, METH_NOARGS, "Return price of a Fighter"},
+    {"BASE_START_MINERAL_STORAGE", (PyCFunction)Config_BASE_START_MINERAL_STORAGE, METH_NOARGS, "Return mineral storage of a new Base"},
+    {"BASE_MAX_MINERAL_STORAGE", (PyCFunction)Config_BASE_MAX_MINERAL_STORAGE, METH_NOARGS, "Return maximum mineral storage capacity of a Base"},
+    {"BASE_MEMORY_SIZE", (PyCFunction)Config_BASE_MEMORY_SIZE, METH_NOARGS, "Return number of memory slot of a Base"},
+    {"BASE_REPAIR_RADIUS", (PyCFunction)Config_BASE_REPAIR_RADIUS, METH_NOARGS, "Return radius in which a ship must be placed to be repaired by a Base"},
+    {"BASE_REFUEL_RADIUS", (PyCFunction)Config_BASE_REFUEL_RADIUS, METH_NOARGS, "Return radius in which a ship must be placed to be refueled by a Base"},
+
+    {"COMMUNICATION_RADIUS", (PyCFunction)Config_COMMUNICATION_RADIUS, METH_NOARGS, "Return communication radius"},
+
     {NULL, NULL, 0, NULL}  /* Sentinel */
 };
 
@@ -1433,6 +1552,12 @@ bool initAiwarModule()
 
     if (m == NULL)
       return false;
+
+    /* Add constants to the module */
+//    PyModule_AddObject(m, "WORLD_SIZE_X", PyInt_FromLong(cfg.WORLD_SIZE_X));
+
+
+    /* Add aiwar objects to the module */
 
     /* add MiningShip */
     Py_INCREF(&MiningShipType);
