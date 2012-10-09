@@ -15,16 +15,22 @@ Dependancies:
 - SDL
 - SDL_gfx
 
+Currently AIWar only works on Linux. Windows version is coming soon.
+
 To compile AIWar, just install dev packages of the libraries listed above, and run 'make CPP=gcc LD=gcc' (or just 'make' if you have clang installed).
 
 *RUN*
+
 './AIWar'
-That's it.
+
+That's it !
+
 More options are available, './AIWar --help' will help you...
+
 To create your own AI, you can create a python file, and provide three functions : play_base(base), play_miningship(miningship) and play_fighter(fighter). See embtest.py for details and examples. Then you add a <player> section in config.xml and set your player name in one of the two teams : blue or red.
 
 *CONTRIBUTE*
 
-If you have suggestions or buf report, do not hesitate to post them in the tracker.
+If you have suggestions or bug report, do not hesitate to post them in the tracker.
 
 Have fun !
