@@ -42,7 +42,7 @@ Item_dealloc(Item* self)
 }
 
 static int
-Item_init(Item *self, PyObject */*args*/, PyObject */*kwds*/)
+Item_init(Item *self, PyObject * /*args*/, PyObject * /*kwds*/)
 {
     std::string msg = "Creating new ";
     msg.append(self->ob_type->tp_name).append(" object is forbidden");

@@ -22,7 +22,9 @@
 #include <SDL/SDL.h>
 #include <iostream>
 
-#include <sys/resource.h>
+#ifndef _WIN32
+#	include <sys/resource.h>
+#endif
 
 #include "item_manager.hpp"
 #include "draw_manager.hpp"
@@ -50,6 +52,7 @@ int main(int argc, char* argv[])
     unsigned int tick = 0;
     Uint32 startTime = 0, ellapsedTime;
 
+#ifndef _WIN32
     /***** rlimit *****/
     rlimit rlim;
     if(getrlimit(RLIMIT_CORE, &rlim) == -1)
@@ -61,7 +64,8 @@ int main(int argc, char* argv[])
 	    std::cerr << "Cannot set new CORE rlimit: " << strerror(errno) << std::endl;
     }
     /******************/
-    
+#endif
+
     /*** read configuration ***/
     aiwar::core::Config &cfg = aiwar::core::Config::instance();
 
