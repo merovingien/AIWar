@@ -15,13 +15,20 @@ Dependancies:
 - SDL
 - SDL_gfx
 
-Currently AIWar only works on Linux. Windows version is coming soon.
+Currently AIWar only works on Linux and Windows. Other platforms have not been tested yet.
 
-To compile AIWar, just install dev packages of the libraries listed above, and run 'make CPP=gcc LD=gcc' (or just 'make' if you have clang installed).
+_Linux_
+
+To compile AIWar, just install dev packages of the libraries listed above, and run 'make CPP=g++ LD=g++' (or just 'make' if you have clang compiler installed).
+
+_Windows_
+
+You need Visual C++ 2008 (Express Edition works fine), TinyXML, SDL and SDL_gfx headers, and python 2.7 (python headers are distributed with the python installer).
+Open AIWar.sln and compile in Release mode (to compile in Debug mode, you must have a debug version of python, which is not distributed by the python maintainers on windows, but if you compile it yourself, it should work !).
 
 *RUN*
 
-'./AIWar'
+'./AIWar' or 'AIWar.exe'
 
 That's it !
 
