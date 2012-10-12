@@ -67,5 +67,10 @@ void Missile::update(unsigned int)
 	    target->_takeLife(Config::instance().MISSILE_DAMAGE, true);
 	    _toRemoveFlag = true;
 	}
+	// enough fuel to continue ?
+	else if(_fuel < Config::instance().MISSILE_MOVE_CONSO)
+	{
+	    _toRemoveFlag = true;
+	}
     }
 }

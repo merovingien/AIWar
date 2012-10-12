@@ -89,7 +89,7 @@ void TestHandler::play_miningship(aiwar::core::Playable* item)
 	    double d = self->distanceTo(m);
 	    if(d <= Config::instance().MININGSHIP_MINING_RADIUS)
 	    {
-		unsigned int e = self->extract(m);
+		/*unsigned int e =*/ self->extract(m);
 //		cout << *self << ": Meet a Mineral, extracted: " << e << endl;
 	    }
 	    else
@@ -132,7 +132,7 @@ void TestHandler::play_base(aiwar::core::Playable* item)
 	    else
 	    {
 		self->setMemory(0, 5, s);
-		int i = self->getMemory<int>(0, s);
+		/*int i =*/ self->getMemory<int>(0, s);
 //		cout << *self << ": get Memory from " << *s << ": " << i << endl;
 	    }
 	}

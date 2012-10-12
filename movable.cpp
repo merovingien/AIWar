@@ -50,17 +50,13 @@ void Movable::rotateOf(double angle)
 
 void Movable::rotateTo(const Item* target)
 {
-//    std::cout << "atan2(" << target->getPosY()-_ypos << "," << target->getPosX()-_xpos << ")" << std::endl;
-//    _angle = atan2(_ypos-target->getPosY(), target->getPosX()-_xpos) * 180.0 / M_PI;
     rotateTo(target->xpos(), target->ypos());
-//    std::cout << "New direction: " << _direction << std::endl;
 }
 
 void Movable::rotateTo(double px, double py)
 {
     _angle = atan2(_ypos-py, px-_xpos) * 180.0 / M_PI;
 }
-
 
 void Movable::move()
 {

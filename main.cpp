@@ -36,7 +36,7 @@
 #include "config.hpp"
 
 
-#define SCREEN_WIDTH 900
+#define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 800
 #define SPEED 400
 
@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 	return 1;
     }
 
-    std::cout << cfg.dump();
+//    std::cout << cfg.dump();
 
     manual = cfg.manual;
 
