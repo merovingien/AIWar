@@ -7,7 +7,9 @@ Create your Artificial Intelligence to win the war
 AIWar is a game that let you create artificial intelligences to control space ships. The goal is to assemble a fighter army to destroy the ennemy base. To do that, you must get minerals with miningship and create fighters with your ressources. And you should also defend yourself again the ennemy army. The first team that destroes the ennemy base win the match !
 
 
-*INSTALL*
+*COMPILE*
+
+This section describes the compilation process. If you prefer use a pre-compiled version (currently available for Windows only) of the program, just go to section INSTALL below.
 
 Dependancies:
 - tinyxml
@@ -25,6 +27,15 @@ _Windows_
 
 You need Visual C++ 2008 (Express Edition works fine), TinyXML, SDL and SDL_gfx headers, and python 2.7 (python headers are distributed with the python installer).
 Open AIWar.sln and compile in Release mode (to compile in Debug mode, you must have a debug version of python, which is not distributed by the python maintainers on windows, but if you compile it yourself, it should work !).
+
+*INSTALL*
+
+If you have compiled the program, there is nothing to do, just go the the RUN section below.
+
+If you use a pre-compile version for Windows, you must have the Visual Studio 2008 SP1 Redistributable Package (x86) installed. You can find it on the Microsoft website : http://www.microsoft.com/en-us/download/details.aspx?id=5582.
+It's free.
+
+Then unzip the archive in a folder, where you want on your computer, and keep going to the next section.
 
 *RUN*
 
