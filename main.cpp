@@ -254,10 +254,18 @@ int main(int argc, char* argv[])
 	    }
 	    else
 	    {
-		im.update(tick);
-		tick++;
-
-		gm.printStat();
+		try
+		{
+		    im.update(tick++);
+		    gm.printStat();
+		}
+		catch(const aiwar::core::HandlerError &e)
+		{
+		    std::cout << "********** GameOver *********\n";
+		    std::string name = (e.team() == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name;
+		    std::cout << "Team " << name << " has lost because an error occured in his play handler: " << e.what() << std::endl;
+		    done = true;
+		}
 	    }
 	}
 

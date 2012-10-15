@@ -24,8 +24,6 @@
 #include "base.hpp"
 #include "fighter.hpp"
 
-#include <stdexcept>
-
 
 PythonHandler::PythonHandler() : _initFlag(false)
 {
@@ -234,7 +232,7 @@ void PythonHandler::play_miningShip(PyObject *pHandler, aiwar::core::Playable *i
     if(!m)
     {
 	std::cerr << "Bad cast error : play_miningShip_py expects MiningShip* argument" << std::endl;
-	return;
+	throw std::runtime_error("Bad cast error : play_miningShip_py expects MiningShip* argument");
     }
 
     PyObject *pM = MiningShip_New(m);
@@ -242,7 +240,7 @@ void PythonHandler::play_miningShip(PyObject *pHandler, aiwar::core::Playable *i
     {
 	std::cerr << "Error while creating new MiningShip python object" << std::endl;
 	PyErr_Print();
-	return;
+	throw std::runtime_error("Error while creating new MiningShip python object");
     }
 
     PyObject *pResult = PyObject_CallFunctionObjArgs(pHandler, pM, NULL);
@@ -251,7 +249,7 @@ void PythonHandler::play_miningShip(PyObject *pHandler, aiwar::core::Playable *i
     {
 	std::cerr << "Error while calling pMiningShip_Handler" << std::endl;
 	PyErr_Print();
-	return;
+	throw aiwar::core::HandlerError(item->team(), "Error while calling pMiningShip_Handler");
     }
     Py_DECREF(pResult);
 }
@@ -263,7 +261,7 @@ void PythonHandler::play_base(PyObject *pHandler, aiwar::core::Playable *item)
     if(!b)
     {
 	std::cerr << "Bad cast error: play_base expects Base* argument" << std::endl;
-	return;
+	throw std::runtime_error("Bad cast error: play_base expects Base* argument");
     }
 
     PyObject *pB = Base_New(b);
@@ -271,7 +269,7 @@ void PythonHandler::play_base(PyObject *pHandler, aiwar::core::Playable *item)
     {
 	std::cerr << "Error while creating new Base python object" << std::endl;
 	PyErr_Print();
-	return;
+	throw std::runtime_error("Error while creating new Base python object");
     }
 
     // call the python function
@@ -281,7 +279,7 @@ void PythonHandler::play_base(PyObject *pHandler, aiwar::core::Playable *item)
     {
 	std::cerr << "Error while calling pBase_Handler" << std::endl;
 	PyErr_Print();
-	return;
+	throw aiwar::core::HandlerError(item->team(), "Error while calling pBase_Handler");
     }
     Py_DECREF(pResult);
 }
@@ -293,7 +291,7 @@ void PythonHandler::play_fighter(PyObject *pHandler, aiwar::core::Playable *item
     if(!f)
     {
 	std::cerr << "Bad cast error : play_fighter expects Fighter* argument" << std::endl;
-	return;
+	throw std::runtime_error("Bad cast error : play_fighter expects Fighter* argument");
     }
 
     PyObject *pF = Fighter_New(f);
@@ -301,7 +299,7 @@ void PythonHandler::play_fighter(PyObject *pHandler, aiwar::core::Playable *item
     {
 	std::cerr << "Error while creating new Fighter python object" << std::endl;
 	PyErr_Print();
-	return;
+	throw std::runtime_error("Error while creating new Fighter python object");
     }
 
     // call the python function
@@ -311,7 +309,7 @@ void PythonHandler::play_fighter(PyObject *pHandler, aiwar::core::Playable *item
     {
 	std::cerr << "Error while calling pFighter_Handler" << std::endl;
 	PyErr_Print();
-	return;
+	throw aiwar::core::HandlerError(item->team(), "Error while calling pFighter_Handler");
     }
     Py_DECREF(pResult);
 }

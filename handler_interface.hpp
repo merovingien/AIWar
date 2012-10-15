@@ -24,6 +24,7 @@
 #include "playable.hpp" // for Playable::PlayFunction
 
 #include <string>
+#include <stdexcept>
 
 namespace aiwar {
     namespace core {
@@ -42,6 +43,16 @@ namespace aiwar {
 	    virtual PlayFunction& get_BaseHandler(Config::Player player) = 0;
 	    virtual PlayFunction& get_MiningShipHandler(Config::Player player) = 0;
 	    virtual PlayFunction& get_FighterHandler(Config::Player player) = 0;
+	};
+
+	class HandlerError : public std::runtime_error
+	{
+	public:
+	    HandlerError(Team team, const std::string &what) : std::runtime_error(what), _team(team) {}
+	    const Team& team() const { return _team; }
+
+	private:
+	    Team _team;
 	};
 
     } // aiwar::core
