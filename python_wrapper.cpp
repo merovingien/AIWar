@@ -1392,6 +1392,7 @@ static PyObject* Config_BASE_MAX_MINERAL_STORAGE(PyObject*) { return Py_BuildVal
 static PyObject* Config_BASE_MEMORY_SIZE(PyObject*) { return Py_BuildValue("I", aiwar::core::Config::instance().BASE_MEMORY_SIZE); }
 static PyObject* Config_BASE_REPAIR_RADIUS(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().BASE_REPAIR_RADIUS); }
 static PyObject* Config_BASE_REFUEL_RADIUS(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().BASE_REFUEL_RADIUS); }
+static PyObject* Config_BASE_GIVE_MISSILE_RADIUS(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().BASE_GIVE_MISSILE_RADIUS); }
 
 static PyObject* Config_COMMUNICATION_RADIUS(PyObject*) { return Py_BuildValue("d", aiwar::core::Config::instance().COMMUNICATION_RADIUS); }
 
@@ -1452,6 +1453,7 @@ static PyMethodDef module_methods[] = {
     {"BASE_MEMORY_SIZE", (PyCFunction)Config_BASE_MEMORY_SIZE, METH_NOARGS, "Return number of memory slot of a Base"},
     {"BASE_REPAIR_RADIUS", (PyCFunction)Config_BASE_REPAIR_RADIUS, METH_NOARGS, "Return radius in which a ship must be placed to be repaired by a Base"},
     {"BASE_REFUEL_RADIUS", (PyCFunction)Config_BASE_REFUEL_RADIUS, METH_NOARGS, "Return radius in which a ship must be placed to be refueled by a Base"},
+    {"BASE_GIVE_MISSILE_RADIUS", (PyCFunction)Config_BASE_GIVE_MISSILE_RADIUS, METH_NOARGS, "Return radius in which a fighter must be placed to received missiles from a Base"},
 
     {"COMMUNICATION_RADIUS", (PyCFunction)Config_COMMUNICATION_RADIUS, METH_NOARGS, "Return communication radius"},
 
@@ -1555,9 +1557,6 @@ bool initAiwarModule()
 
     if (m == NULL)
       return false;
-
-    /* Add constants to the module */
-//    PyModule_AddObject(m, "WORLD_SIZE_X", PyInt_FromLong(cfg.WORLD_SIZE_X));
 
 
     /* Add aiwar objects to the module */

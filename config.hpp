@@ -116,6 +116,7 @@ namespace aiwar {
 	    unsigned int BASE_MEMORY_SIZE;
 	    double BASE_REPAIR_RADIUS;
 	    double BASE_REFUEL_RADIUS;
+	    double BASE_GIVE_MISSILE_RADIUS;
 
 	    double COMMUNICATION_RADIUS;
 

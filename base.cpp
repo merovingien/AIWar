@@ -185,6 +185,12 @@ unsigned int Base::giveMissiles(unsigned int nb, Fighter* fighter)
 	return 0;
     }
 
+    if(distanceTo(fighter) > Config::instance().BASE_GIVE_MISSILE_RADIUS)
+    {
+	std::cerr << "Give missile failed: fighter is too far" << std::endl;
+	return 0;
+    }
+
     unsigned int p = nb;
     if(p * Config::instance().BASE_MISSILE_PRICE > _mineralStorage)
     {

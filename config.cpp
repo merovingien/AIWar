@@ -331,6 +331,7 @@ bool Config::loadConfigFile()
 	BASE_MEMORY_SIZE = get<unsigned int>(hDoc, "constants/BASE_MEMORY_SIZE");
 	BASE_REPAIR_RADIUS = get<double>(hDoc, "constants/BASE_REPAIR_RADIUS");
 	BASE_REFUEL_RADIUS = get<double>(hDoc, "constants/BASE_REFUEL_RADIUS");
+	BASE_GIVE_MISSILE_RADIUS = get<double>(hDoc, "constants/BASE_GIVE_MISSILE_RADIUS");
 
 	COMMUNICATION_RADIUS = get<double>(hDoc, "constants/COMMUNICATION_RADIUS");
     }
@@ -385,6 +386,8 @@ std::string Config::dump() const
 	<< "\thelp: " << help << "\n"
 	<< "\tdebug: " << debug << "\n"
 	<< "\tmanual: " << manual << "\n"
+	<< "\tconfig file: " << _configFile << "\n"
+	<< "\tmap file: " << mapFile << "\n"
 	<< "\tblue: " << blue << "\n"
 	<< "\tred: " << red << "\n";
 
@@ -452,6 +455,7 @@ std::string Config::dump() const
 	<< "\tBASE_MEMORY_SIZE: " << BASE_MEMORY_SIZE << "\n"
 	<< "\tBASE_REPAIR_RADIUS: " << BASE_REPAIR_RADIUS << "\n"
 	<< "\tBASE_REFUEL_RADIUS: " << BASE_REFUEL_RADIUS << "\n"
+	<< "\tBASE_GIVE_MISSILE_RADIUS: " << BASE_GIVE_MISSILE_RADIUS << "\n"
 	<< "\tCOMMUNICATION_RADIUS: " << COMMUNICATION_RADIUS << "\n";
 
     return oss.str();
