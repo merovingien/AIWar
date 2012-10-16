@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 {
     SDL_Surface *screen = NULL;
     SDL_Event e;
-    bool done = false;
+    bool done = false, gameover = false;
     bool play = false;
     bool manual = false;
     unsigned int tick = 0;
@@ -240,7 +240,7 @@ int main(int argc, char* argv[])
 	dm.preDraw();
 
 	// update game
-	if(play)
+	if(play && !gameover)
 	{
 	    if(gm.gameOver())
 	    {
@@ -250,7 +250,7 @@ int main(int argc, char* argv[])
 		    std::cout << "Egality !\n";
 		else
 		    std::cout << "Winner is: " << ((winner == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name) << std::endl;
-		done = true;
+		gameover = true;
 	    }
 	    else
 	    {
@@ -264,7 +264,7 @@ int main(int argc, char* argv[])
 		    std::cout << "********** GameOver *********\n";
 		    std::string name = (e.team() == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name;
 		    std::cout << "Team " << name << " has lost because an error occured in his play handler: " << e.what() << std::endl;
-		    done = true;
+		    gameover = true;
 		}
 	    }
 	}
@@ -290,6 +290,8 @@ int main(int argc, char* argv[])
     // finalize handlers
     th.finalize();
     ph.finalize();
+
+    std::cout << "Exiting gracefully...\n";
 	
     return 0;
 }
