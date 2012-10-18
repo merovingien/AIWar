@@ -3,7 +3,13 @@
   <options>
     <debug>false</debug>
     <manual>false</manual>
-    <map>map.xml</map>
+    <map>maps/map.xml</map>
+<!--    <map>maps/map_test.xml</map>-->
+<!--    <map>maps/map.xml</map>-->
+<!--    <map>maps/map_NoRulZ.xml</map>-->
+<!--    <map>maps/map_BackToBack.xml</map>-->
+<!--    <map>maps/map_FollowTheWhiteRabbit.xml</map>-->
+<!--    <map>maps/map_ToInfinityAndBeyond.xml</map>-->
     <blue>PYTHON_TEAM</blue>
     <red>TEST_TEAM</red>
   </options>
@@ -22,6 +28,16 @@
       <name>merovingien</name>
       <handler>python</handler>
       <params>mero</params>
+    </player>
+    <player>
+      <name>GuiGui_01</name>
+      <handler>python</handler>
+      <params>AIWar_GuiGui_01</params>
+    </player>
+    <player>
+      <name>GuiGui_02</name>
+      <handler>python</handler>
+      <params>AIWar_GuiGui_02</params>
     </player>
     <player>
       <name>print_config</name>
