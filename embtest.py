@@ -93,17 +93,17 @@ def play_base_test(self):
 
     # refuel friend ships
     for i in n:
-        if isinstance(i, aiwar.MiningShip) and self.isFriend(i) and self.distanceTo(i) <= 30:
+        if isinstance(i, aiwar.MiningShip) and self.isFriend(i) and self.distanceTo(i) <= aiwar.BASE_REFUEL_RADIUS():
             print "je fais le plein de mon ami"
-            self.refuel(600, i)
+            self.refuel(aiwar.MININGSHIP_START_FUEL(), i)
 
     # create new MiningShip
-    if self.life() > 600 and random.randint(1, 20) == 1:
+    if self.mineralStorage() > aiwar.BASE_MININGSHIP_PRICE() and random.randint(1, 20) == 1:
         self.createMiningShip()
 
     # communiquer avec les copains
     for i in n:
-        if (isinstance(i, aiwar.Base) or isinstance(i, aiwar.MiningShip)) and self.isFriend(i) and self.distanceTo(i) <= 60:
+        if (isinstance(i, aiwar.Base) or isinstance(i, aiwar.MiningShip)) and self.isFriend(i) and self.distanceTo(i) <= aiwar.COMMUNICATION_RADIUS():
             # si on connait la position du mineral
             posMineralSelf = (self.getMemoryFloat(2), self.getMemoryFloat(3))
             if posMineralSelf != (0.0, 0.0):
@@ -141,7 +141,7 @@ def play_miningship_1(self):
 
     # communiquer avec les copains
     for i in n:
-        if (isinstance(i, aiwar.Base) or isinstance(i, aiwar.MiningShip)) and self.isFriend(i) and self.distanceTo(i) <= 60:
+        if (isinstance(i, aiwar.Base) or isinstance(i, aiwar.MiningShip)) and self.isFriend(i) and self.distanceTo(i) <= aiwar.COMMUNICATION_RADIUS():
             # si on connait la position du mineral
             posMineralSelf = (self.getMemoryFloat(2), self.getMemoryFloat(3))
             if posMineralSelf != (0.0, 0.0):
@@ -153,7 +153,7 @@ def play_miningship_1(self):
                     print "J'ai donne la position de mon minerais a mon copain"
 
     # rentrer a la base ?
-    if self.mineralStorage() == 2000 or self.fuel() < ( self.distanceTo(basePos) if baseConnue else 170 ):
+    if self.mineralStorage() == aiwar.MININGSHIP_MAX_MINERAL_STORAGE() or self.fuel() < ( self.distanceTo(basePos) if baseConnue else 170 ):
         if baseConnue:
             print "je rentre a la base"
             self.rotateTo(basePos)
@@ -161,7 +161,7 @@ def play_miningship_1(self):
             # base en vue et assez proche pour donner le minerai ?
             for i in n:
                 if isinstance(i, aiwar.Base) and self.isFriend(i):
-                    if self.distanceTo(i) <= 30:
+                    if self.distanceTo(i) <= aiwar.MININGSHIP_MINING_RADIUS():
                         print "je donne mon minerai a ma base"
                         self.pushMineral(i, self.mineralStorage())
                     break
@@ -181,7 +181,7 @@ def play_miningship_1(self):
             print "je vais au minerais visible"
             self.rotateTo(i)
             self.move()
-            if self.distanceTo(i) <= (30-1):
+            if self.distanceTo(i) <= (aiwar.MININGSHIP_MINING_RADIUS()-1):
                 print "je mine"
                 self.extract(i)
             return
@@ -190,7 +190,7 @@ def play_miningship_1(self):
     minPos = (self.getMemoryFloat(2), self.getMemoryFloat(3))
     if minPos != (0.0, 0.0):
         print "je connais un minerai"
-        if self.distanceTo(minPos) < 160: # on aurait du voir le minerai -> il est vide
+        if self.distanceTo(minPos) < aiwar.MININGSHIP_DETECTION_RADIUS(): # on aurait du voir le minerai -> il est vide
             # reset de la position
             self.setMemoryFloat(2, 0.0)
             self.setMemoryFloat(3, 0.0)

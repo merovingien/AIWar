@@ -1,5 +1,7 @@
 import aiwar
 
+########
+
 def play_miningship(ship):
     pass
 
@@ -10,8 +12,10 @@ def play_base(base):
 def play_fighter(fighter):
     pass
 
+########
+
 def print_config():
     print "Config:"
     for i in dir(aiwar):
         if i.isupper():
-            print i,"():", getattr(aiwar, i).__doc__
+            print "aiwar."+i+"() =", getattr(aiwar, i)(), ":", getattr(aiwar, i).__doc__
