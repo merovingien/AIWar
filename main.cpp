@@ -35,6 +35,7 @@
 
 #include "config.hpp"
 
+#include "drawer_interface.hpp"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 800
