@@ -29,6 +29,8 @@ cxxsrc = config.cpp \
 	test_handler.cpp \
 	python_wrapper.cpp \
 	python_handler.cpp \
+	renderer_dummy.cpp \
+	renderer_sdl.cpp \
 	main.cpp
 
 objects = $(cxxsrc:.cpp=.o)

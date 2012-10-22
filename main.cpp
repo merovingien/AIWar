@@ -19,7 +19,7 @@
 
 #include <Python.h> // to define some constant before everything else
 
-#include <SDL/SDL.h>
+//#include <SDL/SDL.h>
 #include <iostream>
 
 #ifndef _WIN32
@@ -35,23 +35,24 @@
 
 #include "config.hpp"
 
-#include "drawer_interface.hpp"
+#include "renderer_interface.hpp"
+#include "renderer_dummy.hpp"
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 800
-#define SPEED 400
+//#define SCREEN_WIDTH 800
+//#define SCREEN_HEIGHT 800
+//#define SPEED 400
 
 using namespace aiwar::core;
 
 int main(int argc, char* argv[])
 {
-    SDL_Surface *screen = NULL;
-    SDL_Event e;
+//    SDL_Surface *screen = NULL;
+//    SDL_Event e;
     bool done = false, gameover = false;
-    bool play = false;
-    bool manual = false;
+//    bool play = false;
+//    bool manual = false;
     unsigned int tick = 0;
-    Uint32 startTime = 0, ellapsedTime;
+//    Uint32 startTime = 0, ellapsedTime;
 
 #ifndef _WIN32
     /***** rlimit *****/
@@ -90,7 +91,7 @@ int main(int argc, char* argv[])
 
 //    std::cout << cfg.dump();
 
-    manual = cfg.manual;
+//    manual = cfg.manual;
 
     /*** Start handlers ***/
 
@@ -156,7 +157,22 @@ int main(int argc, char* argv[])
 	ph.finalize();
 	return -1;
     }
-    
+  
+    /*** Load the renderer ***/
+    aiwar::renderer::RendererInterface *renderer = NULL;
+
+    // load the dummy renderer
+    aiwar::renderer::RendererDummy dummyRenderer;
+    renderer = &dummyRenderer;
+
+    if(!renderer->initialize(""))
+    {
+	std::cerr << "Fail to initialize renderer\n";
+	th.finalize();
+	ph.finalize();
+	return -1;
+    }
+  
     /*** Init the game ***/
 
     GameManager gm;
@@ -171,12 +187,13 @@ int main(int argc, char* argv[])
 	std::cerr << "Error while loading map file\n";
 	th.finalize();
 	ph.finalize();
+	renderer->finalize();
 	return -1;
     }
 
     // SDL init
-    SDL_Init(SDL_INIT_VIDEO);
-    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+//    SDL_Init(SDL_INIT_VIDEO);
+//    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 
     /****** TEST HARDWARE ******/
 //    const SDL_VideoInfo *info = SDL_GetVideoInfo();
@@ -184,65 +201,65 @@ int main(int argc, char* argv[])
 //    printf("window manager available ? %d\n", info->wm_available);
     /*******/
 
-    screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_HWSURFACE);
-    SDL_WM_SetCaption("AIWar", NULL);
+//    screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_HWSURFACE);
+//    SDL_WM_SetCaption("AIWar", NULL);
 
-    aiwar::renderer::DrawManager dm(screen);
-    dm.debug(cfg.debug);
+//    aiwar::renderer::DrawManager dm(screen);
+//    dm.debug(cfg.debug);
 
     while(!done)
     {
-	play = false;
-	if(!manual)
-	{
-	    ellapsedTime = SDL_GetTicks();
-	    if((ellapsedTime - startTime) >= SPEED)
-	    {
-		play = true;
-		startTime = ellapsedTime;
-	    }
-	}
+//	play = false;
+//	if(!manual)
+//	{
+//	    ellapsedTime = SDL_GetTicks();
+//	    if((ellapsedTime - startTime) >= SPEED)
+//	    {
+//		play = true;
+//		startTime = ellapsedTime;
+//	    }
+//	}
 
 	// treat all events
-	while(SDL_PollEvent(&e))
- 	{	
-	    switch(e.type)
-	    {
-	    case SDL_QUIT:
-		done = true;
-		break;
+	// while(SDL_PollEvent(&e))
+ 	// {	
+	//     switch(e.type)
+	//     {
+	//     case SDL_QUIT:
+	// 	done = true;
+	// 	break;
 		
-	    case SDL_KEYDOWN:
-		switch(e.key.keysym.sym)
-		{
-		case SDLK_SPACE:
-		    play = true;
-		    break;
+	//     case SDL_KEYDOWN:
+	// 	switch(e.key.keysym.sym)
+	// 	{
+	// 	case SDLK_SPACE:
+	// 	    play = true;
+	// 	    break;
 
-		case SDLK_d:
-		    dm.toggleDebug();
-		    break;
+	// 	case SDLK_d:
+	// 	    dm.toggleDebug();
+	// 	    break;
 
-		case SDLK_m:
-		    manual = !manual;
-		    break;
+	// 	case SDLK_m:
+	// 	    manual = !manual;
+	// 	    break;
 
-		default:
-		    break;
-		}
+	// 	default:
+	// 	    break;
+	// 	}
 	       
-	    default:
-		break;
-	    }
-	}
+	//     default:
+	// 	break;
+	//     }
+	// }
 	
 	/* actualisation de l'écran */
-	SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format,0,0,0));
-	dm.preDraw();
+//	SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format,0,0,0));
+//	dm.preDraw();
 
 	// update game
-	if(play && !gameover)
-	{
+//	if(play && !gameover)
+//	{
 	    if(gm.gameOver())
 	    {
 		Team winner = gm.getWinner();
@@ -268,21 +285,27 @@ int main(int argc, char* argv[])
 		    gameover = true;
 		}
 	    }
-	}
+//	}
 
-	ItemManager::ItemMap::const_iterator cit;
-	for(cit = im.begin() ; cit != im.end() ; cit++)
-	    dm.draw(cit->second);
+//	ItemManager::ItemMap::const_iterator cit;
+//	for(cit = im.begin() ; cit != im.end() ; cit++)
+//	    dm.draw(cit->second);
 
-	dm.postDraw();
-	SDL_Flip(screen);
+	done = !renderer->render(im.begin(), gm.getStat(), gameover);
 
-	SDL_Delay(16); // about 60 FPS
+	if(gameover)
+	    done = true;
+
+//	dm.postDraw();
+//	SDL_Flip(screen);
+
+//	SDL_Delay(16); // about 60 FPS
     }
 
     // SDL exit
-    SDL_Quit();
+//    SDL_Quit();
  
+    renderer->finalize();  
 
     // unload teams
     hred->unload(cfg.red);
