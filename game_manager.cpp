@@ -118,14 +118,27 @@ void GameManager::itemDestroyed(const Item* item)
 void GameManager::printStat() const
 {
     TeamMap::const_iterator cit;
+    aiwar::core::Config &cfg = aiwar::core::Config::instance();
     for(cit = _teamMap.begin() ; cit != _teamMap.end() ; ++cit)
     {
-	std::cout << "*******************\n"
-		  << "TEAM " << cit->first << ":\n"
-		  << "\tBases:       " << cit->second.nb_base << " (max: " << cit->second.nb_base_max << ")\n"
-		  << "\tMiningShips: " << cit->second.nb_miningShip << " (max: " << cit->second.nb_miningShip_max << ")\n"
-		  << "\tFighters:    " << cit->second.nb_fighter << " (max: " << cit->second.nb_fighter_max << ")\n"
-		  << "*******************\n";
+    
+	    std::cout << "*******************\n";
+	    if(cit->first == BLUE_TEAM)
+	    {
+	        std::cout << "Blue team : " << cfg.players[cfg.blue].name << "\n";
+	    }
+	    else if(cit->first == RED_TEAM)
+	    {
+	        std::cout << "Red team : " << cfg.players[cfg.red].name << "\n";
+	    }
+	    else
+	    {
+	        std::cout << "No team :\n";
+	    }
+	    std::cout << "\tBases:       " << cit->second.nb_base << " (max: " << cit->second.nb_base_max << ")\n"
+		      << "\tMiningShips: " << cit->second.nb_miningShip << " (max: " << cit->second.nb_miningShip_max << ")\n"
+		      << "\tFighters:    " << cit->second.nb_fighter << " (max: " << cit->second.nb_fighter_max << ")\n"
+		      << "*******************\n";
     }
 }
 
