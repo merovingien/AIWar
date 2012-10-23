@@ -158,8 +158,9 @@ std::string Config::usage() const
 	<< "\t--file config_file\tConfiguration file [config.xml]\n"
 	<< "\t--map map_file\t\tMap file [map.xml]\n"
 	<< "\t--blue player_name\tBlue player name\n"
-	<< "\t--red player_name\tRed player name\n";
-
+	<< "\t--red player_name\tRed player name\n"
+	<< "\t--renderer name\t\tRenderer name\n";
+    
     return oss.str();
 }
 
@@ -212,6 +213,12 @@ bool Config::parseCmdLine(int argc, char* argv[])
 		return false;
 	    _cl_red = argv[++i];
 	}
+	else if(arg == "renderer")
+	{
+	    if(i == argc-1)
+		return false;
+	    _cl_renderer = argv[++i];
+	}
 	else
 	{
 	    std::cerr << "Bad option: " << arg << "\n";
@@ -226,6 +233,7 @@ bool Config::loadConfigFile()
 {
     std::string blue_name;
     std::string red_name;
+    std::string renderer_name;
 
     TiXmlDocument doc(_configFile.c_str());
     if(!doc.LoadFile())
@@ -234,8 +242,9 @@ bool Config::loadConfigFile()
 	return false;
     }
 
-    TiXmlHandle hDoc(0), hPlayer(0);;
-    TiXmlElement* pElem, *pPlayers;
+    TiXmlHandle hDoc(0), hPlayer(0), hRenderer(0);
+    TiXmlElement *pElem, *pPlayers, *pParams, *pRenderers;
+    TiXmlNode *pNode;
 
     // root: aiwar
     pElem=doc.RootElement();
@@ -243,7 +252,7 @@ bool Config::loadConfigFile()
     if (!pElem || pElem->ValueStr() != "aiwar")
 	return false;
 
-    // read options
+    // read file
     hDoc = TiXmlHandle(pElem);
     try
     {
@@ -254,6 +263,8 @@ bool Config::loadConfigFile()
 
 	blue_name = get<std::string>(hDoc, "options/blue");
 	red_name = get<std::string>(hDoc, "options/red");
+
+	renderer_name = get<std::string>(hDoc, "options/renderer");
 
 	// players
 	pPlayers = hDoc.FirstChildElement("players").ToElement();
@@ -268,10 +279,48 @@ bool Config::loadConfigFile()
 	    PlayerInfo tf;
 	    tf.name = get<std::string>(hPlayer, "name");
 	    tf.handler = get<std::string>(hPlayer, "handler");
-	    tf.params = get<std::string>(hPlayer, "params");
-	    players[player_id] = tf;
+	    
+	    // params (keep whole content)
+	    pParams = hPlayer.FirstChildElement("params").ToElement();
+	    if(!pParams)
+		throw ParseError("Key error: player/params");
+	    
+	    std::ostringstream oss;
+	    for(pNode=pParams->FirstChild() ; pNode ; pNode=pNode->NextSibling())
+	    {
+		oss << *pNode;
+	    }
+	    tf.params = oss.str();
 
+	    players[player_id] = tf;
 	    player_id++;
+	}
+
+	// renderers
+	pRenderers = hDoc.FirstChildElement("renderers").ToElement();
+	if(!pRenderers)
+	    throw(ParseError("Key error: renderers"));
+	Renderer renderer_id = 1;
+	for(pElem=pRenderers->FirstChildElement("renderer") ; pElem ; pElem=pElem->NextSiblingElement("renderer"))
+	{
+	    hRenderer = pElem;
+
+	    RendererInfo tf;
+	    tf.name = get<std::string>(hRenderer, "name");
+	    
+	    // params (keep whole content)
+	    pParams = hRenderer.FirstChildElement("params").ToElement();
+	    if(!pParams)
+		throw ParseError("Key error: renderer/params");
+	    std::ostringstream oss;
+	    for(pNode=pParams->FirstChild() ; pNode ; pNode=pNode->NextSibling())
+	    {
+		oss << *pNode;
+	    }
+	    tf.params = oss.str();
+
+	    renderers[renderer_id] = tf;
+	    renderer_id++;
 	}
 
 	// constants
@@ -369,6 +418,23 @@ bool Config::loadConfigFile()
 	return false;
     }
 
+    // set renderers id
+    if(!_cl_renderer.empty())
+	renderer_name = _cl_renderer;
+
+    RendererMap::const_iterator cit_r;
+    for(cit_r=renderers.begin() ; cit_r!=renderers.end() ; ++cit_r)
+    {
+	if(cit_r->second.name == renderer_name)
+	    renderer = cit_r->first;
+    }
+
+    if(renderer == 0)
+    {
+	std::cerr << "Renderer not found in config file: " << renderer_name << std::endl;
+	return false;
+    }
+
     // replace options with command line values
     if(_cl_debug) debug = _cl_debug;
     if(_cl_manual) manual = _cl_manual;
@@ -389,7 +455,8 @@ std::string Config::dump() const
 	<< "\tconfig file: " << _configFile << "\n"
 	<< "\tmap file: " << mapFile << "\n"
 	<< "\tblue: " << blue << "\n"
-	<< "\tred: " << red << "\n";
+	<< "\tred: " << red << "\n"
+	<< "\trenderer: " << renderer << "\n";
 
     // teams
     oss << "players\n";
@@ -400,6 +467,16 @@ std::string Config::dump() const
 	    << "\t\tname: " << cit->second.name << "\n"
 	    << "\t\thandler: " << cit->second.handler << "\n"
 	    << "\t\tparams: " << cit->second.params << "\n";
+    }
+
+    // renderers
+    oss << "renderers\n";
+    RendererMap::const_iterator cit_r;
+    for(cit_r = renderers.begin() ; cit_r != renderers.end() ; ++cit_r)
+    {
+	oss << "\trenderer: " << cit_r->first << "\n"
+	    << "\t\tname: " << cit_r->second.name << "\n"
+	    << "\t\tparams: " << cit_r->second.params << "\n";
     }
 
     // constants

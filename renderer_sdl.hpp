@@ -28,6 +28,9 @@ namespace aiwar {
 	class RendererSDL : public RendererInterface
 	{
 	public:
+	    RendererSDL();
+	    ~RendererSDL();
+
 	    std::string getName() const;
 	    std::string getVersion() const;
 

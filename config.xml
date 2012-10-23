@@ -12,6 +12,7 @@
 <!--    <map>maps/map_ToInfinityAndBeyond.xml</map>-->
     <blue>PYTHON_TEAM</blue>
     <red>TEST_TEAM</red>
+    <renderer>dummy</renderer>
   </options>
   <players>
     <player>
@@ -45,6 +46,16 @@
       <params>print_config</params>
     </player>
   </players>
+  <renderers>
+    <renderer>
+      <name>dummy</name>
+      <params/>
+    </renderer>
+    <renderer>
+      <name>sdl</name>
+      <params/>
+    </renderer>
+  </renderers>
   <constants>
     <WORLD_SIZE_X>800.0</WORLD_SIZE_X>
     <WORLD_SIZE_Y>800.0</WORLD_SIZE_Y>
