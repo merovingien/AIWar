@@ -25,7 +25,6 @@
 #endif
 
 #include "item_manager.hpp"
-#include "draw_manager.hpp"
 #include "game_manager.hpp"
 
 #include "test_handler.hpp"
@@ -194,6 +193,21 @@ int main(int argc, char* argv[])
     }
 
     /*** enter the main loop ***/
+
+    // game over ?
+    if(gm.gameOver())
+    {
+	Team winner = gm.getWinner();
+	std::cout << "********** GameOver *********\n";
+	if(winner == NO_TEAM)
+	    std::cout << "Egality !\n";
+	else
+	    std::cout << "Winner is: " << ((winner == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name) << std::endl;
+	gameover = true;
+    }
+    
+    // first render
+    done = !renderer->render(im.begin(), im.end(), gm.getStat(), gameover) || gameover;
     
     while(!done)
     {
@@ -209,8 +223,22 @@ int main(int argc, char* argv[])
 //	}
 
 
-	// update game
-	if(gm.gameOver())
+	// play
+	try
+	{
+	    im.update(tick++);
+	    gm.printStat();
+	}
+	catch(const aiwar::core::HandlerError &e)
+	{
+	    std::cout << "********** GameOver *********\n";
+	    std::string name = (e.team() == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name;
+	    std::cout << "Team " << name << " has lost because an error occured in his play handler: " << e.what() << std::endl;
+	    gameover = true;
+	}
+
+	// game over ?
+	if(!gameover && gm.gameOver())
 	{
 	    Team winner = gm.getWinner();
 	    std::cout << "********** GameOver *********\n";
@@ -220,31 +248,9 @@ int main(int argc, char* argv[])
 		std::cout << "Winner is: " << ((winner == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name) << std::endl;
 	    gameover = true;
 	}
-	else
-	{
-	    try
-	    {
-		im.update(tick++);
-		gm.printStat();
-	    }
-	    catch(const aiwar::core::HandlerError &e)
-	    {
-		std::cout << "********** GameOver *********\n";
-		std::string name = (e.team() == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name;
-		std::cout << "Team " << name << " has lost because an error occured in his play handler: " << e.what() << std::endl;
-		gameover = true;
-	    }
-	}
 
-	done = !renderer->render(im.begin(), gm.getStat(), gameover);
-
-	if(gameover)
-	    done = true;
-
-//	dm.postDraw();
-//	SDL_Flip(screen);
-
-//	SDL_Delay(16); // about 60 FPS
+	// render
+	done = !renderer->render(im.begin(), im.end(), gm.getStat(), gameover) || gameover;
     }
 
     renderer->finalize();  

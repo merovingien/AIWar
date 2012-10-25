@@ -19,20 +19,30 @@
 
 #include "renderer_sdl.hpp"
 
+#include "renderer_sdl_draw.hpp"
+
+#include <iostream>
 #include <SDL/SDL.h>
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 800
 //#define SPEED 400
 
+// ms between each event treatment and draw (20 ms -> 50 FPS)
+#define FRAME_DELAY 20
+
+// ms between each play round
+#define PLAY_DELAY 500
+
 using namespace aiwar::renderer;
 
-RendererSDL::RendererSDL()
+RendererSDL::RendererSDL() : _drawer(NULL)
 {
 }
 
 RendererSDL::~RendererSDL()
 {
+    finalize();
 }
 
 std::string RendererSDL::getName() const
@@ -47,6 +57,8 @@ std::string RendererSDL::getVersion() const
 
 bool RendererSDL::initialize(const std::string& params)
 {
+    std::cout << "SDL: params (untreated): '" << params << "'\n";
+
     // SDL init
     SDL_Init(SDL_INIT_VIDEO);
     SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
@@ -57,65 +69,154 @@ bool RendererSDL::initialize(const std::string& params)
 //    printf("window manager available ? %d\n", info->wm_available);
     /*******/
 
-    SDL_Surface *screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_HWSURFACE);
+    _screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_HWSURFACE);
     SDL_WM_SetCaption("AIWar", NULL);
 
-//    aiwar::renderer::DrawManager dm(screen);
-//    dm.debug(cfg.debug);
+    _drawer = new RendererSDLDraw(_screen);
+    _drawer->debug(aiwar::core::Config::instance().debug);
 
+    _manual = aiwar::core::Config::instance().manual;
 
+    _frameDelay = FRAME_DELAY;
+    _playDelay = PLAY_DELAY;
 
+    _startTimeFrame = SDL_GetTicks() - _frameDelay; // to force process and draw at the first call of render()
+    _startTimePlay = SDL_GetTicks();
 
     return true;
 }
 	    
 bool RendererSDL::finalize()
 {
+    if(_drawer)
+    {
+	delete _drawer;
+	_drawer = NULL;
+    }
+
     SDL_Quit();
     return true;
 }
 
-bool RendererSDL::render(const aiwar::core::ItemManager::ItemMap::const_iterator &cit, const aiwar::core::GameManager::Stat &stats, bool gameover)
+bool RendererSDL::render(aiwar::core::ItemManager::ItemMap::const_iterator begin, aiwar::core::ItemManager::ItemMap::const_iterator end, const aiwar::core::GameManager::Stat &stats, bool gameover)
 {
     SDL_Event e;
     bool cont = true;
+    Uint32 ellapsedTimeFrame, ellapsedTimePlay;
+    Sint32 remainingTimeFrame, remainingTimePlay;
 
-    // treat all events
-    while(SDL_PollEvent(&e))
-    {	
-	switch(e.type)
+    bool play = false; // shall we return to play
+    
+    while(cont && (gameover || !play))
+    {
+	bool process = false; // shall we process events and draw
+
+	Uint32 currentTime = SDL_GetTicks();
+
+	/* FPS */
+	ellapsedTimeFrame = currentTime - _startTimeFrame; // ellapsed time since the last event processing and draw
+	remainingTimeFrame = _frameDelay - ellapsedTimeFrame; // remaining time for the next event processing and draw
+
+	/* Play */
+	if(!_manual)
 	{
-	case SDL_QUIT:
-	    cont = false;
-	    break;
-	    
-	case SDL_KEYDOWN:
-	    switch(e.key.keysym.sym)
-	    {
-	    case SDLK_SPACE:
-		//play = true;
-		break;
-
-	    case SDLK_d:
-		//dm.toggleDebug();
-		break;
-
-	    case SDLK_m:
-		//manual = !manual;
-		break;
-
-	    default:
-		break;
-	    }
-	       
-	default:
-	    break;
+	    ellapsedTimePlay = currentTime - _startTimePlay; // ellapsed time since the last play
+	    remainingTimePlay = _playDelay - ellapsedTimePlay;  // remaining time for the next play
 	}
-    }
-	
-	/* actualisation de l'écran */
-//	SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format,0,0,0));
+	else
+	{
+	    remainingTimePlay = (remainingTimeFrame > 0) ? remainingTimeFrame+1 : 1; 
+            // so remainingTimePlay is always positive and bigger than remainingTimeFrame -> never play and never wait for playing
+	}
 
+	// shall we process ?
+	if(remainingTimeFrame <= 0)
+	    process = true;
+
+	// shall we draw ?
+	if(remainingTimePlay <= 0)
+	    play = true;
+
+	// shall we wait ?
+	if(!process && !play)
+	{
+	    if(remainingTimeFrame <= remainingTimePlay)
+	    {
+		// we must wait to process
+		SDL_Delay(remainingTimeFrame);
+		process = true;
+	    }
+	    else
+	    {
+		// we must wait to play
+		SDL_Delay(remainingTimePlay);
+		play = true;
+	    }
+	}
+
+	// shall we process ?
+	if(process)
+	{
+	    // treat all events
+	    while(SDL_PollEvent(&e))
+	    {	
+		switch(e.type)
+		{
+		case SDL_QUIT:
+		    cont = false; // exit
+		    break;
+	    
+		case SDL_KEYDOWN:
+		    switch(e.key.keysym.sym)
+		    {
+		    case SDLK_ESCAPE:
+			cont = false; // exit
+			break;
+
+		    case SDLK_SPACE: // force play
+			play = true;
+			break;
+
+		    case SDLK_d: // toggle debug
+			_drawer->toggleDebug();
+			break;
+
+		    case SDLK_m: // toggle manual
+			_manual = !_manual;
+			break;
+			
+		    case SDLK_s: // toggle full speed play
+			_playDelay = PLAY_DELAY - _playDelay;
+			break;
+
+		    default:
+			break;
+		    }
+	       
+		default:
+		    break;
+		}
+	    }
+
+	    /* actualisation de l'écran */
+	    SDL_FillRect(_screen, NULL, SDL_MapRGB(_screen->format,0,0,0));
+
+	    _drawer->preDraw();
+    
+	    aiwar::core::ItemManager::ItemMap::const_iterator cit;
+	    for(cit = begin ; cit != end ; ++cit)
+		_drawer->draw(cit->second);
+
+	    _drawer->postDraw();
+
+	    SDL_Flip(_screen);
+
+	    _startTimeFrame = SDL_GetTicks(); /// \bug should be at the begin of process event ?
+	}
+
+    } // end while(!play)
+
+    _startTimePlay = SDL_GetTicks(); /// \bug should be at the begin of render ?
 
     return cont;
 }

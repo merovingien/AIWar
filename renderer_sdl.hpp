@@ -22,8 +22,12 @@
 
 #include "renderer_interface.hpp"
 
+#include <SDL/SDL.h>
+
 namespace aiwar {
     namespace renderer {
+
+	class RendererSDLDraw;
 
 	class RendererSDL : public RendererInterface
 	{
@@ -38,12 +42,21 @@ namespace aiwar {
 	    
 	    bool finalize();
 
-	    bool render(const aiwar::core::ItemManager::ItemMap::const_iterator &cit,
-				const aiwar::core::GameManager::Stat &stats,
-				bool gameover);
+	    bool render(aiwar::core::ItemManager::ItemMap::const_iterator begin,
+			aiwar::core::ItemManager::ItemMap::const_iterator end,
+			const aiwar::core::GameManager::Stat &stats,
+			bool gameover);
 
 	private:
+	    SDL_Surface *_screen;
+	    RendererSDLDraw *_drawer;
+	    bool _manual;
 
+	    Uint32 _frameDelay;
+	    Uint32 _playDelay;
+
+	    Uint32 _startTimeFrame;
+	    Uint32 _startTimePlay;
 	};
 
     } // aiwar::renderer

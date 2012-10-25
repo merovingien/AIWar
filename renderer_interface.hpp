@@ -56,18 +56,20 @@ namespace aiwar {
 
 	    /**
 	     * \brief Render the battle state
-	     * \param cit an iterator on all the item
+	     * \param begin an iterator that points on the first item
+	     * \param end an iterator that points after the last item
 	     * \param stat a statistic object giving global information about the battle
 	     * \param gameover True if game is over
 	     * \return True if the game continues, false to stop the game
 	     *
-	     * The cit iterator is pointing on the first item. Renderer object must not use
+	     * The begin iterators is pointing on the first item. Renderer object must not copy and use
 	     * the iterator outside of this function, because it will be certainlly
 	     * invalidated just after this function returns. The same applies for stat object.
 	     * If gameover is true, this is the last call to the renderer update. When 
 	     * the function return, the core manager will clean and exit the game.
 	     */
-	    virtual bool render(const aiwar::core::ItemManager::ItemMap::const_iterator &cit,
+	    virtual bool render(aiwar::core::ItemManager::ItemMap::const_iterator begin,
+				aiwar::core::ItemManager::ItemMap::const_iterator end,
 				const aiwar::core::GameManager::Stat &stats,
 				bool gameover) = 0;
 	};

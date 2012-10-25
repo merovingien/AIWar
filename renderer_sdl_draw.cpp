@@ -17,7 +17,7 @@
  * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-#include "draw_manager.hpp"
+#include "renderer_sdl_draw.hpp"
 
 #include "item.hpp"
 #include "mineral.hpp"
@@ -36,7 +36,7 @@ using namespace aiwar::renderer;
 using aiwar::core::BLUE_TEAM;
 using aiwar::core::RED_TEAM;
 
-DrawManager::DrawManager(SDL_Surface *screen) : _cfg(core::Config::instance()), _debug(_cfg.debug), _screen(screen)
+RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::instance()), _debug(_cfg.debug), _screen(screen)
 {
     _world_rect = new SDL_Rect();
     _world_rect->x = 0;
@@ -90,7 +90,7 @@ DrawManager::DrawManager(SDL_Surface *screen) : _cfg(core::Config::instance()), 
 
 }
 
-DrawManager::~DrawManager()
+RendererSDLDraw::~RendererSDLDraw()
 {
     std::map<ItemType, SDL_Surface*>::iterator it;
     for(it = _surfaceMap.begin() ; it != _surfaceMap.end() ; ++it)
@@ -100,12 +100,12 @@ DrawManager::~DrawManager()
     delete _world_rect;
 }
 
-void DrawManager::_addSurface(ItemType t, SDL_Surface* s)
+void RendererSDLDraw::_addSurface(ItemType t, SDL_Surface* s)
 {
     _surfaceMap[t] = s;
 }
 
-SDL_Surface* DrawManager::_getSurface(ItemType t) const
+SDL_Surface* RendererSDLDraw::_getSurface(ItemType t) const
 {
     std::map<ItemType, SDL_Surface*>::const_iterator cit = _surfaceMap.find(t);
     if(cit != _surfaceMap.end())
@@ -113,12 +113,12 @@ SDL_Surface* DrawManager::_getSurface(ItemType t) const
     return NULL;
 }
 
-void DrawManager::preDraw()
+void RendererSDLDraw::preDraw()
 {
     SDL_FillRect(_world_surface, NULL, SDL_MapRGB(_screen->format,0,0,0));
 }
 
-void DrawManager::draw(const aiwar::core::Item *item)
+void RendererSDLDraw::draw(const aiwar::core::Item *item)
 {
     const aiwar::core::Mineral *mineral;
     const aiwar::core::Missile *missile;
@@ -138,22 +138,22 @@ void DrawManager::draw(const aiwar::core::Item *item)
 	_drawFighter(fighter);
 }
 
-void DrawManager::postDraw()
+void RendererSDLDraw::postDraw()
 {
     SDL_BlitSurface(_world_surface, NULL, _screen, _world_rect);
 }
 
-void DrawManager::debug(bool active)
+void RendererSDLDraw::debug(bool active)
 {
     _debug = active;
 }
 
-void DrawManager::toggleDebug()
+void RendererSDLDraw::toggleDebug()
 {
     _debug = !_debug;
 }
 
-void DrawManager::_drawMineral(const aiwar::core::Mineral *m)
+void RendererSDLDraw::_drawMineral(const aiwar::core::Mineral *m)
 {
     SDL_Rect r;
     r.x = static_cast<Sint16>(m->xpos() - _cfg.MINERAL_SIZE_X/2);
@@ -163,7 +163,7 @@ void DrawManager::_drawMineral(const aiwar::core::Mineral *m)
     SDL_FillRect(_world_surface, &r, SDL_MapRGB(_world_surface->format, 0,255,128));
 }
 
-void DrawManager::_drawBase(const aiwar::core::Base *b)
+void RendererSDLDraw::_drawBase(const aiwar::core::Base *b)
 {
     SDL_Rect r;
     r.x = static_cast<Sint16>(b->xpos() - _cfg.BASE_SIZE_X/2);
@@ -180,7 +180,7 @@ void DrawManager::_drawBase(const aiwar::core::Base *b)
     SDL_FillRect(_world_surface, &r, color);
 }
 
-void DrawManager::_drawMiningShip(const aiwar::core::MiningShip *m)
+void RendererSDLDraw::_drawMiningShip(const aiwar::core::MiningShip *m)
 {
     SDL_Surface *rs = NULL;
 
@@ -214,7 +214,7 @@ void DrawManager::_drawMiningShip(const aiwar::core::MiningShip *m)
     }
 }
 
-void DrawManager::_drawMissile(const aiwar::core::Missile *m)
+void RendererSDLDraw::_drawMissile(const aiwar::core::Missile *m)
 {
     SDL_Surface* tmp = SDL_CreateRGBSurface(_world_surface->flags, static_cast<int>(_cfg.MISSILE_SIZE_X), static_cast<int>(_cfg.MISSILE_SIZE_Y), _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
 
@@ -234,7 +234,7 @@ void DrawManager::_drawMissile(const aiwar::core::Missile *m)
     SDL_FreeSurface(tmp);
 }
 
-void DrawManager::_drawFighter(const aiwar::core::Fighter *f)
+void RendererSDLDraw::_drawFighter(const aiwar::core::Fighter *f)
 {
     SDL_Surface *rs = NULL;
 

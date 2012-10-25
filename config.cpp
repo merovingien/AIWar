@@ -139,6 +139,7 @@ Config::Config()
     : help(false),
       blue(0),
       red(0),
+      renderer(0),
       _programName("AIWar"),
       _configFile("config.xml"),
       _cl_debug(false),

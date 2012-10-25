@@ -38,7 +38,8 @@ namespace aiwar {
 	    
 	    bool finalize();
 
-	    bool render(const aiwar::core::ItemManager::ItemMap::const_iterator &cit,
+	    bool render(aiwar::core::ItemManager::ItemMap::const_iterator begin,
+			aiwar::core::ItemManager::ItemMap::const_iterator end,
 			const aiwar::core::GameManager::Stat &stats,
 			bool gameover);
 	};
