@@ -94,6 +94,18 @@ void GameManager::mineralDestroyed(const Mineral*)
 {
 }
 
+void GameManager::mineralSaved(const Team t, const  unsigned int m)
+{
+    TeamInfo &info = _teamMap[t];
+    info.nb_mineral_saved += m;
+}
+
+void GameManager::mineralSpent(const Team t, const  unsigned int m)
+{
+    TeamInfo &info = _teamMap[t];
+    info.nb_mineral_spent += m;
+}
+
 void GameManager::itemDestroyed(const Item* item)
 {
     const aiwar::core::Mineral *mineral;
@@ -138,6 +150,7 @@ void GameManager::printStat() const
 	    std::cout << "\tBases:       " << cit->second.nb_base << " (max: " << cit->second.nb_base_max << ")\n"
 		      << "\tMiningShips: " << cit->second.nb_miningShip << " (max: " << cit->second.nb_miningShip_max << ")\n"
 		      << "\tFighters:    " << cit->second.nb_fighter << " (max: " << cit->second.nb_fighter_max << ")\n"
+		      << "\tMinerals spent/saved:    " << cit->second.nb_mineral_spent << " / " << cit->second.nb_mineral_saved << "\n"
 		      << "*******************\n";
     }
 }
@@ -213,6 +226,7 @@ GameManager::TeamInfo::TeamInfo(PlayFunction& pfb, PlayFunction& pfm, PlayFuncti
     : play_base(pfb), play_miningShip(pfm), play_fighter(pff),
       nb_base(0), nb_base_max(0),
       nb_miningShip(0), nb_miningShip_max(0),
-      nb_fighter(0), nb_fighter_max(0)
+      nb_fighter(0), nb_fighter_max(0),
+      nb_mineral_spent(0), nb_mineral_saved(0)
 {
 }

@@ -59,6 +59,8 @@ namespace aiwar {
 	    void missileDestroyed(const Missile*);
 	    void mineralCreated(const Mineral*);
 	    void mineralDestroyed(const Mineral*);
+        void mineralSaved(const Team, const  unsigned int);
+        void mineralSpent(const Team, const  unsigned int);
 	    void itemDestroyed(const Item*);
 
 	    void printStat() const;
@@ -91,6 +93,8 @@ namespace aiwar {
 	    unsigned int nb_miningShip_max;
 	    unsigned int nb_fighter;
 	    unsigned int nb_fighter_max;
+	    unsigned int nb_mineral_spent;
+	    unsigned int nb_mineral_saved;
 	};
 
     } // aiwar::core

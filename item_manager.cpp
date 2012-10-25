@@ -82,6 +82,8 @@ Missile* ItemManager::createMissile(Item* launcher, Living* target)
     Missile *m = new Missile(*this, k, launcher->xpos(), launcher->ypos(), target);
     _itemMap.insert(ItemMap::value_type(k, m));
     _gm.missileCreated(m);
+    /* How can I do this ? But warning, because this function is called when launching missile already bought !
+    _gm.mineralSpent(launcher->team(), Config::instance().BASE_MISSILE_PRICE);*/
     return m;
 }
 
@@ -91,6 +93,8 @@ Base* ItemManager::createBase(double px, double py, Team team)
     Base *b = new Base(*this, k, px, py, team, _gm.getBasePF(team));
     _itemMap.insert(ItemMap::value_type(k, b));
     _gm.baseCreated(b);
+    /* Need the price of base !
+    _gm.mineralSpent(team, Config::instance().BASE_CreateBase_PRICE);*/
     return b;
 }
 
@@ -100,6 +104,7 @@ MiningShip* ItemManager::createMiningShip(double px, double py, Team team)
     MiningShip *t = new MiningShip(*this, k, px, py, team, _gm.getMiningShipPF(team));
     _itemMap.insert(ItemMap::value_type(k, t));
     _gm.miningShipCreated(t);
+    _gm.mineralSpent(team, Config::instance().BASE_MININGSHIP_PRICE);
     return t;
 }
 
@@ -123,6 +128,7 @@ Fighter* ItemManager::createFighter(double px, double py, Team team)
     Fighter *f = new Fighter(*this, k, px, py, team, _gm.getFighterPF(team));
     _itemMap.insert(ItemMap::value_type(k, f));
     _gm.fighterCreated(f);
+    _gm.mineralSpent(team, Config::instance().BASE_FIGHTER_PRICE);
     return f;
 }
 

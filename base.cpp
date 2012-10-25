@@ -100,6 +100,8 @@ unsigned int Base::pullMineral(MiningShip *ship, unsigned int mineralPoint)
 
 	p = ship->_release(p);
 	_mineralStorage += p;
+	/* How can I do this ? 
+	_gm.mineralSaved(ship->team(), mineralPoint); */
     }
     else
 	std::cout << "WARNING: pullMineral from ennemy is forbidden" << std::endl;
