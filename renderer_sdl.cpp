@@ -157,6 +157,8 @@ bool RendererSDL::render(aiwar::core::ItemManager::ItemMap::const_iterator begin
 	// shall we process ?
 	if(process)
 	{
+	    _startTimeFrame = SDL_GetTicks();
+
 	    // treat all events
 	    while(SDL_PollEvent(&e))
 	    {	
@@ -210,13 +212,11 @@ bool RendererSDL::render(aiwar::core::ItemManager::ItemMap::const_iterator begin
 	    _drawer->postDraw();
 
 	    SDL_Flip(_screen);
-
-	    _startTimeFrame = SDL_GetTicks(); /// \bug should be at the begin of process event ?
 	}
 
     } // end while(!play)
 
-    _startTimePlay = SDL_GetTicks(); /// \bug should be at the begin of render ?
+    _startTimePlay = SDL_GetTicks();
 
     return cont;
 }

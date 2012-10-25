@@ -4,15 +4,9 @@
     <debug>false</debug>
     <manual>false</manual>
     <map>maps/map.xml</map>
-<!--    <map>maps/map_test.xml</map>-->
-<!--    <map>maps/map.xml</map>-->
-<!--    <map>maps/map_NoRulZ.xml</map>-->
-<!--    <map>maps/map_BackToBack.xml</map>-->
-<!--    <map>maps/map_FollowTheWhiteRabbit.xml</map>-->
-<!--    <map>maps/map_ToInfinityAndBeyond.xml</map>-->
     <blue>PYTHON_TEAM</blue>
     <red>TEST_TEAM</red>
-    <renderer>dummy</renderer>
+    <renderer>sdl</renderer>
   </options>
   <players>
     <player>
