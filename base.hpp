@@ -102,6 +102,7 @@ namespace aiwar {
 	    
 	    unsigned int _mineralStorage;
 	    bool _hasLaunch;
+	    bool _hasCreate;
 	};
 
     } // namespace aiwar::core

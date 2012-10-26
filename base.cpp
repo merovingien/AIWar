@@ -34,7 +34,7 @@ Base::Base(ItemManager &im, Key k, double xpos, double ypos, Team team, PlayFunc
       Playable(team, pf),
       Memory(im, k, Config::instance().BASE_MEMORY_SIZE),
       _mineralStorage(Config::instance().BASE_START_MINERAL_STORAGE),
-      _hasLaunch(false)
+      _hasLaunch(false), _hasCreate(false)
 {
 //    std::cout << "Ctr Base(" << xpos << "," << ypos << ")" << std::endl;
 }
@@ -46,6 +46,7 @@ Base::~Base()
 void Base::_preUpdate(unsigned int)
 {
     _hasLaunch = false;
+    _hasCreate = false;
 }
 
 void Base::update(unsigned int tick)
@@ -66,14 +67,26 @@ void Base::launchMissile(Living* target)
 	    _hasLaunch = true;
 	}
     }
+    else
+    {
+	std::cerr << "Launching more than one missile per round is forbidden\n";
+    }
 }
 
 void Base::createMiningShip()
 {
-    if(_mineralStorage >= Config::instance().BASE_MININGSHIP_PRICE)
+    if(!_hasCreate)
     {
-	_im.createMiningShip(this);
-	_mineralStorage -= Config::instance().BASE_MININGSHIP_PRICE;
+	if(_mineralStorage >= Config::instance().BASE_MININGSHIP_PRICE)
+	{
+	    _im.createMiningShip(this);
+	    _mineralStorage -= Config::instance().BASE_MININGSHIP_PRICE;
+	    _hasCreate = true;
+	}
+    }
+    else
+    {
+	std::cerr << "Creating more than one ship per round is forbidden\n";
     }
 }
 
@@ -172,10 +185,18 @@ unsigned int Base::refuel(unsigned int points, Movable *item)
 
 void Base::createFighter()
 {
-   if(_mineralStorage >= Config::instance().BASE_FIGHTER_PRICE)
+    if(!_hasCreate)
     {
-	_im.createFighter(this);
-	_mineralStorage -= Config::instance().BASE_FIGHTER_PRICE;
+	if(_mineralStorage >= Config::instance().BASE_FIGHTER_PRICE)
+	{
+	    _im.createFighter(this);
+	    _mineralStorage -= Config::instance().BASE_FIGHTER_PRICE;
+	    _hasCreate = true;
+	}
+    }
+    else
+    {
+	std::cerr << "Creating more than one ship per round is forbidden\n";
     }
 }
 
@@ -204,7 +225,6 @@ unsigned int Base::giveMissiles(unsigned int nb, Fighter* fighter)
 
     return p;
 }
-
 
 std::ostream& operator<< (std::ostream& os, const Base& b)
 {
