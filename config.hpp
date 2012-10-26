@@ -43,6 +43,10 @@ namespace aiwar {
 	    class PlayerInfo;
 	    typedef std::map<Player, PlayerInfo> PlayerMap;
 
+	    typedef unsigned int Renderer;
+	    class RendererInfo;
+	    typedef std::map<Renderer, RendererInfo> RendererMap;
+
 	    static Config& instance();
 
 	    std::string usage() const;
@@ -57,8 +61,11 @@ namespace aiwar {
 
 	    Player blue;
 	    Player red;
+	    
+	    Renderer renderer;
 
 	    PlayerMap players;
+	    RendererMap renderers;
 
 	    double WORLD_SIZE_X;
 	    double WORLD_SIZE_Y;
@@ -137,6 +144,7 @@ namespace aiwar {
 	    std::string _cl_mapFile;
 	    std::string _cl_blue;
 	    std::string _cl_red;
+	    std::string _cl_renderer;
 	};
 
 	class Config::PlayerInfo
@@ -144,6 +152,13 @@ namespace aiwar {
 	public:
 	    std::string name;
 	    std::string handler;
+	    std::string params;
+	};
+
+	class Config::RendererInfo
+	{
+	public:
+	    std::string name;
 	    std::string params;
 	};
 

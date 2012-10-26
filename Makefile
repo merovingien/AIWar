@@ -24,11 +24,13 @@ cxxsrc = config.cpp \
 	fighter.cpp \
 	missile.cpp \
 	item_manager.cpp \
-	draw_manager.cpp \
 	game_manager.cpp \
 	test_handler.cpp \
 	python_wrapper.cpp \
 	python_handler.cpp \
+	renderer_dummy.cpp \
+	renderer_sdl.cpp \
+	renderer_sdl_draw.cpp \
 	main.cpp
 
 objects = $(cxxsrc:.cpp=.o)

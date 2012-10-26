@@ -155,6 +155,10 @@ void GameManager::printStat() const
     }
 }
 
+const GameManager::Stat& GameManager::getStat() const
+{
+    return _stat;
+}
 
 void GameManager::registerTeam(Team team, PlayFunction& pfBase, PlayFunction& pfMiningShip, PlayFunction& pfFighter)
 {
@@ -228,5 +232,9 @@ GameManager::TeamInfo::TeamInfo(PlayFunction& pfb, PlayFunction& pfm, PlayFuncti
       nb_miningShip(0), nb_miningShip_max(0),
       nb_fighter(0), nb_fighter_max(0),
       nb_mineral_spent(0), nb_mineral_saved(0)
+{
+}
+
+GameManager::Stat::Stat()
 {
 }

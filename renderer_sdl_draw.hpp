@@ -17,8 +17,8 @@
  * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-#ifndef DRAW_MANAGER_HPP
-#define DRAW_MANAGER_HPP
+#ifndef RENDERER_SDL_DRAW_HPP
+#define RENDERER_SDL_DRAW_HPP
 
 #include <map>
 
@@ -39,11 +39,11 @@ namespace aiwar {
     
     namespace renderer {
 
-	class DrawManager
+	class RendererSDLDraw
 	{
 	public:
-	    DrawManager(SDL_Surface *s);
-	    ~DrawManager();
+	    RendererSDLDraw(SDL_Surface *s);
+	    ~RendererSDLDraw();
 
 	    void preDraw();
 	    void draw(const core::Item *item);
@@ -86,4 +86,4 @@ namespace aiwar {
     }
 }
 
-#endif /* DRAW_MANAGER_HPP */
+#endif /* RENDERER_SDL_DRAW_HPP */

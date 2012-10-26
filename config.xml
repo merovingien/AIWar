@@ -4,14 +4,9 @@
     <debug>false</debug>
     <manual>false</manual>
     <map>maps/map.xml</map>
-<!--    <map>maps/map_test.xml</map>-->
-<!--    <map>maps/map.xml</map>-->
-<!--    <map>maps/map_NoRulZ.xml</map>-->
-<!--    <map>maps/map_BackToBack.xml</map>-->
-<!--    <map>maps/map_FollowTheWhiteRabbit.xml</map>-->
-<!--    <map>maps/map_ToInfinityAndBeyond.xml</map>-->
     <blue>PYTHON_TEAM</blue>
     <red>TEST_TEAM</red>
+    <renderer>sdl</renderer>
   </options>
   <players>
     <player>
@@ -45,6 +40,16 @@
       <params>print_config</params>
     </player>
   </players>
+  <renderers>
+    <renderer>
+      <name>dummy</name>
+      <params/>
+    </renderer>
+    <renderer>
+      <name>sdl</name>
+      <params/>
+    </renderer>
+  </renderers>
   <constants>
     <WORLD_SIZE_X>800.0</WORLD_SIZE_X>
     <WORLD_SIZE_Y>800.0</WORLD_SIZE_Y>

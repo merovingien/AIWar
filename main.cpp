@@ -18,8 +18,6 @@
  */
 
 #include <Python.h> // to define some constant before everything else
-
-#include <SDL/SDL.h>
 #include <iostream>
 
 #ifndef _WIN32
@@ -27,7 +25,6 @@
 #endif
 
 #include "item_manager.hpp"
-#include "draw_manager.hpp"
 #include "game_manager.hpp"
 
 #include "test_handler.hpp"
@@ -35,22 +32,17 @@
 
 #include "config.hpp"
 
-
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 800
-#define SPEED 400
+#include "renderer_interface.hpp"
+#include "renderer_dummy.hpp"
+#include "renderer_sdl.hpp"
 
 using namespace aiwar::core;
 
 int main(int argc, char* argv[])
 {
-    SDL_Surface *screen = NULL;
-    SDL_Event e;
     bool done = false, gameover = false;
-    bool play = false;
-    bool manual = false;
     unsigned int tick = 0;
-    Uint32 startTime = 0, ellapsedTime;
+//    Uint32 startTime = 0, ellapsedTime;
 
 #ifndef _WIN32
     /***** rlimit *****/
@@ -88,8 +80,7 @@ int main(int argc, char* argv[])
     }
 
 //    std::cout << cfg.dump();
-
-    manual = cfg.manual;
+//    return 0;
 
     /*** Start handlers ***/
 
@@ -155,7 +146,34 @@ int main(int argc, char* argv[])
 	ph.finalize();
 	return -1;
     }
-    
+  
+    /*** Load the renderer ***/
+    aiwar::renderer::RendererInterface *renderer = NULL;
+
+    // load the dummy renderer
+    aiwar::renderer::RendererDummy dummyRenderer;
+    aiwar::renderer::RendererSDL sdlRenderer;
+
+    if(cfg.renderers[cfg.renderer].name == "dummy")
+	renderer = &dummyRenderer;
+    else if(cfg.renderers[cfg.renderer].name == "sdl")
+	renderer = &sdlRenderer;
+    else
+    {
+	std::cerr << "Cannot find renderer '" << cfg.renderers[cfg.renderer].name << "'\n";
+	th.finalize();
+	ph.finalize();
+	return -1;
+    }
+
+    if(!renderer->initialize(cfg.renderers[cfg.renderer].params))
+    {
+	std::cerr << "Fail to initialize renderer\n";
+	th.finalize();
+	ph.finalize();
+	return -1;
+    }
+  
     /*** Init the game ***/
 
     GameManager gm;
@@ -170,118 +188,72 @@ int main(int argc, char* argv[])
 	std::cerr << "Error while loading map file\n";
 	th.finalize();
 	ph.finalize();
+	renderer->finalize();
 	return -1;
     }
 
-    // SDL init
-    SDL_Init(SDL_INIT_VIDEO);
-    SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+    /*** enter the main loop ***/
 
-    /****** TEST HARDWARE ******/
-//    const SDL_VideoInfo *info = SDL_GetVideoInfo();
-//    printf("hardware surfaces? %d\n", info->hw_available);
-//    printf("window manager available ? %d\n", info->wm_available);
-    /*******/
-
-    screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_HWSURFACE);
-    SDL_WM_SetCaption("AIWar", NULL);
-
-    aiwar::renderer::DrawManager dm(screen);
-    dm.debug(cfg.debug);
-
+    // game over ?
+    if(gm.gameOver())
+    {
+	Team winner = gm.getWinner();
+	std::cout << "********** GameOver *********\n";
+	if(winner == NO_TEAM)
+	    std::cout << "Egality !\n";
+	else
+	    std::cout << "Winner is: " << ((winner == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name) << std::endl;
+	gameover = true;
+    }
+    
+    // first render
+    done = !renderer->render(im.begin(), im.end(), gm.getStat(), gameover) || gameover;
+    
     while(!done)
     {
-	play = false;
-	if(!manual)
+//	play = false;
+//	if(!manual)
+//	{
+//	    ellapsedTime = SDL_GetTicks();
+//	    if((ellapsedTime - startTime) >= SPEED)
+//	    {
+//		play = true;
+//		startTime = ellapsedTime;
+//	    }
+//	}
+
+
+	// play
+	try
 	{
-	    ellapsedTime = SDL_GetTicks();
-	    if((ellapsedTime - startTime) >= SPEED)
-	    {
-		play = true;
-		startTime = ellapsedTime;
-	    }
+	    im.update(tick++);
+	    gm.printStat();
+	}
+	catch(const aiwar::core::HandlerError &e)
+	{
+	    std::cout << "********** GameOver *********\n";
+	    std::string name = (e.team() == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name;
+	    std::cout << "Team " << name << " has lost because an error occured in his play handler: " << e.what() << std::endl;
+	    gameover = true;
 	}
 
-	// treat all events
-	while(SDL_PollEvent(&e))
- 	{	
-	    switch(e.type)
-	    {
-	    case SDL_QUIT:
-		done = true;
-		break;
-		
-	    case SDL_KEYDOWN:
-		switch(e.key.keysym.sym)
-		{
-		case SDLK_SPACE:
-		    play = true;
-		    break;
-
-		case SDLK_d:
-		    dm.toggleDebug();
-		    break;
-
-		case SDLK_m:
-		    manual = !manual;
-		    break;
-
-		default:
-		    break;
-		}
-	       
-	    default:
-		break;
-	    }
-	}
-	
-	/* actualisation de l'écran */
-	SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format,0,0,0));
-	dm.preDraw();
-
-	// update game
-	if(play && !gameover)
+	// game over ?
+	if(!gameover && gm.gameOver())
 	{
-	    if(gm.gameOver())
-	    {
-		Team winner = gm.getWinner();
-		std::cout << "********** GameOver *********\n";
-		if(winner == NO_TEAM)
-		    std::cout << "Egality !\n";
-		else
-		    std::cout << "Winner is: " << ((winner == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name) << std::endl;
-		gameover = true;
-	    }
+	    Team winner = gm.getWinner();
+	    std::cout << "********** GameOver *********\n";
+	    if(winner == NO_TEAM)
+		std::cout << "Egality !\n";
 	    else
-	    {
-		try
-		{
-		    im.update(tick++);
-		    gm.printStat();
-		}
-		catch(const aiwar::core::HandlerError &e)
-		{
-		    std::cout << "********** GameOver *********\n";
-		    std::string name = (e.team() == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name;
-		    std::cout << "Team " << name << " has lost because an error occured in his play handler: " << e.what() << std::endl;
-		    gameover = true;
-		}
-	    }
+		std::cout << "Winner is: " << ((winner == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name) << std::endl;
+	    gameover = true;
 	}
 
-	ItemManager::ItemMap::const_iterator cit;
-	for(cit = im.begin() ; cit != im.end() ; cit++)
-	    dm.draw(cit->second);
-
-	dm.postDraw();
-	SDL_Flip(screen);
-
-	SDL_Delay(16); // about 60 FPS
+	// render
+	done = !renderer->render(im.begin(), im.end(), gm.getStat(), gameover) || gameover;
     }
 
-    // SDL exit
-    SDL_Quit();
- 
+    renderer->finalize();  
 
     // unload teams
     hred->unload(cfg.red);

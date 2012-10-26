@@ -35,10 +35,18 @@ namespace aiwar {
 	class Missile;
 	class Mineral;
 
-
 	class GameManager
 	{
 	public:
+	    class Stat
+	    {
+	    public:
+		Stat();
+	    private:
+		Stat(const Stat&);
+		Stat& operator=(const Stat&);
+	    };
+
 	    GameManager();
 	    ~GameManager();
 	    
@@ -64,6 +72,7 @@ namespace aiwar {
 	    void itemDestroyed(const Item*);
 
 	    void printStat() const;
+	    const Stat& getStat() const;
 
 	    bool gameOver() const;
 	    Team getWinner() const;
@@ -76,7 +85,9 @@ namespace aiwar {
 	    const TeamInfo& _getTeamInfo(Team team) const;
 
 	    TeamMap _teamMap;
+	    Stat _stat;
 	};
+
 
 	class GameManager::TeamInfo
 	{
