@@ -340,6 +340,7 @@ static PyMemberDef Missile_members[] = {
 static PyMethodDef Missile_methods[] = {
     {"pos", (PyCFunction)Item_pos, METH_NOARGS, "Return the position of the item"},
     {"angle", (PyCFunction)Item_angle, METH_NOARGS, "Return the current angle of the missile"},
+    {"life", (PyCFunction)Item_life, METH_NOARGS, "Return the remaining life of the item"},
     {NULL, NULL, 0, NULL} /* Sentinel */
 };
 
