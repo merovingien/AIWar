@@ -29,6 +29,7 @@
 
 #include "game_manager.hpp"
 
+#include <stdexcept>
 #include <tinyxml.h>
 
 
@@ -36,6 +37,15 @@ using namespace aiwar::core;
 
 ItemManager::ItemManager(GameManager& gm) : _gm(gm), _currentItemId(0)
 {
+    _xOffset = 2000.0;
+    _yOffset = 3000.0;
+
+    std::cout << "Loading the map... ";
+    if(!this->loadMap(Config::instance().mapFile))
+    {
+	throw std::runtime_error("Error while loading map file");
+    }
+    std::cout << "Done\n";
 }
 
 ItemManager::~ItemManager()
@@ -211,6 +221,9 @@ bool ItemManager::loadMap(const std::string& mapFile)
 	    return false;
 	}
 	
+	x += _xOffset;
+	y += _yOffset;
+
 	if(stype == "MINERAL")
 	{
 	    // load a mineral
@@ -245,4 +258,3 @@ bool ItemManager::loadMap(const std::string& mapFile)
 
     return true;
 }
-

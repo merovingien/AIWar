@@ -75,6 +75,8 @@ namespace aiwar {
 	    GameManager& _gm;
 	    ItemKey _currentItemId;
 	    ItemMap _itemMap;
+	    double _xOffset;
+	    double _yOffset;
 	};
 
     } // namespace aiwar::core

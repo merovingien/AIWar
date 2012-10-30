@@ -28,6 +28,8 @@
 namespace aiwar {
     namespace core {
 
+	class ItemManager;
+
 	class Item;
 	class Base;
 	class MiningShip;
@@ -52,9 +54,14 @@ namespace aiwar {
 	    
 	    void registerTeam(Team team, PlayFunction& pfBase, PlayFunction& pfMiningShip, PlayFunction& pfFighter);
 
+	    bool initItemManager();
+	    const ItemManager& getItemManager() const;
+
 	    PlayFunction& getBasePF(Team team) const;
 	    PlayFunction& getMiningShipPF(Team team) const;
 	    PlayFunction& getFighterPF(Team team) const;
+
+	    void update(unsigned int ticks);
 
 	    // slots
 	    void baseCreated(const Base*);
@@ -67,8 +74,8 @@ namespace aiwar {
 	    void missileDestroyed(const Missile*);
 	    void mineralCreated(const Mineral*);
 	    void mineralDestroyed(const Mineral*);
-        void mineralSaved(const Team, const  unsigned int);
-        void mineralSpent(const Team, const  unsigned int);
+	    void mineralSaved(const Team, const  unsigned int);
+	    void mineralSpent(const Team, const  unsigned int);
 	    void itemDestroyed(const Item*);
 
 	    void printStat() const;
@@ -85,6 +92,7 @@ namespace aiwar {
 	    const TeamInfo& _getTeamInfo(Team team) const;
 
 	    TeamMap _teamMap;
+	    ItemManager *_im;
 	    Stat _stat;
 	};
 

@@ -24,7 +24,6 @@
 #	include <sys/resource.h>
 #endif
 
-#include "item_manager.hpp"
 #include "game_manager.hpp"
 
 #include "test_handler.hpp"
@@ -42,7 +41,6 @@ int main(int argc, char* argv[])
 {
     bool done = false, gameover = false;
     unsigned int tick = 0;
-//    Uint32 startTime = 0, ellapsedTime;
 
 #ifndef _WIN32
     /***** rlimit *****/
@@ -181,11 +179,9 @@ int main(int argc, char* argv[])
     gm.registerTeam(BLUE_TEAM, hblue->get_BaseHandler(cfg.blue), hblue->get_MiningShipHandler(cfg.blue), hblue->get_FighterHandler(cfg.blue));
     gm.registerTeam(RED_TEAM, hred->get_BaseHandler(cfg.red), hred->get_MiningShipHandler(cfg.red), hred->get_FighterHandler(cfg.red));
 
-    ItemManager im(gm);
-
-    if(!im.loadMap(cfg.mapFile))
+    if(!gm.initItemManager())
     {
-	std::cerr << "Error while loading map file\n";
+	std::cerr << "Error while initializing GameManager\n";
 	th.finalize();
 	ph.finalize();
 	renderer->finalize();
@@ -207,26 +203,14 @@ int main(int argc, char* argv[])
     }
     
     // first render
-    done = !renderer->render(im.begin(), im.end(), gm.getStat(), gameover) || gameover;
+    done = !renderer->render(gm.getItemManager().begin(), gm.getItemManager().end(), gm.getStat(), gameover) || gameover;
     
     while(!done)
     {
-//	play = false;
-//	if(!manual)
-//	{
-//	    ellapsedTime = SDL_GetTicks();
-//	    if((ellapsedTime - startTime) >= SPEED)
-//	    {
-//		play = true;
-//		startTime = ellapsedTime;
-//	    }
-//	}
-
-
 	// play
 	try
 	{
-	    im.update(tick++);
+	    gm.update(tick++);
 	    gm.printStat();
 	}
 	catch(const aiwar::core::HandlerError &e)
@@ -250,7 +234,7 @@ int main(int argc, char* argv[])
 	}
 
 	// render
-	done = !renderer->render(im.begin(), im.end(), gm.getStat(), gameover) || gameover;
+	done = !renderer->render(gm.getItemManager().begin(), gm.getItemManager().end(), gm.getStat(), gameover) || gameover;
     }
 
     renderer->finalize();  

@@ -24,6 +24,7 @@
 #include "fighter.hpp"
 #include "missile.hpp"
 #include "mineral.hpp"
+#include "item_manager.hpp"
 
 #include <iostream>
 #include <stdexcept>
@@ -31,12 +32,41 @@
 using namespace aiwar::core;
 
 
-GameManager::GameManager()
+GameManager::GameManager() : _im(NULL)
 {
 }
 
 GameManager::~GameManager()
 {
+    if(_im)
+    {
+	delete _im;
+	_im = NULL;
+    }
+}
+
+bool GameManager::initItemManager()
+{
+    try
+    {
+	_im = new ItemManager(*this);
+	return true;
+    }
+    catch(const std::runtime_error& e)
+    {
+	std::cerr << "Fail to init ItemManager: " << e.what() << std::endl;
+	return false;
+    }
+}
+
+const ItemManager& GameManager::getItemManager() const
+{
+    return *_im;
+}
+
+void GameManager::update(unsigned int ticks)
+{
+    _im->update(ticks);
 }
 
 void GameManager::baseCreated(const Base* b)
