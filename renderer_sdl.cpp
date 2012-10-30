@@ -101,7 +101,7 @@ bool RendererSDL::finalize()
     return true;
 }
 
-bool RendererSDL::render(aiwar::core::ItemManager::ItemMap::const_iterator begin, aiwar::core::ItemManager::ItemMap::const_iterator end, const aiwar::core::GameManager::Stat &stats, bool gameover)
+bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwar::core::GameManager::Stat &stats, bool gameover)
 {
     SDL_Event e;
     bool cont = true;
@@ -209,7 +209,7 @@ bool RendererSDL::render(aiwar::core::ItemManager::ItemMap::const_iterator begin
 	    _drawer->preDraw();
     
 	    aiwar::core::ItemManager::ItemMap::const_iterator cit;
-	    for(cit = begin ; cit != end ; ++cit)
+	    for(cit = itemManager.begin() ; cit != itemManager.end() ; ++cit)
 		_drawer->draw(cit->second);
 
 	    _drawer->drawStats();

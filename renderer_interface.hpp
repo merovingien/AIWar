@@ -68,8 +68,7 @@ namespace aiwar {
 	     * If gameover is true, this is the last call to the renderer update. When 
 	     * the function return, the core manager will clean and exit the game.
 	     */
-	    virtual bool render(aiwar::core::ItemManager::ItemMap::const_iterator begin,
-				aiwar::core::ItemManager::ItemMap::const_iterator end,
+	    virtual bool render(const aiwar::core::ItemManager &itemManager,
 				const aiwar::core::GameManager::Stat &stats,
 				bool gameover) = 0;
 	};

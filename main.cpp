@@ -207,22 +207,10 @@ int main(int argc, char* argv[])
     }
     
     // first render
-    done = !renderer->render(im.begin(), im.end(), gm.getStat(), gameover) || gameover;
+    done = !renderer->render(im, gm.getStat(), gameover) || gameover;
     
     while(!done)
     {
-//	play = false;
-//	if(!manual)
-//	{
-//	    ellapsedTime = SDL_GetTicks();
-//	    if((ellapsedTime - startTime) >= SPEED)
-//	    {
-//		play = true;
-//		startTime = ellapsedTime;
-//	    }
-//	}
-
-
 	// play
 	try
 	{
@@ -250,7 +238,7 @@ int main(int argc, char* argv[])
 	}
 
 	// render
-	done = !renderer->render(im.begin(), im.end(), gm.getStat(), gameover) || gameover;
+	done = !renderer->render(im, gm.getStat(), gameover) || gameover;
     }
 
     renderer->finalize();  
