@@ -23,8 +23,9 @@
 
 #include <iostream>
 #include <SDL/SDL.h>
+#include <SDL_ttf.h>
 
-#define SCREEN_WIDTH 800
+#define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 800
 //#define SPEED 400
 
@@ -52,7 +53,7 @@ std::string RendererSDL::getName() const
 
 std::string RendererSDL::getVersion() const
 {
-    return "0.1.0";
+    return "0.1.1";
 }
 
 bool RendererSDL::initialize(const std::string& params)
@@ -62,6 +63,7 @@ bool RendererSDL::initialize(const std::string& params)
     // SDL init
     SDL_Init(SDL_INIT_VIDEO);
     SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+    TTF_Init();
 
     /****** TEST HARDWARE ******/
 //    const SDL_VideoInfo *info = SDL_GetVideoInfo();
@@ -93,12 +95,13 @@ bool RendererSDL::finalize()
 	delete _drawer;
 	_drawer = NULL;
     }
-
+    
+    TTF_Quit();
     SDL_Quit();
     return true;
 }
 
-bool RendererSDL::render(aiwar::core::ItemManager::ItemMap::const_iterator begin, aiwar::core::ItemManager::ItemMap::const_iterator end, const aiwar::core::GameManager::Stat &stats, bool gameover)
+bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwar::core::GameManager::Stat &stats, bool gameover)
 {
     SDL_Event e;
     bool cont = true;
@@ -201,13 +204,15 @@ bool RendererSDL::render(aiwar::core::ItemManager::ItemMap::const_iterator begin
 	    }
 
 	    /* actualisation de l'écran */
-	    SDL_FillRect(_screen, NULL, SDL_MapRGB(_screen->format,0,0,0));
+	    // SDL_FillRect(_screen, NULL, SDL_MapRGB(_screen->format,0,0,0)); not necessary ?
 
 	    _drawer->preDraw();
     
 	    aiwar::core::ItemManager::ItemMap::const_iterator cit;
-	    for(cit = begin ; cit != end ; ++cit)
+	    for(cit = itemManager.begin() ; cit != itemManager.end() ; ++cit)
 		_drawer->draw(cit->second);
+
+	    _drawer->drawStats();
 
 	    _drawer->postDraw();
 

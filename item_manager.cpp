@@ -37,8 +37,8 @@ using namespace aiwar::core;
 
 ItemManager::ItemManager(GameManager& gm) : _gm(gm), _currentItemId(0)
 {
-    _xOffset = 2000.0;
-    _yOffset = 3000.0;
+    _xOffset = 0.0;
+    _yOffset = 0.0;
 
     std::cout << "Loading the map... ";
     if(!this->loadMap(Config::instance().mapFile))

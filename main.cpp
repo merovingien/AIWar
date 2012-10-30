@@ -203,7 +203,7 @@ int main(int argc, char* argv[])
     }
     
     // first render
-    done = !renderer->render(gm.getItemManager().begin(), gm.getItemManager().end(), gm.getStat(), gameover) || gameover;
+    done = !renderer->render(gm.getItemManager(), gm.getStat(), gameover) || gameover;
     
     while(!done)
     {
@@ -234,7 +234,7 @@ int main(int argc, char* argv[])
 	}
 
 	// render
-	done = !renderer->render(gm.getItemManager().begin(), gm.getItemManager().end(), gm.getStat(), gameover) || gameover;
+	done = !renderer->render(gm.getItemManager(), gm.getStat(), gameover) || gameover;
     }
 
     renderer->finalize();  

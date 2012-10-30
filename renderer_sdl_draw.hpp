@@ -21,9 +21,15 @@
 #define RENDERER_SDL_DRAW_HPP
 
 #include <map>
+#include <sstream>
+#include <SDL_ttf.h>
 
 struct SDL_Surface;
 struct SDL_Rect;
+
+#define STATS_SIZE_WIDTH 200
+#define SMALL_FONT_SIZE 10
+#define BIG_FONT_SIZE 20
 
 namespace aiwar {
 
@@ -47,6 +53,7 @@ namespace aiwar {
 
 	    void preDraw();
 	    void draw(const core::Item *item);
+	    void drawStats();
 	    void postDraw();
 
 	    void debug(bool active);
@@ -70,7 +77,8 @@ namespace aiwar {
 	    void _drawMiningShip(const core::MiningShip *m);
 	    void _drawBase(const core::Base *b);
 	    void _drawFighter(const core::Fighter *f);
-
+	  void _drawText(SDL_Surface* surface, const char* string, int x, int y, TTF_Font* font);
+	  
 	    void _addSurface(ItemType, SDL_Surface* surf);
 	    SDL_Surface* _getSurface(ItemType) const;
 
@@ -81,6 +89,21 @@ namespace aiwar {
 	    SDL_Rect *_world_rect;
 	    SDL_Surface *_world_surface;
 	    std::map<ItemType, SDL_Surface*> _surfaceMap;
+
+	  SDL_Surface *_statsSurface;
+	  SDL_Rect* _statsRect;
+
+	  std::ostringstream *_debugText;
+	  std::ostringstream *_statsText;
+
+	  SDL_Color _foregroundDebugTextColor;
+	  SDL_Color _foregroundStatsTextColor;
+	  SDL_Color _backgroundTextColor;
+
+	  // Fonts
+	  TTF_Font* _debugFont;
+	  TTF_Font* _statsFont;
+
 	};
 
     }
