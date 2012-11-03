@@ -161,6 +161,18 @@ Item* ItemManager::get(ItemKey key) const
 	return NULL;
 }
 
+void ItemManager::applyOffset(double &px, double &py) const
+{
+    px += _xOffset;
+    py += _yOffset;
+}
+
+void ItemManager::undoOffset(double &px, double &py) const
+{
+    px -= _xOffset;
+    py -= _yOffset;
+}
+
 ItemManager::ItemMap::const_iterator ItemManager::begin() const
 {
     return _itemMap.begin();
@@ -221,8 +233,7 @@ bool ItemManager::loadMap(const std::string& mapFile)
 	    return false;
 	}
 	
-	x += _xOffset;
-	y += _yOffset;
+	applyOffset(x, y);
 
 	if(stype == "MINERAL")
 	{

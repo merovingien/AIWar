@@ -53,7 +53,7 @@ std::string RendererSDL::getName() const
 
 std::string RendererSDL::getVersion() const
 {
-    return "0.1.1";
+    return "0.2.0";
 }
 
 bool RendererSDL::initialize(const std::string& params)
@@ -210,7 +210,7 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
     
 	    aiwar::core::ItemManager::ItemMap::const_iterator cit;
 	    for(cit = itemManager.begin() ; cit != itemManager.end() ; ++cit)
-		_drawer->draw(cit->second);
+		_drawer->draw(cit->second, itemManager);
 
 	    _drawer->drawStats();
 

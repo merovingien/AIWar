@@ -155,7 +155,7 @@ void RendererSDLDraw::preDraw()
   SDL_FillRect(_statsSurface, NULL, SDL_MapRGB(_screen->format,0,0,0));
 }
 
-void RendererSDLDraw::draw(const aiwar::core::Item *item)
+void RendererSDLDraw::draw(const aiwar::core::Item *item, const core::ItemManager &im)
 {
   const aiwar::core::Mineral *mineral;
   const aiwar::core::Missile *missile;
@@ -164,15 +164,15 @@ void RendererSDLDraw::draw(const aiwar::core::Item *item)
   const aiwar::core::Fighter *fighter;
 
   if((mineral = dynamic_cast<const aiwar::core::Mineral*>(item)))
-    _drawMineral(mineral);
+      _drawMineral(mineral, im);
   else if((missile = dynamic_cast<const aiwar::core::Missile*>(item)))
-    _drawMissile(missile);
+      _drawMissile(missile, im);
   else if((miningShip = dynamic_cast<const aiwar::core::MiningShip*>(item)))
-    _drawMiningShip(miningShip);
+      _drawMiningShip(miningShip, im);
   else if((base = dynamic_cast<const aiwar::core::Base*>(item)))
-    _drawBase(base);
+      _drawBase(base, im);
   else if((fighter = dynamic_cast<const aiwar::core::Fighter*>(item)))
-    _drawFighter(fighter);
+      _drawFighter(fighter, im);
 }
 
 void RendererSDLDraw::drawStats()
@@ -228,38 +228,46 @@ void RendererSDLDraw::toggleDebug()
   _debug = !_debug;
 }
 
-void RendererSDLDraw::_drawMineral(const aiwar::core::Mineral *m)
+void RendererSDLDraw::_drawMineral(const aiwar::core::Mineral *m, const core::ItemManager &im)
 {
+    double px = m->xpos();
+    double py = m->ypos();
+    im.undoOffset(px, py);
+
   if (_debug)
     {
       _debugText->str("");
       *_debugText << m->life();
-      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(m->xpos()), static_cast<Sint16>(m->ypos()), _debugFont);
+      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont);
     }
   else
     {
       SDL_Rect r;
-      r.x = static_cast<Sint16>(m->xpos() - _cfg.MINERAL_SIZE_X/2);
-      r.y = static_cast<Sint16>(m->ypos() - _cfg.MINERAL_SIZE_Y/2);
+      r.x = static_cast<Sint16>(px - _cfg.MINERAL_SIZE_X/2);
+      r.y = static_cast<Sint16>(py - _cfg.MINERAL_SIZE_Y/2);
       r.w = static_cast<Uint16>(_cfg.MINERAL_SIZE_X);
       r.h = static_cast<Uint16>(_cfg.MINERAL_SIZE_Y);
       SDL_FillRect(_world_surface, &r, SDL_MapRGB(_world_surface->format, 0,255,128));
     }
 }
 
-void RendererSDLDraw::_drawBase(const aiwar::core::Base *b)
+void RendererSDLDraw::_drawBase(const aiwar::core::Base *b, const core::ItemManager &im)
 {
+    double px = b->xpos();
+    double py = b->ypos();
+    im.undoOffset(px, py);
+
   if (_debug)
     {
       _debugText->str("");
       *_debugText << b->mineralStorage();
-      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(b->xpos()), static_cast<Sint16>(b->ypos()), _debugFont);
+      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont);
     }
   else
     {
       SDL_Rect r;
-      r.x = static_cast<Sint16>(b->xpos() - _cfg.BASE_SIZE_X/2);
-      r.y = static_cast<Sint16>(b->ypos() - _cfg.BASE_SIZE_Y/2);
+      r.x = static_cast<Sint16>(px - _cfg.BASE_SIZE_X/2);
+      r.y = static_cast<Sint16>(py - _cfg.BASE_SIZE_Y/2);
       r.w = static_cast<Uint16>(_cfg.BASE_SIZE_X);
       r.h = static_cast<Uint16>(_cfg.BASE_SIZE_Y);
 
@@ -273,22 +281,26 @@ void RendererSDLDraw::_drawBase(const aiwar::core::Base *b)
     }
 }
 
-void RendererSDLDraw::_drawMiningShip(const aiwar::core::MiningShip *m)
+void RendererSDLDraw::_drawMiningShip(const aiwar::core::MiningShip *m, const core::ItemManager &im)
 {
+    double px = m->xpos();
+    double py = m->ypos();
+    im.undoOffset(px, py);
+
   if (_debug)
     {
       // draw vision circle
-      circleRGBA(_world_surface, static_cast<Sint16>(m->xpos()), static_cast<Sint16>(m->ypos()), static_cast<Sint16>(_cfg.MININGSHIP_DETECTION_RADIUS), 255,255,0,255);
+      circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.MININGSHIP_DETECTION_RADIUS), 255,255,0,255);
       
       // draw mining circle
-      circleRGBA(_world_surface, static_cast<Sint16>(m->xpos()), static_cast<Sint16>(m->ypos()), static_cast<Sint16>(_cfg.MININGSHIP_MINING_RADIUS), 190,192,192,255);
+      circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.MININGSHIP_MINING_RADIUS), 190,192,192,255);
 
       // draw communication circle
-      circleRGBA(_world_surface, static_cast<Sint16>(m->xpos()), static_cast<Sint16>(m->ypos()), static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS), 0,192,128,255);
+      circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS), 0,192,128,255);
       
       _debugText->str("");
       *_debugText << m->fuel() << " - " << m->mineralStorage();
-      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(m->xpos()), static_cast<Sint16>(m->ypos()), _debugFont);
+      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont);
 
     }
   else
@@ -302,8 +314,8 @@ void RendererSDLDraw::_drawMiningShip(const aiwar::core::MiningShip *m)
 	rs = rotozoomSurface(_getSurface(BLUE_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
 
       SDL_Rect r;
-      r.x = static_cast<Sint16>(m->xpos()) - rs->w/2;
-      r.y = static_cast<Sint16>(m->ypos()) - rs->h/2;
+      r.x = static_cast<Sint16>(px) - rs->w/2;
+      r.y = static_cast<Sint16>(py) - rs->h/2;
       r.w = rs->w;
       r.h = rs->h;
 
@@ -314,8 +326,12 @@ void RendererSDLDraw::_drawMiningShip(const aiwar::core::MiningShip *m)
     }
 }
 
-void RendererSDLDraw::_drawMissile(const aiwar::core::Missile *m)
+void RendererSDLDraw::_drawMissile(const aiwar::core::Missile *m, const core::ItemManager &im)
 {
+    double px = m->xpos();
+    double py = m->ypos();
+    im.undoOffset(px, py);
+
     SDL_Surface* tmp = SDL_CreateRGBSurface(_world_surface->flags, static_cast<int>(_cfg.MISSILE_SIZE_X), static_cast<int>(_cfg.MISSILE_SIZE_Y), _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
 
     SDL_FillRect(tmp, NULL, SDL_MapRGB(_world_surface->format, 255,0,255));
@@ -324,8 +340,8 @@ void RendererSDLDraw::_drawMissile(const aiwar::core::Missile *m)
     SDL_Surface *rs = rotozoomSurface(tmp, m->angle(), 1.0, SMOOTHING_OFF);
 
     SDL_Rect r;
-    r.x = static_cast<Sint16>(m->xpos()) - rs->w/2;
-    r.y = static_cast<Sint16>(m->ypos()) - rs->h/2;
+    r.x = static_cast<Sint16>(px) - rs->w/2;
+    r.y = static_cast<Sint16>(py) - rs->h/2;
     r.w = rs->w;
     r.h = rs->h;
     SDL_BlitSurface(rs, NULL, _world_surface, &r);
@@ -334,19 +350,23 @@ void RendererSDLDraw::_drawMissile(const aiwar::core::Missile *m)
     SDL_FreeSurface(tmp);
 }
 
-void RendererSDLDraw::_drawFighter(const aiwar::core::Fighter *f)
+void RendererSDLDraw::_drawFighter(const aiwar::core::Fighter *f, const core::ItemManager &im)
 {
+    double px = f->xpos();
+    double py = f->ypos();
+    im.undoOffset(px, py);
+
   if(_debug)
     {
       // draw vision circle
-      circleRGBA(_world_surface, static_cast<Sint16>(f->xpos()), static_cast<Sint16>(f->ypos()), static_cast<Sint16>(_cfg.FIGHTER_DETECTION_RADIUS), 255,255,0,255);
+      circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.FIGHTER_DETECTION_RADIUS), 255,255,0,255);
       
       // draw communication circle
-      circleRGBA(_world_surface, static_cast<Sint16>(f->xpos()), static_cast<Sint16>(f->ypos()), static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS), 0,192,128,255);
+      circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS), 0,192,128,255);
       
       _debugText->str("");
       *_debugText << f->fuel() << " - " << f->missiles();
-      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(f->xpos()), static_cast<Sint16>(f->ypos()), _debugFont);
+      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont);
       
     }
   else
@@ -360,8 +380,8 @@ void RendererSDLDraw::_drawFighter(const aiwar::core::Fighter *f)
 	rs = rotozoomSurface(_getSurface(BLUE_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
       
       SDL_Rect r;
-      r.x = static_cast<Sint16>(f->xpos()) - rs->w/2;
-      r.y = static_cast<Sint16>(f->ypos()) - rs->h/2;
+      r.x = static_cast<Sint16>(px) - rs->w/2;
+      r.y = static_cast<Sint16>(py) - rs->h/2;
       r.w = rs->w;
       r.h = rs->h;
       

@@ -58,6 +58,9 @@ namespace aiwar {
 	    Fighter* createFighter(double px, double py, Team team);
 	    Fighter* createFighter(Base* base);
 
+	    void applyOffset(double &px, double &py) const;
+	    void undoOffset(double &px, double &py) const;
+
 	    bool exists(ItemKey key) const;
 	    Item* get(ItemKey key) const;
 	    ItemMap::const_iterator begin() const;
