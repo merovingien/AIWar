@@ -78,7 +78,7 @@ namespace aiwar {
 	    void _drawMiningShip(const core::MiningShip *m, const core::ItemManager &im);
 	    void _drawBase(const core::Base *b, const core::ItemManager &im);
 	    void _drawFighter(const core::Fighter *f, const core::ItemManager &im);
-	    void _drawText(SDL_Surface* surface, const char* string, int x, int y, TTF_Font* font);
+	    void _drawText(SDL_Surface* surface, const char* string, int x, int y, TTF_Font* font, bool centered = false);
 	  
 	    void _addSurface(ItemType, SDL_Surface* surf);
 	    SDL_Surface* _getSurface(ItemType) const;

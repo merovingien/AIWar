@@ -238,7 +238,7 @@ void RendererSDLDraw::_drawMineral(const aiwar::core::Mineral *m, const core::It
     {
       _debugText->str("");
       *_debugText << m->life();
-      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont);
+      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont, true);
     }
   else
     {
@@ -261,7 +261,7 @@ void RendererSDLDraw::_drawBase(const aiwar::core::Base *b, const core::ItemMana
     {
       _debugText->str("");
       *_debugText << b->mineralStorage();
-      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont);
+      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont, true);
     }
   else
     {
@@ -300,7 +300,7 @@ void RendererSDLDraw::_drawMiningShip(const aiwar::core::MiningShip *m, const co
       
       _debugText->str("");
       *_debugText << m->fuel() << " - " << m->mineralStorage();
-      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont);
+      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont, true);
 
     }
   else
@@ -366,7 +366,7 @@ void RendererSDLDraw::_drawFighter(const aiwar::core::Fighter *f, const core::It
       
       _debugText->str("");
       *_debugText << f->fuel() << " - " << f->missiles();
-      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont);
+      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont, true);
       
     }
   else
@@ -390,27 +390,37 @@ void RendererSDLDraw::_drawFighter(const aiwar::core::Fighter *f, const core::It
     }
 }
 
-void RendererSDLDraw::_drawText(SDL_Surface* surface, const char* string, int x, int y, TTF_Font* font)
-{  
+void RendererSDLDraw::_drawText(SDL_Surface* surface, const char* string, int x, int y, TTF_Font* font, bool centered)
+{
 
   // use TTF_RenderText_Solid ?
   SDL_Surface* textSurface = TTF_RenderText_Shaded(font, string, _foregroundDebugTextColor, _backgroundTextColor);
-  
+
   SDL_Rect textLocation;
-  /*
+/*
   int w,h;
-  if (TTF_SizeText(_debugFont, string, &w, &h)) {
-    printf("Text   %s   has a size !!! \n", string);
-    textLocation.x =  x - w/2; 
-    textLocation.y = y - h/2;
+  if(TTF_SizeText(_debugFont, string, &w, &h) == 0) // TTF_SizeText return 0 on success
+  {
+      std::cout << "Text " << string <<  " has a size !!! \n";
+      textLocation.x =  x - w/2; 
+      textLocation.y = y - h/2;
   } else {
-    printf("TTF_GetError : %s  :  %s \n", TTF_GetError(), string);
-    textLocation.x =  x; 
-    textLocation.y = y;
+      std::cout << "TTF_GetError: " << TTF_GetError() << " : " << string << "\n";
+      textLocation.x =  x; 
+      textLocation.y = y;
   }
-  */
-  textLocation.x =  x; 
-  textLocation.y = y;
+*/
+
+  if(centered)
+  {
+      textLocation.x = x - textSurface->w / 2;
+      textLocation.y = y - textSurface->h / 2;
+  }
+  else
+  {
+      textLocation.x = x;
+      textLocation.y = y;
+  }
   textLocation.w =  0;
   textLocation.h = 0;
   
