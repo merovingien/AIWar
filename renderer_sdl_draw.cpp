@@ -155,7 +155,7 @@ void RendererSDLDraw::preDraw()
   SDL_FillRect(_statsSurface, NULL, SDL_MapRGB(_screen->format,0,0,0));
 }
 
-void RendererSDLDraw::draw(const aiwar::core::Item *item, const core::ItemManager &im)
+void RendererSDLDraw::draw(const aiwar::core::Item *item, const aiwar::core::ItemManager &im)
 {
   const aiwar::core::Mineral *mineral;
   const aiwar::core::Missile *missile;
@@ -228,7 +228,7 @@ void RendererSDLDraw::toggleDebug()
   _debug = !_debug;
 }
 
-void RendererSDLDraw::_drawMineral(const aiwar::core::Mineral *m, const core::ItemManager &im)
+void RendererSDLDraw::_drawMineral(const aiwar::core::Mineral *m, const aiwar::core::ItemManager &im)
 {
     double px = m->xpos();
     double py = m->ypos();
@@ -251,7 +251,7 @@ void RendererSDLDraw::_drawMineral(const aiwar::core::Mineral *m, const core::It
     }
 }
 
-void RendererSDLDraw::_drawBase(const aiwar::core::Base *b, const core::ItemManager &im)
+void RendererSDLDraw::_drawBase(const aiwar::core::Base *b, const aiwar::core::ItemManager &im)
 {
     double px = b->xpos();
     double py = b->ypos();
@@ -281,7 +281,7 @@ void RendererSDLDraw::_drawBase(const aiwar::core::Base *b, const core::ItemMana
     }
 }
 
-void RendererSDLDraw::_drawMiningShip(const aiwar::core::MiningShip *m, const core::ItemManager &im)
+void RendererSDLDraw::_drawMiningShip(const aiwar::core::MiningShip *m, const aiwar::core::ItemManager &im)
 {
     double px = m->xpos();
     double py = m->ypos();
@@ -326,7 +326,7 @@ void RendererSDLDraw::_drawMiningShip(const aiwar::core::MiningShip *m, const co
     }
 }
 
-void RendererSDLDraw::_drawMissile(const aiwar::core::Missile *m, const core::ItemManager &im)
+void RendererSDLDraw::_drawMissile(const aiwar::core::Missile *m, const aiwar::core::ItemManager &im)
 {
     double px = m->xpos();
     double py = m->ypos();
@@ -350,7 +350,7 @@ void RendererSDLDraw::_drawMissile(const aiwar::core::Missile *m, const core::It
     SDL_FreeSurface(tmp);
 }
 
-void RendererSDLDraw::_drawFighter(const aiwar::core::Fighter *f, const core::ItemManager &im)
+void RendererSDLDraw::_drawFighter(const aiwar::core::Fighter *f, const aiwar::core::ItemManager &im)
 {
     double px = f->xpos();
     double py = f->ypos();
