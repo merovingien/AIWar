@@ -40,3 +40,18 @@ bool Playable::isFriend(const Playable* p) const
 {
     return p->_team == _team;
 }
+
+void Playable::log(const std::string &msg)
+{
+    _log << msg << "\n";
+}
+
+std::string Playable::getLog() const
+{
+    return _log.str();
+}
+
+void Playable::_preUpdate(unsigned long)
+{
+    _log.str("");
+}

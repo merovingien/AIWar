@@ -30,6 +30,7 @@
 #include "game_manager.hpp"
 
 #include <stdexcept>
+#include <cstdlib>
 #include <tinyxml.h>
 
 
@@ -37,10 +38,13 @@ using namespace aiwar::core;
 
 ItemManager::ItemManager(GameManager& gm) : _gm(gm), _currentItemId(0)
 {
-    _xOffset = 0.0;
-    _yOffset = 0.0;
+    // offset is between 1 and 50000 included
+    _xOffset = static_cast<double>(std::rand() % 50000) + 1.0;
+    _yOffset = static_cast<double>(std::rand() % 50000) + 1.0;
 
-    std::cout << "Loading the map... ";
+    std::cout << "ItemManager: position offset: " << _xOffset << "x" << _yOffset << "\n";
+
+    std::cout << "ItemManager: Loading the map... ";
     if(!this->loadMap(Config::instance().mapFile))
     {
 	throw std::runtime_error("Error while loading map file");

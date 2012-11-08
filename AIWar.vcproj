@@ -128,7 +128,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="tinyxml_STL.lib SDL.lib SDLmain.lib SDL_gfx.lib"
+				AdditionalDependencies="tinyxml_STL.lib SDL.lib SDLmain.lib SDL_gfx.lib SDL_ttf.lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -172,10 +172,6 @@
 			</File>
 			<File
 				RelativePath=".\config.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\draw_manager.cpp"
 				>
 			</File>
 			<File
@@ -232,6 +228,18 @@
 			</File>
 			<File
 				RelativePath=".\python_wrapper.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\renderer_dummy.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\renderer_sdl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\renderer_sdl_draw.cpp"
 				>
 			</File>
 			<File
@@ -310,6 +318,22 @@
 			</File>
 			<File
 				RelativePath=".\python_wrapper.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\renderer_dummy.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\renderer_interface.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\renderer_sdl.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\renderer_sdl_draw.hpp"
 				>
 			</File>
 			<File

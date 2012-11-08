@@ -23,7 +23,7 @@
 
 #include <iostream>
 #include <SDL/SDL.h>
-#include <SDL_ttf.h>
+#include <SDL/SDL_ttf.h>
 
 #define SCREEN_WIDTH 1000
 #define SCREEN_HEIGHT 800

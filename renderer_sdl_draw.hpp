@@ -22,7 +22,7 @@
 
 #include <map>
 #include <sstream>
-#include <SDL_ttf.h>
+#include <SDL/SDL_ttf.h>
 
 struct SDL_Surface;
 struct SDL_Rect;
@@ -53,7 +53,7 @@ namespace aiwar {
 	    ~RendererSDLDraw();
 
 	    void preDraw();
-	    void draw(const core::Item *item, const core::ItemManager &im);
+		void draw(const core::Item *item, const aiwar::core::ItemManager &im);
 	    void drawStats();
 	    void postDraw();
 
@@ -73,17 +73,17 @@ namespace aiwar {
 		MINERAL
 	    };
 
-	    void _drawMineral(const core::Mineral *m, const core::ItemManager &im);
-	    void _drawMissile(const core::Missile *m, const core::ItemManager &im);
-	    void _drawMiningShip(const core::MiningShip *m, const core::ItemManager &im);
-	    void _drawBase(const core::Base *b, const core::ItemManager &im);
-	    void _drawFighter(const core::Fighter *f, const core::ItemManager &im);
+		void _drawMineral(const core::Mineral *m, const aiwar::core::ItemManager &im);
+		void _drawMissile(const core::Missile *m, const aiwar::core::ItemManager &im);
+		void _drawMiningShip(const core::MiningShip *m, const aiwar::core::ItemManager &im);
+		void _drawBase(const core::Base *b, const aiwar::core::ItemManager &im);
+		void _drawFighter(const core::Fighter *f, const aiwar::core::ItemManager &im);
 	    void _drawText(SDL_Surface* surface, const char* string, int x, int y, TTF_Font* font, bool centered = false);
 	  
 	    void _addSurface(ItemType, SDL_Surface* surf);
 	    SDL_Surface* _getSurface(ItemType) const;
 
-	    core::Config& _cfg;
+		aiwar::core::Config& _cfg;
 
 	    bool _debug;
 	    SDL_Surface *_screen;
