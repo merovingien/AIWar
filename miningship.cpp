@@ -42,17 +42,21 @@ MiningShip::~MiningShip()
 {
 }
 
-void MiningShip::_preUpdate(unsigned int)
+void MiningShip::_preUpdate(unsigned int ticks)
 {
+    Movable::preUpdate();
+    Playable::_preUpdate(ticks);
+    
     _hasExtracted = false;
 }
 
 void MiningShip::update(unsigned int tick)
 {
-    Movable::preUpdate();
-    this->_preUpdate(tick);
+    _preUpdate(tick);
 
     _play(this);
+
+    std::cout << getLog();
 }
 
 unsigned int MiningShip::extract(Mineral *m)

@@ -36,17 +36,21 @@ Fighter::~Fighter()
 {
 }
 
-void Fighter::_preUpdate(unsigned int)
+void Fighter::_preUpdate(unsigned int ticks)
 {
+    Movable::preUpdate();
+    Playable::_preUpdate(ticks);
+
     _hasLaunch = false;
 }
 
 void Fighter::update(unsigned int tick)
 {
-    Movable::preUpdate();
-    this->_preUpdate(tick);
+    _preUpdate(tick);
 
     _play(this);
+
+    std::cout << getLog();
 }
 
 unsigned int Fighter::missiles() const

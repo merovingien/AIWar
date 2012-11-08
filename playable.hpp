@@ -20,6 +20,8 @@
 #ifndef PLAYABLE_HPP
 #define PLAYABLE_HPP
 
+#include <sstream>
+
 #include "config.hpp" // for Team
 
 namespace aiwar {
@@ -52,8 +54,6 @@ namespace aiwar {
 	class Playable
 	{
 	public:
-//	    typedef unsigned int Team;
-	    
 	    static DefaultPlayFunction playNoOp;
 
 	    virtual ~Playable();
@@ -61,11 +61,17 @@ namespace aiwar {
 	    Team team() const;
 	    bool isFriend(const Playable* p) const;
 
+	    void log(const std::string &msg);
+	    std::string getLog() const;
+
 	protected:
 	    Playable(Team team, PlayFunction& play);
-	    
+	
+	    void _preUpdate(unsigned long ticks);
+    
 	    Team _team;
 	    PlayFunction& _play;
+	    std::ostringstream _log;
 	};
 
 

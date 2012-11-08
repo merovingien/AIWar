@@ -43,17 +43,21 @@ Base::~Base()
 {
 }
 
-void Base::_preUpdate(unsigned int)
+void Base::_preUpdate(unsigned int ticks)
 {
+    Playable::_preUpdate(ticks);
+
     _hasLaunch = false;
     _hasCreate = false;
 }
 
 void Base::update(unsigned int tick)
 {
-    this->_preUpdate(tick);
+    _preUpdate(tick);
 
     _play(this);
+
+    std::cout << getLog();
 }
 
 void Base::launchMissile(Living* target)
