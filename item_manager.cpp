@@ -38,9 +38,9 @@ using namespace aiwar::core;
 
 ItemManager::ItemManager(GameManager& gm) : _gm(gm), _currentItemId(0)
 {
-    // offset is between -10000 and +10000
-    _xOffset = static_cast<double>(std::rand() % 20001) - 10000.0;
-    _yOffset = static_cast<double>(std::rand() % 20001) - 10000.0;
+    // offset is between 1 and 50000 included
+    _xOffset = static_cast<double>(std::rand() % 50000) + 1.0;
+    _yOffset = static_cast<double>(std::rand() % 50000) + 1.0;
 
     std::cout << "ItemManager: position offset: " << _xOffset << "x" << _yOffset << "\n";
 
