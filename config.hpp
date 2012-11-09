@@ -58,6 +58,7 @@ namespace aiwar {
 	    bool debug;
 	    bool manual;
 	    std::string mapFile;
+	    unsigned int seed;
 
 	    Player blue;
 	    Player red;

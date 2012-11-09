@@ -20,7 +20,6 @@
 #include <Python.h> // to define some constant before everything else
 #include <iostream>
 #include <cstdlib>
-#include <ctime>
 
 #ifndef _WIN32
 #	include <sys/resource.h>
@@ -82,10 +81,9 @@ int main(int argc, char* argv[])
 //    std::cout << cfg.dump();
 //    return 0;
 
-    // initialize pseudo-random generator
-    std::time_t seed = std::time(0);
-    std::srand(seed);
-    std::cout << "Pseudo-random generator seed: " << seed << std::endl;
+    // initialize pseudo-random 
+    std::srand(cfg.seed);
+    std::cout << "Pseudo-random generator seed: " << cfg.seed << std::endl;
 
     /*** Start handlers ***/
 

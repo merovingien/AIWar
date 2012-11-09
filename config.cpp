@@ -23,6 +23,7 @@
 #include <stdexcept>
 #include <list>
 #include <string>
+#include <ctime>
 #include <tinyxml.h>
 
 using namespace aiwar::core;
@@ -137,6 +138,7 @@ Config& Config::instance()
 
 Config::Config()
     : help(false),
+      seed(0),
       blue(0),
       red(0),
       renderer(0),
@@ -160,7 +162,8 @@ std::string Config::usage() const
 	<< "\t--map map_file\t\tMap file [map.xml]\n"
 	<< "\t--blue player_name\tBlue player name\n"
 	<< "\t--red player_name\tRed player name\n"
-	<< "\t--renderer name\t\tRenderer name\n";
+	<< "\t--renderer name\t\tRenderer name\n"
+	<< "\t--seed value\t\tSeed for pseudo-random generator\n";
     
     return oss.str();
 }
@@ -219,6 +222,17 @@ bool Config::parseCmdLine(int argc, char* argv[])
 	    if(i == argc-1)
 		return false;
 	    _cl_renderer = argv[++i];
+	}
+	else if(arg == "seed")
+	{
+	    if(i == argc-1)
+		return false;
+	    try {
+		seed = convert<unsigned int>(argv[++i]);
+	    } catch(const ParseError &e) {
+		std::cerr << "Bad seed value, using default\n";
+		seed = 0;
+	    }
 	}
 	else
 	{
@@ -440,6 +454,7 @@ bool Config::loadConfigFile()
     if(_cl_debug) debug = _cl_debug;
     if(_cl_manual) manual = _cl_manual;
     if(!_cl_mapFile.empty()) mapFile = _cl_mapFile;
+    if(seed == 0) seed = std::time(0);
 
     return true;
 }
@@ -453,6 +468,7 @@ std::string Config::dump() const
 	<< "\thelp: " << help << "\n"
 	<< "\tdebug: " << debug << "\n"
 	<< "\tmanual: " << manual << "\n"
+	<< "\tseed: " << seed << "\n"
 	<< "\tconfig file: " << _configFile << "\n"
 	<< "\tmap file: " << mapFile << "\n"
 	<< "\tblue: " << blue << "\n"

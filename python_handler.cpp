@@ -79,6 +79,16 @@ bool PythonHandler::initialize()
     if(!initAiwarModule())
 	return false;
 
+    // import random module and set the seed
+    std::ostringstream oss;
+    oss << "import random; random.seed(" << aiwar::core::Config::instance().seed << ")";
+    if(PyRun_SimpleString(oss.str().c_str()) != 0)
+    {
+	std::cerr << "Fail to set the random seed\n";
+	return false;
+    }
+    
+    // initilization is done
     _initFlag = true;
 
     return true;
