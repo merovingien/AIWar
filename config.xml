@@ -5,7 +5,7 @@
     <manual>false</manual>
     <map>maps/map.xml</map>
     <blue>PYTHON_TEAM</blue>
-    <red>TEST_TEAM</red>
+    <red>TEAM_DUMMY</red>
     <renderer>sdl</renderer>
   </options>
   <players>
@@ -15,8 +15,8 @@
       <params>embtest</params>
     </player>
     <player>
-      <name>TEST_TEAM</name>
-      <handler>test</handler>
+      <name>TEAM_DUMMY</name>
+      <handler>dummy</handler>
       <params/>
     </player>
     <player>
