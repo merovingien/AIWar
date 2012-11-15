@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef LIVING_HPP
@@ -25,48 +25,48 @@
 namespace aiwar {
     namespace core {
 
-	class Living : virtual public Item
-	{
-	public:
+        class Living : virtual public Item
+        {
+        public:
 
-	    virtual ~Living();
+            virtual ~Living();
 
-	    /**
-	     * \brief Get the current number of life points
-	     * \return The current number of life points
-	     */
-	    unsigned int life() const;
+            /**
+             * \brief Get the current number of life points
+             * \return The current number of life points
+             */
+            unsigned int life() const;
 
-	    /**
-	     * \brief Take some life points
-	     * \param value Number of life point to remove
-	     * \param kill If true, the item is mark to be removed if life reached zero.
-	     * \return Number of life point finally removed
-	     * \warning Internal use only
-	     *
-	     * If the number of life points reaches zero, the object deads
-	     */
-	    unsigned int _takeLife(unsigned int value, bool kill = true);
-    
-	    /**
-	     * \brief Put some life points
-	     * \param value Number of life points to add
-	     * \return Number of life points finally added.
-	     * \warning Internal use only
-	     *
-	     * The number of lifePoint cannot exceed _maxLife.
-	     */
-	    unsigned int _putLife(unsigned int value);
+            /**
+             * \brief Take some life points
+             * \param value Number of life point to remove
+             * \param kill If true, the item is mark to be removed if life reached zero.
+             * \return Number of life point finally removed
+             * \warning Internal use only
+             *
+             * If the number of life points reaches zero, the object deads
+             */
+            unsigned int _takeLife(unsigned int value, bool kill = true);
 
-	protected:
-	    Living(ItemManager& im, Key k);
-	    Living(ItemManager& im, Key k, unsigned int life, unsigned int maxLife);
+            /**
+             * \brief Put some life points
+             * \param value Number of life points to add
+             * \return Number of life points finally added.
+             * \warning Internal use only
+             *
+             * The number of lifePoint cannot exceed _maxLife.
+             */
+            unsigned int _putLife(unsigned int value);
 
-	    bool _isDead() const;
+        protected:
+            Living(ItemManager& im, Key k);
+            Living(ItemManager& im, Key k, unsigned int life, unsigned int maxLife);
 
-	    unsigned int _maxLife;
-	    unsigned int _life;
-	};
+            bool _isDead() const;
+
+            unsigned int _maxLife;
+            unsigned int _life;
+        };
 
     } // namespace aiwar::core
 } // namespace aiwar

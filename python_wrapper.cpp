@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <Python.h>
@@ -138,12 +138,12 @@ static PyTypeObject MiningShipType = {
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT,        /*tp_flags*/
     "Playable MiningShip objects",/* tp_doc */
-    0,		               /* tp_traverse */
-    0,		               /* tp_clear */
-    0,		               /* tp_richcompare */
-    0,		               /* tp_weaklistoffset */
-    0,		               /* tp_iter */
-    0,		               /* tp_iternext */
+    0,                         /* tp_traverse */
+    0,                         /* tp_clear */
+    0,                         /* tp_richcompare */
+    0,                         /* tp_weaklistoffset */
+    0,                         /* tp_iter */
+    0,                         /* tp_iternext */
     MiningShip_methods,        /* tp_methods */
     MiningShip_members,        /* tp_members */
     0,                         /* tp_getset */
@@ -171,8 +171,8 @@ PyObject* MiningShip_New(aiwar::core::MiningShip *m)
     Item *pM = PyObject_New(Item, &MiningShipType);
     if(!pM)
     {
-	std::cerr << "Error while creating new MiningShip python object" << std::endl;
-	return NULL;
+        std::cerr << "Error while creating new MiningShip python object" << std::endl;
+        return NULL;
     }
 
     pM->item = m;
@@ -215,12 +215,12 @@ static PyTypeObject MiningShipConstType = {
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT,        /*tp_flags*/
     "Const MiningShip objects",/* tp_doc */
-    0,		               /* tp_traverse */
-    0,		               /* tp_clear */
-    0,		               /* tp_richcompare */
-    0,		               /* tp_weaklistoffset */
-    0,		               /* tp_iter */
-    0,		               /* tp_iternext */
+    0,                         /* tp_traverse */
+    0,                         /* tp_clear */
+    0,                         /* tp_richcompare */
+    0,                         /* tp_weaklistoffset */
+    0,                         /* tp_iter */
+    0,                         /* tp_iternext */
     MiningShipConst_methods,   /* tp_methods */
     MiningShipConst_members,   /* tp_members */
     0,                         /* tp_getset */
@@ -248,8 +248,8 @@ PyObject* MiningShipConst_New(aiwar::core::MiningShip *m)
     Item *pM = PyObject_New(Item, &MiningShipConstType);
     if(!pM)
     {
-	std::cerr << "Error while creating new MiningShipConst python object" << std::endl;
-	return NULL;
+        std::cerr << "Error while creating new MiningShipConst python object" << std::endl;
+        return NULL;
     }
 
     pM->item = m;
@@ -292,12 +292,12 @@ static PyTypeObject MineralType = {
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT,        /*tp_flags*/
     "Mineral objects",         /* tp_doc */
-    0,		               /* tp_traverse */
-    0,		               /* tp_clear */
-    0,		               /* tp_richcompare */
-    0,		               /* tp_weaklistoffset */
-    0,		               /* tp_iter */
-    0,		               /* tp_iternext */
+    0,                         /* tp_traverse */
+    0,                         /* tp_clear */
+    0,                         /* tp_richcompare */
+    0,                         /* tp_weaklistoffset */
+    0,                         /* tp_iter */
+    0,                         /* tp_iternext */
     Mineral_methods,           /* tp_methods */
     Mineral_members,           /* tp_members */
     0,                         /* tp_getset */
@@ -325,8 +325,8 @@ PyObject* Mineral_New(aiwar::core::Mineral *m)
     Item *pM = PyObject_New(Item, &MineralType);
     if(!pM)
     {
-	std::cerr << "Error while creating new Mineral python object" << std::endl;
-	return NULL;
+        std::cerr << "Error while creating new Mineral python object" << std::endl;
+        return NULL;
     }
 
     pM->item = m;
@@ -369,12 +369,12 @@ static PyTypeObject MissileType = {
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT,        /*tp_flags*/
     "Missile objects",         /* tp_doc */
-    0,		               /* tp_traverse */
-    0,		               /* tp_clear */
-    0,		               /* tp_richcompare */
-    0,		               /* tp_weaklistoffset */
-    0,		               /* tp_iter */
-    0,		               /* tp_iternext */
+    0,                         /* tp_traverse */
+    0,                         /* tp_clear */
+    0,                         /* tp_richcompare */
+    0,                         /* tp_weaklistoffset */
+    0,                         /* tp_iter */
+    0,                         /* tp_iternext */
     Missile_methods,           /* tp_methods */
     Missile_members,           /* tp_members */
     0,                         /* tp_getset */
@@ -402,8 +402,8 @@ PyObject* Missile_New(aiwar::core::Missile *m)
     Item *pM = PyObject_New(Item, &MissileType);
     if(!pM)
     {
-	std::cerr << "Error while creating new Missile python object" << std::endl;
-	return NULL;
+        std::cerr << "Error while creating new Missile python object" << std::endl;
+        return NULL;
     }
 
     pM->item = m;
@@ -465,12 +465,12 @@ static PyTypeObject BaseType = {
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT,        /*tp_flags*/
     "Playable Base objects",   /* tp_doc */
-    0,		               /* tp_traverse */
-    0,		               /* tp_clear */
-    0,		               /* tp_richcompare */
-    0,		               /* tp_weaklistoffset */
-    0,		               /* tp_iter */
-    0,		               /* tp_iternext */
+    0,                         /* tp_traverse */
+    0,                         /* tp_clear */
+    0,                         /* tp_richcompare */
+    0,                         /* tp_weaklistoffset */
+    0,                         /* tp_iter */
+    0,                         /* tp_iternext */
     Base_methods,              /* tp_methods */
     Base_members,              /* tp_members */
     0,                         /* tp_getset */
@@ -498,8 +498,8 @@ PyObject* Base_New(aiwar::core::Base *m)
     Item *pM = PyObject_New(Item, &BaseType);
     if(!pM)
     {
-	std::cerr << "Error while creating new Base python object" << std::endl;
-	return NULL;
+        std::cerr << "Error while creating new Base python object" << std::endl;
+        return NULL;
     }
 
     pM->item = m;
@@ -541,12 +541,12 @@ static PyTypeObject BaseConstType = {
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT,        /*tp_flags*/
     "Const Base objects",      /* tp_doc */
-    0,		               /* tp_traverse */
-    0,		               /* tp_clear */
-    0,		               /* tp_richcompare */
-    0,		               /* tp_weaklistoffset */
-    0,		               /* tp_iter */
-    0,		               /* tp_iternext */
+    0,                         /* tp_traverse */
+    0,                         /* tp_clear */
+    0,                         /* tp_richcompare */
+    0,                         /* tp_weaklistoffset */
+    0,                         /* tp_iter */
+    0,                         /* tp_iternext */
     BaseConst_methods,         /* tp_methods */
     BaseConst_members,         /* tp_members */
     0,                         /* tp_getset */
@@ -574,8 +574,8 @@ PyObject* BaseConst_New(aiwar::core::Base *m)
     Item *pM = PyObject_New(Item, &BaseConstType);
     if(!pM)
     {
-	std::cerr << "Error while creating new BaseConst python object" << std::endl;
-	return NULL;
+        std::cerr << "Error while creating new BaseConst python object" << std::endl;
+        return NULL;
     }
 
     pM->item = m;
@@ -637,12 +637,12 @@ static PyTypeObject FighterType = {
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT,        /*tp_flags*/
     "Playable Fighter objects",/* tp_doc */
-    0,		               /* tp_traverse */
-    0,		               /* tp_clear */
-    0,		               /* tp_richcompare */
-    0,		               /* tp_weaklistoffset */
-    0,		               /* tp_iter */
-    0,		               /* tp_iternext */
+    0,                         /* tp_traverse */
+    0,                         /* tp_clear */
+    0,                         /* tp_richcompare */
+    0,                         /* tp_weaklistoffset */
+    0,                         /* tp_iter */
+    0,                         /* tp_iternext */
     Fighter_methods,           /* tp_methods */
     Fighter_members,           /* tp_members */
     0,                         /* tp_getset */
@@ -670,8 +670,8 @@ PyObject* Fighter_New(aiwar::core::Fighter *m)
     Item *pM = PyObject_New(Item, &FighterType);
     if(!pM)
     {
-	std::cerr << "Error while creating new Fighter python object" << std::endl;
-	return NULL;
+        std::cerr << "Error while creating new Fighter python object" << std::endl;
+        return NULL;
     }
 
     pM->item = m;
@@ -714,12 +714,12 @@ static PyTypeObject FighterConstType = {
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT,        /*tp_flags*/
     "Const Fighter objects",   /* tp_doc */
-    0,		               /* tp_traverse */
-    0,		               /* tp_clear */
-    0,		               /* tp_richcompare */
-    0,		               /* tp_weaklistoffset */
-    0,		               /* tp_iter */
-    0,		               /* tp_iternext */
+    0,                         /* tp_traverse */
+    0,                         /* tp_clear */
+    0,                         /* tp_richcompare */
+    0,                         /* tp_weaklistoffset */
+    0,                         /* tp_iter */
+    0,                         /* tp_iternext */
     FighterConst_methods,      /* tp_methods */
     FighterConst_members,      /* tp_members */
     0,                         /* tp_getset */
@@ -747,8 +747,8 @@ PyObject* FighterConst_New(aiwar::core::Fighter *m)
     Item *pM = PyObject_New(Item, &FighterConstType);
     if(!pM)
     {
-	std::cerr << "Error while creating new FighterConst python object" << std::endl;
-	return NULL;
+        std::cerr << "Error while creating new FighterConst python object" << std::endl;
+        return NULL;
     }
 
     pM->item = m;
@@ -768,7 +768,7 @@ static PyObject * Item_neighbours(Item* self)
 {
     PyObject* pSet = PyFrozenSet_New(NULL);
     if(!pSet)
-	return NULL;
+        return NULL;
 
     aiwar::core::Item::ItemSet n = self->item->neighbours();
     aiwar::core::Item::ItemSet::iterator it;
@@ -782,34 +782,34 @@ static PyObject * Item_neighbours(Item* self)
 
     for(it = n.begin() ; it != n.end() ; ++it)
     {
-	item = *it;
-	pItem = NULL;
+        item = *it;
+        pItem = NULL;
 
-	if((mineral = dynamic_cast<aiwar::core::Mineral*>(item)))
-	    pItem = Mineral_New(mineral);
-	else if((missile = dynamic_cast<aiwar::core::Missile*>(item)))
-	    pItem = Missile_New(missile);
-	else if((miningShip = dynamic_cast<aiwar::core::MiningShip*>(item)))
-	    pItem = MiningShipConst_New(miningShip);
-	else if((base = dynamic_cast<aiwar::core::Base*>(item)))
-	    pItem = BaseConst_New(base);
-	else if((fighter = dynamic_cast<aiwar::core::Fighter*>(item)))
-	    pItem = FighterConst_New(fighter);
+        if((mineral = dynamic_cast<aiwar::core::Mineral*>(item)))
+            pItem = Mineral_New(mineral);
+        else if((missile = dynamic_cast<aiwar::core::Missile*>(item)))
+            pItem = Missile_New(missile);
+        else if((miningShip = dynamic_cast<aiwar::core::MiningShip*>(item)))
+            pItem = MiningShipConst_New(miningShip);
+        else if((base = dynamic_cast<aiwar::core::Base*>(item)))
+            pItem = BaseConst_New(base);
+        else if((fighter = dynamic_cast<aiwar::core::Fighter*>(item)))
+            pItem = FighterConst_New(fighter);
 
-	if(pItem)
-	{
-	    int r = PySet_Add(pSet, pItem);
-	    Py_DECREF(pItem);
-	    if(r != 0) // failure
-	    {
-		std::cerr << "Error while filling neighbours Set" << std::endl;
-		PyErr_Print();
-		Py_DECREF(pSet);
-		return NULL;
-	    }
-	}
-	else
-	    std::cerr << "Item type not yet implemented" << std::endl;
+        if(pItem)
+        {
+            int r = PySet_Add(pSet, pItem);
+            Py_DECREF(pItem);
+            if(r != 0) // failure
+            {
+                std::cerr << "Error while filling neighbours Set" << std::endl;
+                PyErr_Print();
+                Py_DECREF(pSet);
+                return NULL;
+            }
+        }
+        else
+            std::cerr << "Item type not yet implemented" << std::endl;
     }
 
     return pSet;
@@ -823,20 +823,20 @@ Item_distanceTo(Item* self, PyObject *args)
     double py = 0.0;
     if(!PyArg_ParseTuple(args, "O", &o))
     {
-	return NULL;
+        return NULL;
     }
     if(PyObject_IsInstance(o, pItemBasedTuple))
     {
-	return PyFloat_FromDouble(self->item->distanceTo(((Item*)o)->item));
+        return PyFloat_FromDouble(self->item->distanceTo(((Item*)o)->item));
     }
     else if(PyArg_ParseTuple(o, "dd", &px, &py))
     {
-	return PyFloat_FromDouble(self->item->distanceTo(px, py));
+        return PyFloat_FromDouble(self->item->distanceTo(px, py));
     }
     else
     {
-	PyErr_SetString(PyExc_TypeError, "must be an Item or a tuple of two floats");
-	return NULL;
+        PyErr_SetString(PyExc_TypeError, "must be an Item or a tuple of two floats");
+        return NULL;
     }
 }
 
@@ -845,7 +845,7 @@ Item_rotateOf(Item* self, PyObject *args)
 {
     double a;
     if(!PyArg_ParseTuple(args, "d", &a))
-	return NULL;
+        return NULL;
     dynamic_cast<aiwar::core::Movable*>(self->item)->rotateOf(a);
     Py_RETURN_NONE;
 }
@@ -858,22 +858,22 @@ Item_rotateTo(Item* self, PyObject *args)
     double py = -1.0;
     if(!PyArg_ParseTuple(args, "O", &o))
     {
-	return NULL;
-    }   
+        return NULL;
+    }
     if(PyObject_IsInstance(o, pItemBasedTuple))
     {
-	dynamic_cast<aiwar::core::Movable*>(self->item)->rotateTo(((Item*)o)->item);
-	Py_RETURN_NONE;
+        dynamic_cast<aiwar::core::Movable*>(self->item)->rotateTo(((Item*)o)->item);
+        Py_RETURN_NONE;
     }
     else if(PyArg_ParseTuple(o, "dd", &px, &py))
     {
-	dynamic_cast<aiwar::core::Movable*>(self->item)->rotateTo(px, py);
-	Py_RETURN_NONE;
+        dynamic_cast<aiwar::core::Movable*>(self->item)->rotateTo(px, py);
+        Py_RETURN_NONE;
     }
     else
     {
-	PyErr_SetString(PyExc_TypeError, "must be an Item or a tuple of two floats");
-	return NULL;
+        PyErr_SetString(PyExc_TypeError, "must be an Item or a tuple of two floats");
+        return NULL;
     }
 }
 
@@ -914,26 +914,26 @@ Item_isFriend(Item* self, PyObject *args)
     PyObject *o = NULL;
     if(!PyArg_ParseTuple(args, "O", &o))
     {
-	return NULL;
+        return NULL;
     }
-    
+
     if(!PyObject_IsInstance(o, pItemBasedTuple))
     {
-	PyErr_SetString(PyExc_TypeError, "argmument is not an item");
-	return NULL;
+        PyErr_SetString(PyExc_TypeError, "argmument is not an item");
+        return NULL;
     }
 
     aiwar::core::Playable *pl = dynamic_cast<aiwar::core::Playable*>(((Item*)o)->item);
     if(!pl)
     {
-	PyErr_SetString(PyExc_TypeError, "argmument is not a Playable item");
-	return NULL;
+        PyErr_SetString(PyExc_TypeError, "argmument is not a Playable item");
+        return NULL;
     }
 
     if(dynamic_cast<aiwar::core::Playable*>(self->item)->isFriend(pl))
-	Py_RETURN_TRUE;
+        Py_RETURN_TRUE;
     else
-	Py_RETURN_FALSE;
+        Py_RETURN_FALSE;
 }
 
 static PyObject *
@@ -941,7 +941,7 @@ Item_log(Item* self, PyObject *args)
 {
     const char *msg;
     if(!PyArg_ParseTuple(args, "s", &msg))
-	return NULL;
+        return NULL;
     dynamic_cast<aiwar::core::Playable*>(self->item)->log(msg);
     Py_RETURN_NONE;
 }
@@ -958,27 +958,27 @@ Item_getMemoryInt(Item *self, PyObject *args)
     unsigned int index = 0;
     PyObject *o = NULL;
     if(!PyArg_ParseTuple(args, "I|O", &index, &o))
-	return NULL;
+        return NULL;
 
     // check if a target item has been given
     if(o)
     {
-	if(!PyObject_IsInstance(o, pItemBasedTuple))
-	{
-	    PyErr_SetString(PyExc_TypeError, "second argmument is not an item");
-	    return NULL;
-	}
-	aiwar::core::Memory *mem = dynamic_cast<aiwar::core::Memory*>(((Item*)o)->item);
-	if(!mem)
-	{
-	    PyErr_SetString(PyExc_TypeError, "second argmument is not a Memory item");
-	    return NULL;
-	}
-	return Py_BuildValue("i", dynamic_cast<aiwar::core::Memory*>(self->item)->getMemory<int>(index, mem));
+        if(!PyObject_IsInstance(o, pItemBasedTuple))
+        {
+            PyErr_SetString(PyExc_TypeError, "second argmument is not an item");
+            return NULL;
+        }
+        aiwar::core::Memory *mem = dynamic_cast<aiwar::core::Memory*>(((Item*)o)->item);
+        if(!mem)
+        {
+            PyErr_SetString(PyExc_TypeError, "second argmument is not a Memory item");
+            return NULL;
+        }
+        return Py_BuildValue("i", dynamic_cast<aiwar::core::Memory*>(self->item)->getMemory<int>(index, mem));
     }
     else
     {
-	return Py_BuildValue("i", dynamic_cast<aiwar::core::Memory*>(self->item)->getMemory<int>(index));
+        return Py_BuildValue("i", dynamic_cast<aiwar::core::Memory*>(self->item)->getMemory<int>(index));
     }
 }
 
@@ -988,27 +988,27 @@ Item_getMemoryUInt(Item *self, PyObject *args)
     unsigned int index = 0;
     PyObject *o = NULL;
     if(!PyArg_ParseTuple(args, "I|O", &index, &o))
-	return NULL;
+        return NULL;
 
     // check if a target item has been given
     if(o)
     {
-	if(!PyObject_IsInstance(o, pItemBasedTuple))
-	{
-	    PyErr_SetString(PyExc_TypeError, "second argmument is not an item");
-	    return NULL;
-	}
-	aiwar::core::Memory *mem = dynamic_cast<aiwar::core::Memory*>(((Item*)o)->item);
-	if(!mem)
-	{
-	    PyErr_SetString(PyExc_TypeError, "second argmument is not a Memory item");
-	    return NULL;
-	}
-	return Py_BuildValue("I", dynamic_cast<aiwar::core::Memory*>(self->item)->getMemory<unsigned int>(index, mem));
+        if(!PyObject_IsInstance(o, pItemBasedTuple))
+        {
+            PyErr_SetString(PyExc_TypeError, "second argmument is not an item");
+            return NULL;
+        }
+        aiwar::core::Memory *mem = dynamic_cast<aiwar::core::Memory*>(((Item*)o)->item);
+        if(!mem)
+        {
+            PyErr_SetString(PyExc_TypeError, "second argmument is not a Memory item");
+            return NULL;
+        }
+        return Py_BuildValue("I", dynamic_cast<aiwar::core::Memory*>(self->item)->getMemory<unsigned int>(index, mem));
     }
     else
     {
-	return Py_BuildValue("I", dynamic_cast<aiwar::core::Memory*>(self->item)->getMemory<unsigned int>(index));
+        return Py_BuildValue("I", dynamic_cast<aiwar::core::Memory*>(self->item)->getMemory<unsigned int>(index));
     }
 }
 
@@ -1018,27 +1018,27 @@ Item_getMemoryFloat(Item *self, PyObject *args)
     unsigned int index = 0;
     PyObject *o = NULL;
     if(!PyArg_ParseTuple(args, "I|O", &index, &o))
-	return NULL;
+        return NULL;
 
     // check if a target item has been given
     if(o)
     {
-	if(!PyObject_IsInstance(o, pItemBasedTuple))
-	{
-	    PyErr_SetString(PyExc_TypeError, "second argmument is not an item");
-	    return NULL;
-	}
-	aiwar::core::Memory *mem = dynamic_cast<aiwar::core::Memory*>(((Item*)o)->item);
-	if(!mem)
-	{
-	    PyErr_SetString(PyExc_TypeError, "second argmument is not a Memory item");
-	    return NULL;
-	}
-	return Py_BuildValue("f", dynamic_cast<aiwar::core::Memory*>(self->item)->getMemory<float>(index, mem));
+        if(!PyObject_IsInstance(o, pItemBasedTuple))
+        {
+            PyErr_SetString(PyExc_TypeError, "second argmument is not an item");
+            return NULL;
+        }
+        aiwar::core::Memory *mem = dynamic_cast<aiwar::core::Memory*>(((Item*)o)->item);
+        if(!mem)
+        {
+            PyErr_SetString(PyExc_TypeError, "second argmument is not a Memory item");
+            return NULL;
+        }
+        return Py_BuildValue("f", dynamic_cast<aiwar::core::Memory*>(self->item)->getMemory<float>(index, mem));
     }
     else
     {
-	return Py_BuildValue("f", dynamic_cast<aiwar::core::Memory*>(self->item)->getMemory<float>(index));
+        return Py_BuildValue("f", dynamic_cast<aiwar::core::Memory*>(self->item)->getMemory<float>(index));
     }
 }
 
@@ -1049,27 +1049,27 @@ Item_setMemoryInt(Item *self, PyObject *args)
     int value = 0;
     PyObject *o = NULL;
     if(!PyArg_ParseTuple(args, "Ii|O", &index, &value, &o))
-	return NULL;
+        return NULL;
 
     // check if a target item has been given
     if(o)
     {
-	if(!PyObject_IsInstance(o, pItemBasedTuple))
-	{
-	    PyErr_SetString(PyExc_TypeError, "second argmument is not an item");
-	    return NULL;
-	}
-	aiwar::core::Memory *mem = dynamic_cast<aiwar::core::Memory*>(((Item*)o)->item);
-	if(!mem)
-	{
-	    PyErr_SetString(PyExc_TypeError, "second argmument is not a Memory item");
-	    return NULL;
-	}
-	dynamic_cast<aiwar::core::Memory*>(self->item)->setMemory<int>(index, value, mem);
+        if(!PyObject_IsInstance(o, pItemBasedTuple))
+        {
+            PyErr_SetString(PyExc_TypeError, "second argmument is not an item");
+            return NULL;
+        }
+        aiwar::core::Memory *mem = dynamic_cast<aiwar::core::Memory*>(((Item*)o)->item);
+        if(!mem)
+        {
+            PyErr_SetString(PyExc_TypeError, "second argmument is not a Memory item");
+            return NULL;
+        }
+        dynamic_cast<aiwar::core::Memory*>(self->item)->setMemory<int>(index, value, mem);
     }
     else
     {
-	dynamic_cast<aiwar::core::Memory*>(self->item)->setMemory<int>(index, value);
+        dynamic_cast<aiwar::core::Memory*>(self->item)->setMemory<int>(index, value);
     }
     Py_RETURN_NONE;
 }
@@ -1081,27 +1081,27 @@ Item_setMemoryUInt(Item *self, PyObject *args)
     unsigned int value = 0u;
     PyObject *o = NULL;
     if(!PyArg_ParseTuple(args, "II|O", &index, &value, &o))
-	return NULL;
+        return NULL;
 
     // check if a target item has been given
     if(o)
     {
-	if(!PyObject_IsInstance(o, pItemBasedTuple))
-	{
-	    PyErr_SetString(PyExc_TypeError, "second argmument is not an item");
-	    return NULL;
-	}
-	aiwar::core::Memory *mem = dynamic_cast<aiwar::core::Memory*>(((Item*)o)->item);
-	if(!mem)
-	{
-	    PyErr_SetString(PyExc_TypeError, "second argmument is not a Memory item");
-	    return NULL;
-	}
-	dynamic_cast<aiwar::core::Memory*>(self->item)->setMemory<unsigned int>(index, value, mem);
+        if(!PyObject_IsInstance(o, pItemBasedTuple))
+        {
+            PyErr_SetString(PyExc_TypeError, "second argmument is not an item");
+            return NULL;
+        }
+        aiwar::core::Memory *mem = dynamic_cast<aiwar::core::Memory*>(((Item*)o)->item);
+        if(!mem)
+        {
+            PyErr_SetString(PyExc_TypeError, "second argmument is not a Memory item");
+            return NULL;
+        }
+        dynamic_cast<aiwar::core::Memory*>(self->item)->setMemory<unsigned int>(index, value, mem);
     }
     else
     {
-	dynamic_cast<aiwar::core::Memory*>(self->item)->setMemory<unsigned int>(index, value);
+        dynamic_cast<aiwar::core::Memory*>(self->item)->setMemory<unsigned int>(index, value);
     }
     Py_RETURN_NONE;
 }
@@ -1113,27 +1113,27 @@ Item_setMemoryFloat(Item *self, PyObject *args)
     float value = 0.0f;
     PyObject *o = NULL;
     if(!PyArg_ParseTuple(args, "If|O", &index, &value, &o))
-	return NULL;
+        return NULL;
 
     // check if a target item has been given
     if(o)
     {
-	if(!PyObject_IsInstance(o, pItemBasedTuple))
-	{
-	    PyErr_SetString(PyExc_TypeError, "second argmument is not an item");
-	    return NULL;
-	}
-	aiwar::core::Memory *mem = dynamic_cast<aiwar::core::Memory*>(((Item*)o)->item);
-	if(!mem)
-	{
-	    PyErr_SetString(PyExc_TypeError, "second argmument is not a Memory item");
-	    return NULL;
-	}
-	dynamic_cast<aiwar::core::Memory*>(self->item)->setMemory<float>(index, value, mem);
+        if(!PyObject_IsInstance(o, pItemBasedTuple))
+        {
+            PyErr_SetString(PyExc_TypeError, "second argmument is not an item");
+            return NULL;
+        }
+        aiwar::core::Memory *mem = dynamic_cast<aiwar::core::Memory*>(((Item*)o)->item);
+        if(!mem)
+        {
+            PyErr_SetString(PyExc_TypeError, "second argmument is not a Memory item");
+            return NULL;
+        }
+        dynamic_cast<aiwar::core::Memory*>(self->item)->setMemory<float>(index, value, mem);
     }
     else
     {
-	dynamic_cast<aiwar::core::Memory*>(self->item)->setMemory<float>(index, value);
+        dynamic_cast<aiwar::core::Memory*>(self->item)->setMemory<float>(index, value);
     }
     Py_RETURN_NONE;
 }
@@ -1143,7 +1143,7 @@ MiningShip_extract(Item* self, PyObject *args)
 {
     Item *m = NULL;
     if(!PyArg_ParseTuple(args, "O!", &MineralType, &m))
-	return NULL;
+        return NULL;
     return Py_BuildValue("I", dynamic_cast<aiwar::core::MiningShip*>(self->item)->extract(dynamic_cast<aiwar::core::Mineral*>(m->item)));
 }
 
@@ -1159,18 +1159,18 @@ MiningShip_pushMineral(Item* self, PyObject *args)
     PyObject *o = NULL;
     unsigned int value = 0;
     if(!PyArg_ParseTuple(args, "OI", &o, &value))
-	return NULL;
+        return NULL;
 
     if(!PyObject_IsInstance(o, pItemBasedTuple))
     {
-	PyErr_SetString(PyExc_TypeError, "must be an item");
-	return NULL;
+        PyErr_SetString(PyExc_TypeError, "must be an item");
+        return NULL;
     }
     aiwar::core::Base *b = dynamic_cast<aiwar::core::Base*>(((Item*)o)->item);
     if(!b)
     {
-	PyErr_SetString(PyExc_TypeError, "must be a Base");
-	return NULL;
+        PyErr_SetString(PyExc_TypeError, "must be a Base");
+        return NULL;
     }
 
     return Py_BuildValue("I", dynamic_cast<aiwar::core::MiningShip*>(self->item)->pushMineral(b, value));
@@ -1189,18 +1189,18 @@ Base_pullMineral(Item* self, PyObject *args)
     unsigned int value = 0;
     if(!PyArg_ParseTuple(args, "OI", &o, &value))
     {
-	return NULL;
+        return NULL;
     }
     if(!PyObject_IsInstance(o, pItemBasedTuple))
     {
-	PyErr_SetString(PyExc_TypeError, "must be an item");
-	return NULL;
+        PyErr_SetString(PyExc_TypeError, "must be an item");
+        return NULL;
     }
     aiwar::core::MiningShip *m = dynamic_cast<aiwar::core::MiningShip*>(((Item*)o)->item);
     if(!m)
     {
-	PyErr_SetString(PyExc_TypeError, "must be a MiningShip");
-	return NULL;
+        PyErr_SetString(PyExc_TypeError, "must be a MiningShip");
+        return NULL;
     }
     return Py_BuildValue("I", dynamic_cast<aiwar::core::Base*>(self->item)->pullMineral(m, value));
 }
@@ -1211,18 +1211,18 @@ Base_launchMissile(Item* self, PyObject *args)
     PyObject *o = NULL;
     if(!PyArg_ParseTuple(args, "O", &o))
     {
-	return NULL;
+        return NULL;
     }
     if(!PyObject_IsInstance(o, pItemBasedTuple))
     {
-	PyErr_SetString(PyExc_TypeError, "must be an item");
-	return NULL;
+        PyErr_SetString(PyExc_TypeError, "must be an item");
+        return NULL;
     }
     aiwar::core::Living *t = dynamic_cast<aiwar::core::Living*>(((Item*)o)->item);
     if(!t)
     {
-	PyErr_SetString(PyExc_TypeError, "must be a Living Object");
-	return NULL;
+        PyErr_SetString(PyExc_TypeError, "must be a Living Object");
+        return NULL;
     }
     dynamic_cast<aiwar::core::Base*>(self->item)->launchMissile(t);
     Py_RETURN_NONE;
@@ -1242,26 +1242,26 @@ Base_repair(Item* self, PyObject *args)
     unsigned int value = 0;
     if(!PyArg_ParseTuple(args, "I|O", &value, &o))
     {
-	return NULL;
+        return NULL;
     }
     if(!o)
     {
-	return Py_BuildValue("I", dynamic_cast<aiwar::core::Base*>(self->item)->repair(value));
+        return Py_BuildValue("I", dynamic_cast<aiwar::core::Base*>(self->item)->repair(value));
     }
     else
     {
-	if(!PyObject_IsInstance(o, pItemBasedTuple))
-	{
-	    PyErr_SetString(PyExc_TypeError, "must be an item");
-	    return NULL;
-	}
-	aiwar::core::Living *t = dynamic_cast<aiwar::core::Living*>(((Item*)o)->item);
-	if(!t)
-	{
-	    PyErr_SetString(PyExc_TypeError, "must be a Living Object");
-	    return NULL;
-	}
-	return Py_BuildValue("I", dynamic_cast<aiwar::core::Base*>(self->item)->repair(value, t));
+        if(!PyObject_IsInstance(o, pItemBasedTuple))
+        {
+            PyErr_SetString(PyExc_TypeError, "must be an item");
+            return NULL;
+        }
+        aiwar::core::Living *t = dynamic_cast<aiwar::core::Living*>(((Item*)o)->item);
+        if(!t)
+        {
+            PyErr_SetString(PyExc_TypeError, "must be a Living Object");
+            return NULL;
+        }
+        return Py_BuildValue("I", dynamic_cast<aiwar::core::Base*>(self->item)->repair(value, t));
     }
 }
 
@@ -1272,18 +1272,18 @@ Base_refuel(Item* self, PyObject *args)
     unsigned int value = 0;
     if(!PyArg_ParseTuple(args, "IO", &value, &o))
     {
-	return NULL;
+        return NULL;
     }
     if(!PyObject_IsInstance(o, pItemBasedTuple))
     {
-	PyErr_SetString(PyExc_TypeError, "must be an item");
-	return NULL;
+        PyErr_SetString(PyExc_TypeError, "must be an item");
+        return NULL;
     }
     aiwar::core::Movable *t = dynamic_cast<aiwar::core::Movable*>(((Item*)o)->item);
     if(!t)
     {
-	PyErr_SetString(PyExc_TypeError, "must be a Movable Object");
-	return NULL;
+        PyErr_SetString(PyExc_TypeError, "must be a Movable Object");
+        return NULL;
     }
     return Py_BuildValue("I", dynamic_cast<aiwar::core::Base*>(self->item)->refuel(value, t));
 }
@@ -1300,21 +1300,21 @@ Fighter_launchMissile(Item* self, PyObject *args)
     PyObject *o = NULL;
     if(!PyArg_ParseTuple(args, "O", &o))
     {
-	return NULL;
+        return NULL;
     }
     if(!PyObject_IsInstance(o, pItemBasedTuple))
     {
-	PyErr_SetString(PyExc_TypeError, "must be an item");
-	return NULL;
+        PyErr_SetString(PyExc_TypeError, "must be an item");
+        return NULL;
     }
     aiwar::core::Living *t = dynamic_cast<aiwar::core::Living*>(((Item*)o)->item);
     if(!t)
     {
-	PyErr_SetString(PyExc_TypeError, "must be a Living Object");
-	return NULL;
+        PyErr_SetString(PyExc_TypeError, "must be a Living Object");
+        return NULL;
     }
     dynamic_cast<aiwar::core::Fighter*>(self->item)->launchMissile(t);
-    Py_RETURN_NONE;    
+    Py_RETURN_NONE;
 }
 
 static PyObject *
@@ -1331,18 +1331,18 @@ Base_giveMissiles(Item* self, PyObject *args)
     unsigned int value = 0;
     if(!PyArg_ParseTuple(args, "IO", &value, &o))
     {
-	return NULL;
+        return NULL;
     }
     if(!PyObject_IsInstance(o, pItemBasedTuple))
     {
-	PyErr_SetString(PyExc_TypeError, "must be an item");
-	return NULL;
+        PyErr_SetString(PyExc_TypeError, "must be an item");
+        return NULL;
     }
     aiwar::core::Fighter *t = dynamic_cast<aiwar::core::Fighter*>(((Item*)o)->item);
     if(!t)
     {
-	PyErr_SetString(PyExc_TypeError, "must be a Fighter");
-	return NULL;
+        PyErr_SetString(PyExc_TypeError, "must be a Fighter");
+        return NULL;
     }
     return Py_BuildValue("I", dynamic_cast<aiwar::core::Base*>(self->item)->giveMissiles(value, t));
 }
@@ -1418,7 +1418,7 @@ static PyMethodDef module_methods[] = {
     {"MINERAL_SIZE_X", (PyCFunction)Config_MINERAL_SIZE_X, METH_NOARGS, "Return horizontal size of a mineral"},
     {"MINERAL_SIZE_Y", (PyCFunction)Config_MINERAL_SIZE_Y, METH_NOARGS, "Return vertical size of a mineral"},
     {"MINERAL_LIFE", (PyCFunction)Config_MINERAL_LIFE, METH_NOARGS, "Return mineral start life"},
-   
+
     {"MININGSHIP_SIZE_X", (PyCFunction)Config_MININGSHIP_SIZE_X, METH_NOARGS, "Return horizontal size of a MiningShip"},
     {"MININGSHIP_SIZE_Y", (PyCFunction)Config_MININGSHIP_SIZE_Y, METH_NOARGS, "Return vertical size of a MiningShip"},
     {"MININGSHIP_SPEED", (PyCFunction)Config_MININGSHIP_SPEED, METH_NOARGS, "Return speed of a MiningShip"},
@@ -1482,23 +1482,23 @@ bool initPythonInterpreter(int /*argc*/, char* /*argv*/[])
     free(p);
     if(!path)
     {
-	PyErr_Print();
-	return false;
+        PyErr_Print();
+        return false;
     }
-    
+
     PyObject *point = PyString_FromString(".");
     if(!point)
     {
-	PyErr_Print();
-	return false;
+        PyErr_Print();
+        return false;
     }
 
     int ret = PyList_Insert(path, 0, point);
     Py_DECREF(point);
     if(ret != 0)
     {
-	PyErr_Print();
-	return false;
+        PyErr_Print();
+        return false;
     }
 
     return true;
@@ -1511,9 +1511,9 @@ bool initAiwarModule()
     pItemBasedTuple = PyTuple_New(8);
     if(!pItemBasedTuple)
     {
-	std::cerr << "Fail to create pItemBasedTuple" << std::endl;
-	PyErr_Print();
-	return false;
+        std::cerr << "Fail to create pItemBasedTuple" << std::endl;
+        PyErr_Print();
+        return false;
     }
     unsigned int i = 0;
     Py_INCREF(&MiningShipType);
@@ -1537,35 +1537,35 @@ bool initAiwarModule()
 
     MiningShipType.tp_new = PyType_GenericNew;
     if(PyType_Ready(&MiningShipType) < 0)
-	return false;
+        return false;
 
     MiningShipConstType.tp_new = PyType_GenericNew;
     if(PyType_Ready(&MiningShipConstType) < 0)
-	return false;
+        return false;
 
     MineralType.tp_new = PyType_GenericNew;
     if(PyType_Ready(&MineralType) < 0)
-	return false;
+        return false;
 
     MissileType.tp_new = PyType_GenericNew;
     if(PyType_Ready(&MissileType) < 0)
-	return false;
+        return false;
 
     BaseType.tp_new = PyType_GenericNew;
     if(PyType_Ready(&BaseType) < 0)
-	return false;
+        return false;
 
     BaseConstType.tp_new = PyType_GenericNew;
     if(PyType_Ready(&BaseConstType) < 0)
-	return false;
+        return false;
 
     FighterType.tp_new = PyType_GenericNew;
     if(PyType_Ready(&FighterType) < 0)
-	return false;
+        return false;
 
     FighterConstType.tp_new = PyType_GenericNew;
     if(PyType_Ready(&FighterConstType) < 0)
-	return false;
+        return false;
 
     m = Py_InitModule3("aiwar", module_methods,
                        "Example module that creates an extension type.");
@@ -1611,11 +1611,11 @@ bool initAiwarModule()
     return true;
 }
 
-#ifndef PyMODINIT_FUNC	/* declarations for DLL import/export */
+#ifndef PyMODINIT_FUNC  /* declarations for DLL import/export */
 #define PyMODINIT_FUNC void
 #endif
 PyMODINIT_FUNC
-initaiwar(void) 
+initaiwar(void)
 {
     initAiwarModule();
 }

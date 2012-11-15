@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "game_manager.hpp"
@@ -40,8 +40,8 @@ GameManager::~GameManager()
 {
     if(_im)
     {
-	delete _im;
-	_im = NULL;
+        delete _im;
+        _im = NULL;
     }
 }
 
@@ -49,13 +49,13 @@ bool GameManager::initItemManager()
 {
     try
     {
-	_im = new ItemManager(*this);
-	return true;
+        _im = new ItemManager(*this);
+        return true;
     }
     catch(const std::runtime_error& e)
     {
-	std::cerr << "Fail to init ItemManager: " << e.what() << std::endl;
-	return false;
+        std::cerr << "Fail to init ItemManager: " << e.what() << std::endl;
+        return false;
     }
 }
 
@@ -145,15 +145,15 @@ void GameManager::itemDestroyed(const Item* item)
     const aiwar::core::Fighter *fighter;
 
     if((mineral = dynamic_cast<const aiwar::core::Mineral*>(item)))
-	mineralDestroyed(mineral);
+        mineralDestroyed(mineral);
     else if((missile = dynamic_cast<const aiwar::core::Missile*>(item)))
-	missileDestroyed(missile);
+        missileDestroyed(missile);
     else if((miningShip = dynamic_cast<const aiwar::core::MiningShip*>(item)))
-	miningShipDestroyed(miningShip);
+        miningShipDestroyed(miningShip);
     else if((base = dynamic_cast<const aiwar::core::Base*>(item)))
-	baseDestroyed(base);
+        baseDestroyed(base);
     else if((fighter = dynamic_cast<const aiwar::core::Fighter*>(item)))
-	fighterDestroyed(fighter);
+        fighterDestroyed(fighter);
 }
 
 
@@ -163,25 +163,25 @@ void GameManager::printStat() const
     aiwar::core::Config &cfg = aiwar::core::Config::instance();
     for(cit = _teamMap.begin() ; cit != _teamMap.end() ; ++cit)
     {
-    
-	    std::cout << "*******************\n";
-	    if(cit->first == BLUE_TEAM)
-	    {
-	        std::cout << "Blue team : " << cfg.players[cfg.blue].name << "\n";
-	    }
-	    else if(cit->first == RED_TEAM)
-	    {
-	        std::cout << "Red team : " << cfg.players[cfg.red].name << "\n";
-	    }
-	    else
-	    {
-	        std::cout << "No team :\n";
-	    }
-	    std::cout << "\tBases:       " << cit->second.nb_base << " (max: " << cit->second.nb_base_max << ")\n"
-		      << "\tMiningShips: " << cit->second.nb_miningShip << " (max: " << cit->second.nb_miningShip_max << ")\n"
-		      << "\tFighters:    " << cit->second.nb_fighter << " (max: " << cit->second.nb_fighter_max << ")\n"
-		      << "\tMinerals spent/saved:    " << cit->second.nb_mineral_spent << " / " << cit->second.nb_mineral_saved << "\n"
-		      << "*******************\n";
+
+            std::cout << "*******************\n";
+            if(cit->first == BLUE_TEAM)
+            {
+                std::cout << "Blue team : " << cfg.players[cfg.blue].name << "\n";
+            }
+            else if(cit->first == RED_TEAM)
+            {
+                std::cout << "Red team : " << cfg.players[cfg.red].name << "\n";
+            }
+            else
+            {
+                std::cout << "No team :\n";
+            }
+            std::cout << "\tBases:       " << cit->second.nb_base << " (max: " << cit->second.nb_base_max << ")\n"
+                      << "\tMiningShips: " << cit->second.nb_miningShip << " (max: " << cit->second.nb_miningShip_max << ")\n"
+                      << "\tFighters:    " << cit->second.nb_fighter << " (max: " << cit->second.nb_fighter_max << ")\n"
+                      << "\tMinerals spent/saved:    " << cit->second.nb_mineral_spent << " / " << cit->second.nb_mineral_saved << "\n"
+                      << "*******************\n";
     }
 }
 
@@ -218,8 +218,8 @@ bool GameManager::gameOver() const
     TeamMap::const_iterator cit;
     for(cit = _teamMap.begin() ; cit != _teamMap.end() ; ++cit)
     {
-	if(cit->second.nb_base > 0)
-	    nbLivingTeam++;
+        if(cit->second.nb_base > 0)
+            nbLivingTeam++;
     }
 
     return (nbLivingTeam < 2);
@@ -229,32 +229,32 @@ Team GameManager::getWinner() const
 {
     Team winner = NO_TEAM;
     int nbLivingTeam = 0;
-    
+
     TeamMap::const_iterator cit;
     for(cit = _teamMap.begin() ; cit != _teamMap.end() ; ++cit)
     {
-	if(cit->second.nb_base > 0)
-	{
-	    nbLivingTeam++;
-	    winner = cit->first;
-	}
+        if(cit->second.nb_base > 0)
+        {
+            nbLivingTeam++;
+            winner = cit->first;
+        }
     }
 
     if(nbLivingTeam > 1) // game not over
-	return NO_TEAM;
+        return NO_TEAM;
     else
-	return winner;
+        return winner;
 }
 
 const GameManager::TeamInfo& GameManager::_getTeamInfo(Team team) const
 {
     TeamMap::const_iterator it = _teamMap.find(team);
     if(it != _teamMap.end())
-	return it->second;
+        return it->second;
     else
-	throw std::runtime_error("Team is not registered");
+        throw std::runtime_error("Team is not registered");
 }
-    
+
 
 GameManager::TeamInfo::TeamInfo(PlayFunction& pfb, PlayFunction& pfm, PlayFunction& pff)
     : play_base(pfb), play_miningShip(pfm), play_fighter(pff),

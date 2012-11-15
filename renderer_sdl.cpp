@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "renderer_sdl.hpp"
@@ -87,15 +87,15 @@ bool RendererSDL::initialize(const std::string& params)
 
     return true;
 }
-	    
+
 bool RendererSDL::finalize()
 {
     if(_drawer)
     {
-	delete _drawer;
-	_drawer = NULL;
+        delete _drawer;
+        _drawer = NULL;
     }
-    
+
     TTF_Quit();
     SDL_Quit();
     return true;
@@ -109,115 +109,115 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
     Sint32 remainingTimeFrame, remainingTimePlay;
 
     bool play = false; // shall we return to play
-    
+
     while(cont && (gameover || !play))
     {
-	bool process = false; // shall we process events and draw
+        bool process = false; // shall we process events and draw
 
-	Uint32 currentTime = SDL_GetTicks();
+        Uint32 currentTime = SDL_GetTicks();
 
-	/* FPS */
-	ellapsedTimeFrame = currentTime - _startTimeFrame; // ellapsed time since the last event processing and draw
-	remainingTimeFrame = _frameDelay - ellapsedTimeFrame; // remaining time for the next event processing and draw
+        /* FPS */
+        ellapsedTimeFrame = currentTime - _startTimeFrame; // ellapsed time since the last event processing and draw
+        remainingTimeFrame = _frameDelay - ellapsedTimeFrame; // remaining time for the next event processing and draw
 
-	/* Play */
-	if(!_manual)
-	{
-	    ellapsedTimePlay = currentTime - _startTimePlay; // ellapsed time since the last play
-	    remainingTimePlay = _playDelay - ellapsedTimePlay;  // remaining time for the next play
-	}
-	else
-	{
-	    remainingTimePlay = (remainingTimeFrame > 0) ? remainingTimeFrame+1 : 1; 
+        /* Play */
+        if(!_manual)
+        {
+            ellapsedTimePlay = currentTime - _startTimePlay; // ellapsed time since the last play
+            remainingTimePlay = _playDelay - ellapsedTimePlay;  // remaining time for the next play
+        }
+        else
+        {
+            remainingTimePlay = (remainingTimeFrame > 0) ? remainingTimeFrame+1 : 1;
             // so remainingTimePlay is always positive and bigger than remainingTimeFrame -> never play and never wait for playing
-	}
+        }
 
-	// shall we process ?
-	if(remainingTimeFrame <= 0)
-	    process = true;
+        // shall we process ?
+        if(remainingTimeFrame <= 0)
+            process = true;
 
-	// shall we draw ?
-	if(remainingTimePlay <= 0)
-	    play = true;
+        // shall we draw ?
+        if(remainingTimePlay <= 0)
+            play = true;
 
-	// shall we wait ?
-	if(!process && !play)
-	{
-	    if(remainingTimeFrame <= remainingTimePlay)
-	    {
-		// we must wait to process
-		SDL_Delay(remainingTimeFrame);
-		process = true;
-	    }
-	    else
-	    {
-		// we must wait to play
-		SDL_Delay(remainingTimePlay);
-		play = true;
-	    }
-	}
+        // shall we wait ?
+        if(!process && !play)
+        {
+            if(remainingTimeFrame <= remainingTimePlay)
+            {
+                // we must wait to process
+                SDL_Delay(remainingTimeFrame);
+                process = true;
+            }
+            else
+            {
+                // we must wait to play
+                SDL_Delay(remainingTimePlay);
+                play = true;
+            }
+        }
 
-	// shall we process ?
-	if(process)
-	{
-	    _startTimeFrame = SDL_GetTicks();
+        // shall we process ?
+        if(process)
+        {
+            _startTimeFrame = SDL_GetTicks();
 
-	    // treat all events
-	    while(SDL_PollEvent(&e))
-	    {	
-		switch(e.type)
-		{
-		case SDL_QUIT:
-		    cont = false; // exit
-		    break;
-	    
-		case SDL_KEYDOWN:
-		    switch(e.key.keysym.sym)
-		    {
-		    case SDLK_ESCAPE:
-			cont = false; // exit
-			break;
+            // treat all events
+            while(SDL_PollEvent(&e))
+            {
+                switch(e.type)
+                {
+                case SDL_QUIT:
+                    cont = false; // exit
+                    break;
 
-		    case SDLK_SPACE: // force play
-			play = true;
-			break;
+                case SDL_KEYDOWN:
+                    switch(e.key.keysym.sym)
+                    {
+                    case SDLK_ESCAPE:
+                        cont = false; // exit
+                        break;
 
-		    case SDLK_d: // toggle debug
-			_drawer->toggleDebug();
-			break;
+                    case SDLK_SPACE: // force play
+                        play = true;
+                        break;
 
-		    case SDLK_m: // toggle manual
-			_manual = !_manual;
-			break;
-			
-		    case SDLK_s: // toggle full speed play
-			_playDelay = PLAY_DELAY - _playDelay;
-			break;
+                    case SDLK_d: // toggle debug
+                        _drawer->toggleDebug();
+                        break;
 
-		    default:
-			break;
-		    }
-	       
-		default:
-		    break;
-		}
-	    }
+                    case SDLK_m: // toggle manual
+                        _manual = !_manual;
+                        break;
 
-	    /* actualisation de l'écran */
-	    // SDL_FillRect(_screen, NULL, SDL_MapRGB(_screen->format,0,0,0)); not necessary ?
+                    case SDLK_s: // toggle full speed play
+                        _playDelay = PLAY_DELAY - _playDelay;
+                        break;
 
-	    _drawer->preDraw();
-    
-	    aiwar::core::ItemManager::ItemMap::const_iterator cit;
-	    for(cit = itemManager.begin() ; cit != itemManager.end() ; ++cit)
-		_drawer->draw(cit->second, itemManager);
+                    default:
+                        break;
+                    }
 
-	    _drawer->drawStats();
+                default:
+                    break;
+                }
+            }
 
-	    _drawer->postDraw();
+            /* actualisation de l'écran */
+            // SDL_FillRect(_screen, NULL, SDL_MapRGB(_screen->format,0,0,0)); not necessary ?
 
-	    SDL_Flip(_screen);
-	}
+            _drawer->preDraw();
+
+            aiwar::core::ItemManager::ItemMap::const_iterator cit;
+            for(cit = itemManager.begin() ; cit != itemManager.end() ; ++cit)
+                _drawer->draw(cit->second, itemManager);
+
+            _drawer->drawStats();
+
+            _drawer->postDraw();
+
+            SDL_Flip(_screen);
+        }
 
     } // end while(!play)
 

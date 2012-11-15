@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "renderer_sdl_draw.hpp"
@@ -108,7 +108,7 @@ RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::insta
     _backgroundTextColor.r = 0;
     _backgroundTextColor.g = 0;
     _backgroundTextColor.b = 0;
-    
+
     _debugText = new std::ostringstream();
     _debugFont = TTF_OpenFont("./fonts/Jura-Medium.ttf", SMALL_FONT_SIZE);
     _statsText = new std::ostringstream();
@@ -127,7 +127,7 @@ RendererSDLDraw::~RendererSDLDraw()
 
   SDL_FreeSurface(_statsSurface);
   delete _statsRect;
-    
+
   // fonts, colors and text
   delete _debugText;
   delete _statsText;
@@ -208,7 +208,7 @@ void RendererSDLDraw::drawStats()
   *_statsText << "Minerals : " << 10;
   _drawText(_statsSurface, _statsText->str().c_str() , 10, y + 2* SMALL_FONT_SIZE, _debugFont);
 
-  
+
 
 }
 
@@ -273,9 +273,9 @@ void RendererSDLDraw::_drawBase(const aiwar::core::Base *b, const aiwar::core::I
 
       Uint32 color = SDL_MapRGB(_world_surface->format, 0,255,0);
       if(b->team() == BLUE_TEAM)
-	color = SDL_MapRGB(_world_surface->format, 0,0,255);
+        color = SDL_MapRGB(_world_surface->format, 0,0,255);
       else if(b->team() == RED_TEAM)
-	color = SDL_MapRGB(_world_surface->format, 255,0,0);
+        color = SDL_MapRGB(_world_surface->format, 255,0,0);
 
       SDL_FillRect(_world_surface, &r, color);
     }
@@ -291,13 +291,13 @@ void RendererSDLDraw::_drawMiningShip(const aiwar::core::MiningShip *m, const ai
     {
       // draw vision circle
       circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.MININGSHIP_DETECTION_RADIUS), 255,255,0,255);
-      
+
       // draw mining circle
       circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.MININGSHIP_MINING_RADIUS), 190,192,192,255);
 
       // draw communication circle
       circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS), 0,192,128,255);
-      
+
       _debugText->str("");
       *_debugText << m->fuel() << " - " << m->mineralStorage();
       _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont);
@@ -309,9 +309,9 @@ void RendererSDLDraw::_drawMiningShip(const aiwar::core::MiningShip *m, const ai
 
       // rotate the ship
       if(m->team() == RED_TEAM)
-	rs = rotozoomSurface(_getSurface(RED_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
+        rs = rotozoomSurface(_getSurface(RED_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
       else if(m->team() == BLUE_TEAM)
-	rs = rotozoomSurface(_getSurface(BLUE_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
+        rs = rotozoomSurface(_getSurface(BLUE_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
 
       SDL_Rect r;
       r.x = static_cast<Sint16>(px) - rs->w/2;
@@ -319,7 +319,7 @@ void RendererSDLDraw::_drawMiningShip(const aiwar::core::MiningShip *m, const ai
       r.w = rs->w;
       r.h = rs->h;
 
-      //    std::cout << "MiningShip size: (" << r.w << "," << r.h << ")\n"; 
+      //    std::cout << "MiningShip size: (" << r.w << "," << r.h << ")\n";
 
       SDL_BlitSurface(rs, NULL, _world_surface, &r);
       SDL_FreeSurface(rs);
@@ -335,7 +335,7 @@ void RendererSDLDraw::_drawMissile(const aiwar::core::Missile *m, const aiwar::c
     SDL_Surface* tmp = SDL_CreateRGBSurface(_world_surface->flags, static_cast<int>(_cfg.MISSILE_SIZE_X), static_cast<int>(_cfg.MISSILE_SIZE_Y), _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
 
     SDL_FillRect(tmp, NULL, SDL_MapRGB(_world_surface->format, 255,0,255));
-  
+
     // rotate the missile
     SDL_Surface *rs = rotozoomSurface(tmp, m->angle(), 1.0, SMOOTHING_OFF);
 
@@ -360,60 +360,60 @@ void RendererSDLDraw::_drawFighter(const aiwar::core::Fighter *f, const aiwar::c
     {
       // draw vision circle
       circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.FIGHTER_DETECTION_RADIUS), 255,255,0,255);
-      
+
       // draw communication circle
       circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS), 0,192,128,255);
-      
+
       _debugText->str("");
       *_debugText << f->fuel() << " - " << f->missiles();
       _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont);
-      
+
     }
   else
     {
       SDL_Surface *rs = NULL;
-      
+
       // rotate the ship
       if(f->team() == RED_TEAM)
-	rs = rotozoomSurface(_getSurface(RED_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+        rs = rotozoomSurface(_getSurface(RED_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
       else if(f->team() == BLUE_TEAM)
-	rs = rotozoomSurface(_getSurface(BLUE_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
-      
+        rs = rotozoomSurface(_getSurface(BLUE_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+
       SDL_Rect r;
       r.x = static_cast<Sint16>(px) - rs->w/2;
       r.y = static_cast<Sint16>(py) - rs->h/2;
       r.w = rs->w;
       r.h = rs->h;
-      
+
       SDL_BlitSurface(rs, NULL, _world_surface, &r);
       SDL_FreeSurface(rs);
     }
 }
 
 void RendererSDLDraw::_drawText(SDL_Surface* surface, const char* string, int x, int y, TTF_Font* font)
-{  
+{
 
   // use TTF_RenderText_Solid ?
   SDL_Surface* textSurface = TTF_RenderText_Shaded(font, string, _foregroundDebugTextColor, _backgroundTextColor);
-  
+
   SDL_Rect textLocation;
   /*
   int w,h;
   if (TTF_SizeText(_debugFont, string, &w, &h)) {
     printf("Text   %s   has a size !!! \n", string);
-    textLocation.x =  x - w/2; 
+    textLocation.x =  x - w/2;
     textLocation.y = y - h/2;
   } else {
     printf("TTF_GetError : %s  :  %s \n", TTF_GetError(), string);
-    textLocation.x =  x; 
+    textLocation.x =  x;
     textLocation.y = y;
   }
   */
-  textLocation.x =  x; 
+  textLocation.x =  x;
   textLocation.y = y;
   textLocation.w =  0;
   textLocation.h = 0;
-  
+
   SDL_BlitSurface(textSurface, NULL, surface, &textLocation);
   SDL_FreeSurface(textSurface);
 }

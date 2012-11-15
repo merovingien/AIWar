@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "missile.hpp"
@@ -45,32 +45,32 @@ void Missile::update(unsigned int)
     Living *target = dynamic_cast<Living*>(_im.get(_target));
     if(!target || target->_toRemove())
     {
-	// no more target, auto destruction
-	_toRemoveFlag = true;
+        // no more target, auto destruction
+        _toRemoveFlag = true;
     }
     else
     {
-	// move to the target
-	rotateTo(target);
-	double d = distanceTo(target);
-	bool reached = false;
-	if(d <= _speed)
-	{
-	    _speed = d;
-	    reached = true;
-	}
-	move();
-	
-	// target reached ?
-	if(reached)
-	{
-	    target->_takeLife(Config::instance().MISSILE_DAMAGE, true);
-	    _toRemoveFlag = true;
-	}
-	// enough fuel to continue ?
-	else if(_fuel < Config::instance().MISSILE_MOVE_CONSO)
-	{
-	    _toRemoveFlag = true;
-	}
+        // move to the target
+        rotateTo(target);
+        double d = distanceTo(target);
+        bool reached = false;
+        if(d <= _speed)
+        {
+            _speed = d;
+            reached = true;
+        }
+        move();
+
+        // target reached ?
+        if(reached)
+        {
+            target->_takeLife(Config::instance().MISSILE_DAMAGE, true);
+            _toRemoveFlag = true;
+        }
+        // enough fuel to continue ?
+        else if(_fuel < Config::instance().MISSILE_MOVE_CONSO)
+        {
+            _toRemoveFlag = true;
+        }
     }
 }

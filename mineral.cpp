@@ -34,4 +34,3 @@ Mineral::Mineral(ItemManager& im, Key k, double px, double py)
 void Mineral::update(unsigned int)
 {
 }
-

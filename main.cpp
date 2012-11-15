@@ -22,7 +22,7 @@
 #include <cstdlib>
 
 #ifndef _WIN32
-#	include <sys/resource.h>
+#       include <sys/resource.h>
 #endif
 
 #include "game_manager.hpp"

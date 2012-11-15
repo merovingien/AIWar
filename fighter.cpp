@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "fighter.hpp"
@@ -31,7 +31,7 @@ Fighter::Fighter(ItemManager &im, Key k, double px, double py, Team team, PlayFu
       _hasLaunch(false)
 {
 }
-	 
+
 Fighter::~Fighter()
 {
 }
@@ -62,12 +62,12 @@ void Fighter::launchMissile(Living* target)
 {
     if(!_hasLaunch)
     {
-	if(_missiles > 0)
-	{
-	    _im.createMissile(this, target);
-	    _missiles--;
-	    _hasLaunch = true;
-	}
+        if(_missiles > 0)
+        {
+            _im.createMissile(this, target);
+            _missiles--;
+            _hasLaunch = true;
+        }
     }
 }
 
@@ -75,8 +75,8 @@ unsigned int Fighter::_addMissiles(unsigned int nb)
 {
     unsigned int p = nb;
     if(p > Config::instance().FIGHTER_MAX_MISSILE - _missiles)
-	p = Config::instance().FIGHTER_MAX_MISSILE - _missiles;
-    
+        p = Config::instance().FIGHTER_MAX_MISSILE - _missiles;
+
     _missiles += p;
 
     return p;

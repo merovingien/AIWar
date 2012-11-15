@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef MISSILE_HPP
@@ -27,18 +27,18 @@
 namespace aiwar {
     namespace core {
 
-	class Missile : virtual public Item, public Movable, public Living
-	{
-	public:
-	    Missile(ItemManager& im, Key k, double px, double py, Living* target);
-	    ~Missile();
+        class Missile : virtual public Item, public Movable, public Living
+        {
+        public:
+            Missile(ItemManager& im, Key k, double px, double py, Living* target);
+            ~Missile();
 
-	    void update(unsigned int tick);
+            void update(unsigned int tick);
 
-	private:
-	    const Key _target;
+        private:
+            const Key _target;
 
-	};
+        };
 
     } // namespace aiwar::core
 } // namespace aiwar

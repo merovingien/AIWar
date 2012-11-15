@@ -26,13 +26,13 @@
 namespace aiwar {
     namespace core {
 
-	class Mineral : virtual public Item, public Living
-	{
-	public:
-	    Mineral(ItemManager& im, Key k, double px, double py);
+        class Mineral : virtual public Item, public Living
+        {
+        public:
+            Mineral(ItemManager& im, Key k, double px, double py);
 
-	    void update(unsigned int tick);
-	};
+            void update(unsigned int tick);
+        };
 
     } // namespace aiwar::core
 } // namespace aiwar

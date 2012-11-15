@@ -28,74 +28,74 @@ namespace aiwar {
     namespace core {
 
         /**
-	 * \brief Abstract base class for all items on the plate
-	 */
-	class Item
-	{
-	public:
-	    typedef std::set<Item*> ItemSet;
-	    typedef ItemManager::ItemKey Key;
+         * \brief Abstract base class for all items on the plate
+         */
+        class Item
+        {
+        public:
+            typedef std::set<Item*> ItemSet;
+            typedef ItemManager::ItemKey Key;
 
-	    virtual ~Item();
+            virtual ~Item();
 
-	    /**
-	     * \brief Update the item at each step.
-	     * \param tick The current step.
-	     */
-	    virtual void update(unsigned int tick) = 0;
+            /**
+             * \brief Update the item at each step.
+             * \param tick The current step.
+             */
+            virtual void update(unsigned int tick) = 0;
 
-	    double xpos() const;
-	    double ypos() const;
+            double xpos() const;
+            double ypos() const;
 
-	    /**
-	     * \brief return item nearer than _vision from itself, itself excluded
-	     */
-	    ItemSet neighbours() const;
+            /**
+             * \brief return item nearer than _vision from itself, itself excluded
+             */
+            ItemSet neighbours() const;
 
-	    /**
-	     * \brief Get the distance to the other item.
-	     * \param other The other item
-	     * \return The distance between this item and other.
-	     */
-	    double distanceTo(const Item *other) const;
+            /**
+             * \brief Get the distance to the other item.
+             * \param other The other item
+             * \return The distance between this item and other.
+             */
+            double distanceTo(const Item *other) const;
 
-	    /**
-	     * \brief Get the distance to a point.
-	     * \param px x position
-	     * \param py y position
-	     * \return The distance to the point(px,py)
-	     */
-	    double distanceTo(double px, double py) const;
+            /**
+             * \brief Get the distance to a point.
+             * \param px x position
+             * \param py y position
+             * \return The distance to the point(px,py)
+             */
+            double distanceTo(double px, double py) const;
 
-	    /**
-	     * \brief Intern method. Return true if the item must be removed
-	     * \return True if the item must be removed
-	     */
-	    bool _toRemove() const;
+            /**
+             * \brief Intern method. Return true if the item must be removed
+             * \return True if the item must be removed
+             */
+            bool _toRemove() const;
 
-	    Key _getKey() const;
+            Key _getKey() const;
 
-	protected:
-	    Item(ItemManager &im, Key k, double px = 0.0, double py = 0.0, double sx = 0.0, double sy = 0.0, double detection = 0.0);
+        protected:
+            Item(ItemManager &im, Key k, double px = 0.0, double py = 0.0, double sx = 0.0, double sy = 0.0, double detection = 0.0);
 
-	    ItemManager &_im;
-	    const Key _key;
+            ItemManager &_im;
+            const Key _key;
 
-	    bool _toRemoveFlag; ///< set to true when the item must be deleted by the game manager
+            bool _toRemoveFlag; ///< set to true when the item must be deleted by the game manager
 
-	    double _xpos; ///< horizontal Position
-	    double _ypos; ///< vertical Position
+            double _xpos; ///< horizontal Position
+            double _ypos; ///< vertical Position
 
-	    double _xsize; ///< horizontal size
-	    double _ysize; ///< vertical size
+            double _xsize; ///< horizontal size
+            double _ysize; ///< vertical size
 
-	    double _detection_radius; ///< radius of vision for the item
+            double _detection_radius; ///< radius of vision for the item
 
-	private:
-	    // no copy
-	    Item(const Item&);
-	    Item& operator= (const Item&);
-	};
+        private:
+            // no copy
+            Item(const Item&);
+            Item& operator= (const Item&);
+        };
 
     } // namespace aiwar::core
 } // namespace aiwar

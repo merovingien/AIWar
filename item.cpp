@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "item.hpp"
@@ -51,18 +51,18 @@ Item::ItemSet Item::neighbours() const
     ItemManager::ItemMap::const_iterator cit;
     for(cit = _im.begin() ; cit != _im.end() ; cit++)
     {
-	Item* i = cit->second;
-	if(i->_key == this->_key)
-	    continue;
+        Item* i = cit->second;
+        if(i->_key == this->_key)
+            continue;
 
-	if(i->_toRemove())
-	    continue;
+        if(i->_toRemove())
+            continue;
 
-	double distance = (i->_xpos - _xpos) * (i->_xpos - _xpos) + (i->_ypos - _ypos) * (i->_ypos - _ypos);
-	if(distance > _detection_radius * _detection_radius)
-	    continue;
+        double distance = (i->_xpos - _xpos) * (i->_xpos - _xpos) + (i->_ypos - _ypos) * (i->_ypos - _ypos);
+        if(distance > _detection_radius * _detection_radius)
+            continue;
 
-	res.insert(i);
+        res.insert(i);
     }
 
     return res;

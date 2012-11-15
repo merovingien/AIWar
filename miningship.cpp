@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "miningship.hpp"
@@ -46,7 +46,7 @@ void MiningShip::_preUpdate(unsigned int ticks)
 {
     Movable::preUpdate();
     Playable::_preUpdate(ticks);
-    
+
     _hasExtracted = false;
 }
 
@@ -64,24 +64,24 @@ unsigned int MiningShip::extract(Mineral *m)
     unsigned int extracted = 0;
     if(!_hasExtracted)
     {
-	if(distanceTo(m) <= Config::instance().MININGSHIP_MINING_RADIUS)
-	{
-	    unsigned int toExtract = ( (Config::instance().MININGSHIP_MAX_MINERAL_STORAGE-_mineralStorage) < Config::instance().MININGSHIP_MINERAL_EXTRACT ) ? (Config::instance().MININGSHIP_MAX_MINERAL_STORAGE-_mineralStorage) : Config::instance().MININGSHIP_MINERAL_EXTRACT;
-	    extracted = m->_takeLife(toExtract);
-	    _mineralStorage += extracted;
-	}
-	else
-	{
-	    std::cout << "Mining failed: Mineral is too far" << std::endl;
-	}
+        if(distanceTo(m) <= Config::instance().MININGSHIP_MINING_RADIUS)
+        {
+            unsigned int toExtract = ( (Config::instance().MININGSHIP_MAX_MINERAL_STORAGE-_mineralStorage) < Config::instance().MININGSHIP_MINERAL_EXTRACT ) ? (Config::instance().MININGSHIP_MAX_MINERAL_STORAGE-_mineralStorage) : Config::instance().MININGSHIP_MINERAL_EXTRACT;
+            extracted = m->_takeLife(toExtract);
+            _mineralStorage += extracted;
+        }
+        else
+        {
+            std::cout << "Mining failed: Mineral is too far" << std::endl;
+        }
     }
     else
     {
-	std::cout << "Cannot extract twice in one play round" << std::endl;
+        std::cout << "Cannot extract twice in one play round" << std::endl;
     }
 
     if(extracted > 0)
-	_hasExtracted = true;
+        _hasExtracted = true;
 
     return extracted;
 }
@@ -101,13 +101,13 @@ unsigned int MiningShip::_release(unsigned int mp)
     unsigned int p = 0;
     if(mp <= _mineralStorage)
     {
-	p = mp;
-	_mineralStorage -= mp;
+        p = mp;
+        _mineralStorage -= mp;
     }
     else
     {
-	p = _mineralStorage;
-	_mineralStorage = 0;
+        p = _mineralStorage;
+        _mineralStorage = 0;
     }
     return p;
 }

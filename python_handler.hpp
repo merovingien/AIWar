@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef PYHTON_HANDLER_HPP
@@ -69,7 +69,7 @@ public:
 
     PythonHandlerPlayFunction(PH_PF fn, PyObject *handler) : _fun(fn), _h(handler) {}
     void operator()(aiwar::core::Playable* p) { _fun(_h, p); }
-    
+
 private:
     PH_PF _fun;
     PyObject *_h;

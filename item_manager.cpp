@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "item_manager.hpp"
@@ -47,7 +47,7 @@ ItemManager::ItemManager(GameManager& gm) : _gm(gm), _currentItemId(0)
     std::cout << "ItemManager: Loading the map... ";
     if(!this->loadMap(Config::instance().mapFile))
     {
-	throw std::runtime_error("Error while loading map file");
+        throw std::runtime_error("Error while loading map file");
     }
     std::cout << "Done\n";
 }
@@ -58,7 +58,7 @@ ItemManager::~ItemManager()
     // delete all items
     for(it = _itemMap.begin() ; it != _itemMap.end() ; ++it)
     {
-	delete it->second;
+        delete it->second;
     }
 }
 
@@ -69,24 +69,24 @@ void ItemManager::update(unsigned int tick)
     // update all items if not to remove
     for(it = _itemMap.begin() ; it != _itemMap.end() ; ++it)
     {
-	i = it->second;
-	if(!i->_toRemove())
-	    i->update(tick);
+        i = it->second;
+        if(!i->_toRemove())
+            i->update(tick);
     }
 
     // remove some items
     for(it = _itemMap.begin() ; it != _itemMap.end() ; )
     {
-	// keep trace of the current iterator *before* increment
-	tmp = it++;
-	
-	i = tmp->second;
-	if(i->_toRemove())
-	{
-	    _gm.itemDestroyed(i);
-	    delete i;
-	    _itemMap.erase(tmp);  // this unvalidates tmp, but 'it' has been updated before
-	}
+        // keep trace of the current iterator *before* increment
+        tmp = it++;
+
+        i = tmp->second;
+        if(i->_toRemove())
+        {
+            _gm.itemDestroyed(i);
+            delete i;
+            _itemMap.erase(tmp);  // this unvalidates tmp, but 'it' has been updated before
+        }
     }
 }
 
@@ -160,9 +160,9 @@ Item* ItemManager::get(ItemKey key) const
 {
     ItemMap::const_iterator cit = _itemMap.find(key);
     if(cit != _itemMap.end())
-	return cit->second;
+        return cit->second;
     else
-	return NULL;
+        return NULL;
 }
 
 void ItemManager::applyOffset(double &px, double &py) const
@@ -186,7 +186,7 @@ ItemManager::ItemMap::const_iterator ItemManager::end() const
 {
     return _itemMap.end();
 }
-	    
+
 ItemManager::ItemKey ItemManager::_getNextItemKey()
 {
     ItemKey k = _currentItemId++;
@@ -198,8 +198,8 @@ bool ItemManager::loadMap(const std::string& mapFile)
     TiXmlDocument doc(mapFile.c_str());
     if(!doc.LoadFile())
     {
-	std::cerr << "Cannot load map file: \"" << mapFile << "\"\n";
-	return false;
+        std::cerr << "Cannot load map file: \"" << mapFile << "\"\n";
+        return false;
     }
 
     TiXmlElement *pRoot, *pElem;
@@ -208,8 +208,8 @@ bool ItemManager::loadMap(const std::string& mapFile)
     pRoot = doc.RootElement();
     if(!pRoot || pRoot->ValueStr() != "items")
     {
-	std::cerr << "Parse error - Bad root element tag, must be \"items\"\n";
-	return false;
+        std::cerr << "Parse error - Bad root element tag, must be \"items\"\n";
+        return false;
     }
 
     // read all items
@@ -219,56 +219,56 @@ bool ItemManager::loadMap(const std::string& mapFile)
     pElem = 0;
     for(pElem=pRoot->FirstChildElement("item") ; pElem ; pElem=pElem->NextSiblingElement("item"))
     {
-	if(pElem->QueryDoubleAttribute("x", &x) != TIXML_SUCCESS)
-	{
-	    std::cerr << "Parse error - No or bad \"x\" attribute\n";
-	    return false;
-	}
+        if(pElem->QueryDoubleAttribute("x", &x) != TIXML_SUCCESS)
+        {
+            std::cerr << "Parse error - No or bad \"x\" attribute\n";
+            return false;
+        }
 
-	if(pElem->QueryDoubleAttribute("y", &y) != TIXML_SUCCESS)
-	{
-	    std::cerr << "Parse error - No or bad \"y\" attribute\n";
-	    return false;
-	}
+        if(pElem->QueryDoubleAttribute("y", &y) != TIXML_SUCCESS)
+        {
+            std::cerr << "Parse error - No or bad \"y\" attribute\n";
+            return false;
+        }
 
-	if(pElem->QueryStringAttribute("type", &stype) != TIXML_SUCCESS)
-	{
-	    std::cerr << "Parse error - No \"type\" attribute\n";
-	    return false;
-	}
-	
-	applyOffset(x, y);
+        if(pElem->QueryStringAttribute("type", &stype) != TIXML_SUCCESS)
+        {
+            std::cerr << "Parse error - No \"type\" attribute\n";
+            return false;
+        }
 
-	if(stype == "MINERAL")
-	{
-	    // load a mineral
-	    createMineral(x, y);
-	}
-	else if(stype == "BASE" || stype == "MININGSHIP" || stype == "FIGHTER")
-	{
-	    // get team
-	    if(pElem->QueryStringAttribute("team", &steam) != TIXML_SUCCESS)
-	    {
-		std::cerr << "Parse error - No \"team\" attribute\n";
-		return false;
-	    }
-	    if(steam == "BLUE")
-		team = BLUE_TEAM;
-	    else if(steam == "RED")
-		team = RED_TEAM;
-	    else
-	    {
-		std::cerr << "Parse error - Bad \"team\" attribute\n";
-		return false;
-	    }
+        applyOffset(x, y);
 
-	    if(stype == "BASE")
-		createBase(x, y, team);
-	    else if(stype == "MININGSHIP")
-		createMiningShip(x, y, team);
-	    else
-		createFighter(x, y, team);
-	}
+        if(stype == "MINERAL")
+        {
+            // load a mineral
+            createMineral(x, y);
+        }
+        else if(stype == "BASE" || stype == "MININGSHIP" || stype == "FIGHTER")
+        {
+            // get team
+            if(pElem->QueryStringAttribute("team", &steam) != TIXML_SUCCESS)
+            {
+                std::cerr << "Parse error - No \"team\" attribute\n";
+                return false;
+            }
+            if(steam == "BLUE")
+                team = BLUE_TEAM;
+            else if(steam == "RED")
+                team = RED_TEAM;
+            else
+            {
+                std::cerr << "Parse error - Bad \"team\" attribute\n";
+                return false;
+            }
+
+            if(stype == "BASE")
+                createBase(x, y, team);
+            else if(stype == "MININGSHIP")
+                createMiningShip(x, y, team);
+            else
+                createFighter(x, y, team);
+        }
     }
 
     return true;
