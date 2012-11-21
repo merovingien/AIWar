@@ -209,7 +209,7 @@ int main(int argc, char* argv[])
     }
 
     // first render
-    done = !renderer->render(gm.getItemManager(), gm.getStat(), gameover) || gameover;
+    done = !renderer->render(gm.getItemManager(), gm.getStatManager(), gameover) || gameover;
 
     while(!done)
     {
@@ -217,7 +217,7 @@ int main(int argc, char* argv[])
         try
         {
             gm.update(tick++);
-            gm.printStat();
+            gm.getStatManager().print();
         }
         catch(const aiwar::core::HandlerError &e)
         {
@@ -240,7 +240,7 @@ int main(int argc, char* argv[])
         }
 
         // render
-        done = !renderer->render(gm.getItemManager(), gm.getStat(), gameover) || gameover;
+        done = !renderer->render(gm.getItemManager(), gm.getStatManager(), gameover) || gameover;
     }
 
     renderer->finalize();

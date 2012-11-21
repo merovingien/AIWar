@@ -20,8 +20,9 @@
 #ifndef RENDERER_INTERFACE_HPP
 #define RENDERER_INTERFACE_HPP
 
-#include "item_manager.hpp"
 #include "game_manager.hpp"
+#include "item_manager.hpp"
+#include "stat_manager.hpp"
 
 namespace aiwar {
     namespace renderer {
@@ -56,20 +57,19 @@ namespace aiwar {
 
             /**
              * \brief Render the battle state
-             * \param begin an iterator that points on the first item
-             * \param end an iterator that points after the last item
-             * \param stat a statistic object giving global information about the battle
+             * \param itemManager an object giving information on items
+             * \param statManager a statistic object giving global information about the battle
              * \param gameover True if game is over
              * \return True if the game continues, false to stop the game
              *
-             * The begin iterators is pointing on the first item. Renderer object must not copy and use
-             * the iterator outside of this function, because it will be certainlly
-             * invalidated just after this function returns. The same applies for stat object.
+             * The itemManager and statManager must not be saved accross the
+             * call of this function because they will be certainlly
+             * invalidated just after this function returns.
              * If gameover is true, this is the last call to the renderer update. When
              * the function return, the core manager will clean and exit the game.
              */
             virtual bool render(const aiwar::core::ItemManager &itemManager,
-                                const aiwar::core::GameManager::Stat &stats,
+                                const aiwar::core::StatManager &statManager,
                                 bool gameover) = 0;
         };
 

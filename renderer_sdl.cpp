@@ -30,7 +30,7 @@
 //#define SPEED 400
 
 // ms between each event treatment and draw (20 ms -> 50 FPS)
-#define FRAME_DELAY 20
+#define FRAME_DELAY 250
 
 // ms between each play round
 #define PLAY_DELAY 500
@@ -101,7 +101,7 @@ bool RendererSDL::finalize()
     return true;
 }
 
-bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwar::core::GameManager::Stat &stats, bool gameover)
+bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwar::core::StatManager &, bool gameover)
 {
     SDL_Event e;
     bool cont = true;

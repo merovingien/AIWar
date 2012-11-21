@@ -49,7 +49,7 @@ bool RendererDummy::finalize()
     return true;
 }
 
-bool RendererDummy::render(const aiwar::core::ItemManager &, const aiwar::core::GameManager::Stat &, bool)
+bool RendererDummy::render(const aiwar::core::ItemManager &, const aiwar::core::StatManager &, bool)
 {
     return true;
 }

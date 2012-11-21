@@ -29,6 +29,7 @@ namespace aiwar {
     namespace core {
 
         class ItemManager;
+        class StatManager;
 
         class Item;
         class Base;
@@ -40,15 +41,6 @@ namespace aiwar {
         class GameManager
         {
         public:
-            class Stat
-            {
-            public:
-                Stat();
-            private:
-                Stat(const Stat&);
-                Stat& operator=(const Stat&);
-            };
-
             GameManager();
             ~GameManager();
 
@@ -57,29 +49,14 @@ namespace aiwar {
             bool initItemManager();
             const ItemManager& getItemManager() const;
 
+            StatManager& getStatManager();
+            const StatManager& getStatManager() const;
+
             PlayFunction& getBasePF(Team team) const;
             PlayFunction& getMiningShipPF(Team team) const;
             PlayFunction& getFighterPF(Team team) const;
 
             void update(unsigned int ticks);
-
-            // slots
-            void baseCreated(const Base*);
-            void baseDestroyed(const Base*);
-            void miningShipCreated(const MiningShip*);
-            void miningShipDestroyed(const MiningShip*);
-            void fighterCreated(const Fighter*);
-            void fighterDestroyed(const Fighter*);
-            void missileCreated(const Missile*);
-            void missileDestroyed(const Missile*);
-            void mineralCreated(const Mineral*);
-            void mineralDestroyed(const Mineral*);
-            void mineralSaved(const Team, const  unsigned int);
-            void mineralSpent(const Team, const  unsigned int);
-            void itemDestroyed(const Item*);
-
-            void printStat() const;
-            const Stat& getStat() const;
 
             bool gameOver() const;
             Team getWinner() const;
@@ -93,7 +70,7 @@ namespace aiwar {
 
             TeamMap _teamMap;
             ItemManager *_im;
-            Stat _stat;
+            StatManager *_sm;
         };
 
 
@@ -105,15 +82,6 @@ namespace aiwar {
             PlayFunction& play_base;
             PlayFunction& play_miningShip;
             PlayFunction& play_fighter;
-
-            unsigned int nb_base;
-            unsigned int nb_base_max;
-            unsigned int nb_miningShip;
-            unsigned int nb_miningShip_max;
-            unsigned int nb_fighter;
-            unsigned int nb_fighter_max;
-            unsigned int nb_mineral_spent;
-            unsigned int nb_mineral_saved;
         };
 
     } // aiwar::core

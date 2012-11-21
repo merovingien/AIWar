@@ -24,6 +24,7 @@ cxxsrc = config.cpp \
 	fighter.cpp \
 	missile.cpp \
 	item_manager.cpp \
+	stat_manager.cpp \
 	game_manager.cpp \
 	handler_dummy.cpp \
 	python_wrapper.cpp \

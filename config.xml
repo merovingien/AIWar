@@ -25,14 +25,9 @@
       <params>mero</params>
     </player>
     <player>
-      <name>GuiGui_01</name>
+      <name>GuiGui_03</name>
       <handler>python</handler>
-      <params>AIWar_GuiGui_01</params>
-    </player>
-    <player>
-      <name>GuiGui_02</name>
-      <handler>python</handler>
-      <params>AIWar_GuiGui_02</params>
+      <params>AIWar_GuiGui_03</params>
     </player>
     <player>
       <name>print_config</name>

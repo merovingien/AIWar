@@ -39,7 +39,7 @@ namespace aiwar {
             bool finalize();
 
             bool render(const aiwar::core::ItemManager &itemManager,
-                        const aiwar::core::GameManager::Stat &stats,
+                        const aiwar::core::StatManager &statManager,
                         bool gameover);
         };
 
