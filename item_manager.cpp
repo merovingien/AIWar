@@ -44,13 +44,6 @@ ItemManager::ItemManager(GameManager& gm) : _gm(gm), _currentItemId(0)
     _yOffset = static_cast<double>(std::rand() % 50000) + 1.0;
 
     std::cout << "ItemManager: position offset: " << _xOffset << "x" << _yOffset << "\n";
-
-    std::cout << "ItemManager: Loading the map... ";
-    if(!this->loadMap(Config::instance().mapFile))
-    {
-        throw std::runtime_error("Error while loading map file");
-    }
-    std::cout << "Done\n";
 }
 
 ItemManager::~ItemManager()
@@ -61,6 +54,18 @@ ItemManager::~ItemManager()
     {
         delete it->second;
     }
+}
+
+bool ItemManager::init()
+{
+    std::cout << "ItemManager: Loading the map... ";
+    if(!this->loadMap(Config::instance().mapFile))
+    {
+        std::cerr << "Error while loading map file\n";
+        return false;
+    }
+    std::cout << "Done\n";
+    return true;
 }
 
 void ItemManager::update(unsigned int tick)
@@ -94,7 +99,7 @@ void ItemManager::update(unsigned int tick)
 Missile* ItemManager::createMissile(Item* launcher, Living* target)
 {
     ItemKey k = _getNextItemKey();
-    Missile *m = new Missile(*this, k, launcher->xpos(), launcher->ypos(), target);
+    Missile *m = new Missile(_gm, k, launcher->xpos(), launcher->ypos(), target);
     _itemMap.insert(ItemMap::value_type(k, m));
     _gm.getStatManager().missileCreated(m);
     /* How can I do this ? But warning, because this function is called when launching missile already bought !
@@ -105,7 +110,7 @@ Missile* ItemManager::createMissile(Item* launcher, Living* target)
 Base* ItemManager::createBase(double px, double py, Team team)
 {
     ItemKey k = _getNextItemKey();
-    Base *b = new Base(*this, k, px, py, team, _gm.getBasePF(team));
+    Base *b = new Base(_gm, k, px, py, team, _gm.getBasePF(team));
     _itemMap.insert(ItemMap::value_type(k, b));
     _gm.getStatManager().baseCreated(b);
     /* Need the price of base !
@@ -116,7 +121,7 @@ Base* ItemManager::createBase(double px, double py, Team team)
 MiningShip* ItemManager::createMiningShip(double px, double py, Team team)
 {
     ItemKey k = _getNextItemKey();
-    MiningShip *t = new MiningShip(*this, k, px, py, team, _gm.getMiningShipPF(team));
+    MiningShip *t = new MiningShip(_gm, k, px, py, team, _gm.getMiningShipPF(team));
     _itemMap.insert(ItemMap::value_type(k, t));
     _gm.getStatManager().miningShipCreated(t);
     _gm.getStatManager().mineralSpent(team, Config::instance().BASE_MININGSHIP_PRICE);
@@ -131,7 +136,7 @@ MiningShip* ItemManager::createMiningShip(Base* base)
 Mineral* ItemManager::createMineral(double px, double py)
 {
     ItemKey k = _getNextItemKey();
-    Mineral *m = new Mineral(*this, k, px, py);
+    Mineral *m = new Mineral(_gm, k, px, py);
     _itemMap.insert(ItemMap::value_type(k, m));
     _gm.getStatManager().mineralCreated(m);
     return m;
@@ -140,7 +145,7 @@ Mineral* ItemManager::createMineral(double px, double py)
 Fighter* ItemManager::createFighter(double px, double py, Team team)
 {
     ItemKey k = _getNextItemKey();
-    Fighter *f = new Fighter(*this, k, px, py, team, _gm.getFighterPF(team));
+    Fighter *f = new Fighter(_gm, k, px, py, team, _gm.getFighterPF(team));
     _itemMap.insert(ItemMap::value_type(k, f));
     _gm.getStatManager().fighterCreated(f);
     _gm.getStatManager().mineralSpent(team, Config::instance().BASE_FIGHTER_PRICE);

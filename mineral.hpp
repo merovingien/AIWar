@@ -29,7 +29,7 @@ namespace aiwar {
         class Mineral : virtual public Item, public Living
         {
         public:
-            Mineral(ItemManager& im, Key k, double px, double py);
+            Mineral(GameManager& gm, Key k, double px, double py);
 
             void update(unsigned int tick);
         };

@@ -185,7 +185,7 @@ int main(int argc, char* argv[])
     gm.registerTeam(BLUE_TEAM, hblue->get_BaseHandler(cfg.blue), hblue->get_MiningShipHandler(cfg.blue), hblue->get_FighterHandler(cfg.blue));
     gm.registerTeam(RED_TEAM, hred->get_BaseHandler(cfg.red), hred->get_MiningShipHandler(cfg.red), hred->get_FighterHandler(cfg.red));
 
-    if(!gm.initItemManager())
+    if(!gm.init())
     {
         std::cerr << "Error while initializing GameManager\n";
         th.finalize();

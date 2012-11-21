@@ -56,7 +56,7 @@ namespace aiwar {
                 float f;
             } MemorySlot;
 
-            Memory(ItemManager& im, Key k, unsigned int size);
+            Memory(GameManager& gm, Key k, unsigned int size);
 
             std::vector<MemorySlot> _memory;
         };

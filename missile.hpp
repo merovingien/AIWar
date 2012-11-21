@@ -30,7 +30,7 @@ namespace aiwar {
         class Missile : virtual public Item, public Movable, public Living
         {
         public:
-            Missile(ItemManager& im, Key k, double px, double py, Living* target);
+            Missile(GameManager& gm, Key k, double px, double py, Living* target);
             ~Missile();
 
             void update(unsigned int tick);

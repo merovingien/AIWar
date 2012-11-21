@@ -27,6 +27,9 @@
 namespace aiwar {
     namespace core {
 
+        class GameManager;
+        class StatManager;
+
         /**
          * \brief Abstract base class for all items on the plate
          */
@@ -76,9 +79,10 @@ namespace aiwar {
             Key _getKey() const;
 
         protected:
-            Item(ItemManager &im, Key k, double px = 0.0, double py = 0.0, double sx = 0.0, double sy = 0.0, double detection = 0.0);
+            Item(GameManager &gm, Key k, double px = 0.0, double py = 0.0, double sx = 0.0, double sy = 0.0, double detection = 0.0);
 
             ItemManager &_im;
+            StatManager &_sm;
             const Key _key;
 
             bool _toRemoveFlag; ///< set to true when the item must be deleted by the game manager

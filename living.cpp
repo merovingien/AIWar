@@ -23,11 +23,11 @@
 
 using namespace aiwar::core;
 
-Living::Living(ItemManager& im, Key k) : Item(im, k), _maxLife(0), _life(0)
+Living::Living(GameManager& gm, Key k) : Item(gm, k), _maxLife(0), _life(0)
 {
 }
 
-Living::Living(ItemManager& im, Key k, unsigned int life, unsigned int maxLife) : Item(im, k), _maxLife(maxLife), _life(life)
+Living::Living(GameManager& gm, Key k, unsigned int life, unsigned int maxLife) : Item(gm, k), _maxLife(maxLife), _life(life)
 {
 }
 

@@ -48,6 +48,8 @@ namespace aiwar {
             ItemManager(GameManager& gm);
             ~ItemManager();
 
+            bool init();
+
             void update(unsigned int tick);
 
             Missile* createMissile(Item* launcher, Living* target);

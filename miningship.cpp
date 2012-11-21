@@ -27,12 +27,12 @@
 
 using namespace aiwar::core;
 
-MiningShip::MiningShip(ItemManager& im, Key k, double xpos, double ypos, Team team, PlayFunction& pf)
-    : Item(im, k, xpos, ypos, Config::instance().MININGSHIP_SIZE_X, Config::instance().MININGSHIP_SIZE_Y, Config::instance().MININGSHIP_DETECTION_RADIUS),
-      Movable(im, k, Config::instance().MININGSHIP_SPEED, Config::instance().MININGSHIP_START_FUEL, Config::instance().MININGSHIP_MAX_FUEL, Config::instance().MININGSHIP_MOVE_CONSO),
-      Living(im, k, Config::instance().MININGSHIP_START_LIFE, Config::instance().MININGSHIP_MAX_LIFE),
+MiningShip::MiningShip(GameManager& gm, Key k, double xpos, double ypos, Team team, PlayFunction& pf)
+    : Item(gm, k, xpos, ypos, Config::instance().MININGSHIP_SIZE_X, Config::instance().MININGSHIP_SIZE_Y, Config::instance().MININGSHIP_DETECTION_RADIUS),
+      Movable(gm, k, Config::instance().MININGSHIP_SPEED, Config::instance().MININGSHIP_START_FUEL, Config::instance().MININGSHIP_MAX_FUEL, Config::instance().MININGSHIP_MOVE_CONSO),
+      Living(gm, k, Config::instance().MININGSHIP_START_LIFE, Config::instance().MININGSHIP_MAX_LIFE),
       Playable(team, pf),
-      Memory(im, k, Config::instance().MININGSHIP_MEMORY_SIZE),
+      Memory(gm, k, Config::instance().MININGSHIP_MEMORY_SIZE),
       _mineralStorage(0),
       _hasExtracted(false)
 {

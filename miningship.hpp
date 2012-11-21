@@ -37,7 +37,7 @@ namespace aiwar {
         class MiningShip : virtual public Item, public Movable, public Living, public Playable, public Memory
         {
         public:
-            MiningShip(ItemManager& im, Key k, double xpos, double ypos, Team team, PlayFunction& pf);
+            MiningShip(GameManager& gm, Key k, double xpos, double ypos, Team team, PlayFunction& pf);
             ~MiningShip();
 
             void update(unsigned int tick);

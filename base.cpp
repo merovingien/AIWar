@@ -28,11 +28,11 @@
 
 using namespace aiwar::core;
 
-Base::Base(ItemManager &im, Key k, double xpos, double ypos, Team team, PlayFunction& pf)
-    : Item(im, k, xpos, ypos, Config::instance().BASE_SIZE_X, Config::instance().BASE_SIZE_Y, Config::instance().BASE_DETECTION_RADIUS),
-      Living(im, k, Config::instance().BASE_START_LIFE, Config::instance().BASE_MAX_LIFE),
+Base::Base(GameManager &gm, Key k, double xpos, double ypos, Team team, PlayFunction& pf)
+    : Item(gm, k, xpos, ypos, Config::instance().BASE_SIZE_X, Config::instance().BASE_SIZE_Y, Config::instance().BASE_DETECTION_RADIUS),
+      Living(gm, k, Config::instance().BASE_START_LIFE, Config::instance().BASE_MAX_LIFE),
       Playable(team, pf),
-      Memory(im, k, Config::instance().BASE_MEMORY_SIZE),
+      Memory(gm, k, Config::instance().BASE_MEMORY_SIZE),
       _mineralStorage(Config::instance().BASE_START_MINERAL_STORAGE),
       _hasLaunch(false), _hasCreate(false)
 {

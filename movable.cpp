@@ -32,8 +32,8 @@ Movable::~Movable()
 {
 }
 
-Movable::Movable(ItemManager& im, Key k, double speed, unsigned int startFuel, unsigned int maxFuel, unsigned int moveConso, double angle)
-    : Item(im, k), _xdest(0.0), _ydest(0.0), _speed(speed), _angle(angle), _fuel(startFuel), _maxFuel(maxFuel), _moveConso(moveConso), _hasMoved(false)
+Movable::Movable(GameManager& gm, Key k, double speed, unsigned int startFuel, unsigned int maxFuel, unsigned int moveConso, double angle)
+    : Item(gm, k), _xdest(0.0), _ydest(0.0), _speed(speed), _angle(angle), _fuel(startFuel), _maxFuel(maxFuel), _moveConso(moveConso), _hasMoved(false)
 {
     // update _xdest and _ydest with the real position of the item.
     // _xpos and _ypos has been set with the value given in the constructor of the final item.

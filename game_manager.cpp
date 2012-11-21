@@ -35,6 +35,7 @@ using namespace aiwar::core;
 
 GameManager::GameManager() : _im(NULL), _sm(NULL)
 {
+    _im = new ItemManager(*this);
     _sm = new StatManager();
 }
 
@@ -53,18 +54,14 @@ GameManager::~GameManager()
     }
 }
 
-bool GameManager::initItemManager()
+bool GameManager::init()
 {
-    try
-    {
-        _im = new ItemManager(*this);
-        return true;
-    }
-    catch(const std::runtime_error& e)
-    {
-        std::cerr << "Fail to init ItemManager: " << e.what() << std::endl;
-        return false;
-    }
+    return _im->init();
+}
+
+ItemManager& GameManager::getItemManager()
+{
+    return *_im;
 }
 
 const ItemManager& GameManager::getItemManager() const

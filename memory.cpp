@@ -25,7 +25,7 @@
 
 using namespace aiwar::core;
 
-Memory::Memory(ItemManager& im, Key k, unsigned int size) : Item(im, k), _memory(size)
+Memory::Memory(GameManager& gm, Key k, unsigned int size) : Item(gm, k), _memory(size)
 {
 //    std::cout << "sizeof MemorySlot: " << sizeof(MemorySlot) << std::endl;
     assert(sizeof(MemorySlot) == 4); // check size of MemorySlot -> must be 32 bits

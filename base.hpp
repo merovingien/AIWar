@@ -37,7 +37,7 @@ namespace aiwar {
         class Base : virtual public Item, public Living, public Playable, public Memory
         {
         public:
-            Base(ItemManager &im, Key k, double xpos, double ypos, Team team, PlayFunction& pf);
+            Base(GameManager &gm, Key k, double xpos, double ypos, Team team, PlayFunction& pf);
             ~Base();
 
             void update(unsigned int tick);

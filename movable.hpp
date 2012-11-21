@@ -45,7 +45,7 @@ namespace aiwar {
             unsigned int _putFuel(unsigned int points);
 
         protected:
-            Movable(ItemManager& im, Key k, double speed = 0.0, unsigned int startFuel = 0, unsigned int maxFuel = 0, unsigned int moveConso = 0, double angle = 0.0);
+            Movable(GameManager& gm, Key k, double speed = 0.0, unsigned int startFuel = 0, unsigned int maxFuel = 0, unsigned int moveConso = 0, double angle = 0.0);
 
             /**
              * \brief Initialize the movement

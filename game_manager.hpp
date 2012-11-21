@@ -46,7 +46,9 @@ namespace aiwar {
 
             void registerTeam(Team team, PlayFunction& pfBase, PlayFunction& pfMiningShip, PlayFunction& pfFighter);
 
-            bool initItemManager();
+            bool init();
+
+            ItemManager& getItemManager();
             const ItemManager& getItemManager() const;
 
             StatManager& getStatManager();

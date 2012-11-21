@@ -21,12 +21,12 @@
 
 using namespace aiwar::core;
 
-Fighter::Fighter(ItemManager &im, Key k, double px, double py, Team team, PlayFunction& pf)
-    : Item(im, k, px, py, Config::instance().FIGHTER_SIZE_X, Config::instance().FIGHTER_SIZE_Y, Config::instance().FIGHTER_DETECTION_RADIUS),
-      Movable(im, k, Config::instance().FIGHTER_SPEED, Config::instance().FIGHTER_START_FUEL, Config::instance().FIGHTER_MAX_FUEL, Config::instance().FIGHTER_MOVE_CONSO),
-      Living(im, k, Config::instance().FIGHTER_START_LIFE, Config::instance().FIGHTER_MAX_LIFE),
+Fighter::Fighter(GameManager &gm, Key k, double px, double py, Team team, PlayFunction& pf)
+    : Item(gm, k, px, py, Config::instance().FIGHTER_SIZE_X, Config::instance().FIGHTER_SIZE_Y, Config::instance().FIGHTER_DETECTION_RADIUS),
+      Movable(gm, k, Config::instance().FIGHTER_SPEED, Config::instance().FIGHTER_START_FUEL, Config::instance().FIGHTER_MAX_FUEL, Config::instance().FIGHTER_MOVE_CONSO),
+      Living(gm, k, Config::instance().FIGHTER_START_LIFE, Config::instance().FIGHTER_MAX_LIFE),
       Playable(team, pf),
-      Memory(im, k, Config::instance().FIGHTER_MEMORY_SIZE),
+      Memory(gm, k, Config::instance().FIGHTER_MEMORY_SIZE),
       _missiles(Config::instance().FIGHTER_START_MISSILE),
       _hasLaunch(false)
 {

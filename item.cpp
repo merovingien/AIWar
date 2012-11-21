@@ -19,12 +19,14 @@
 
 #include "item.hpp"
 
+#include "game_manager.hpp"
+
 #include <iostream>
 #include <cmath>
 
 using namespace aiwar::core;
 
-Item::Item(ItemManager &im, Key k, double px, double py, double sx, double sy, double detection) : _im(im), _key(k), _toRemoveFlag(false), _xpos(px), _ypos(py), _xsize(sx), _ysize(sy), _detection_radius(detection)
+Item::Item(GameManager &gm, Key k, double px, double py, double sx, double sy, double detection) : _im(gm.getItemManager()), _sm(gm.getStatManager()), _key(k), _toRemoveFlag(false), _xpos(px), _ypos(py), _xsize(sx), _ysize(sy), _detection_radius(detection)
 {
 //    std::cout << "Ctr Item(" << px << "," << py << ") -> " << this << std::endl;
 }
