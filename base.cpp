@@ -22,6 +22,8 @@
 #include "miningship.hpp"
 #include "fighter.hpp"
 
+#include "stat_manager.hpp"
+
 #include "config.hpp"
 
 #include <iostream>
@@ -36,7 +38,8 @@ Base::Base(GameManager &gm, Key k, double xpos, double ypos, Team team, PlayFunc
       _mineralStorage(Config::instance().BASE_START_MINERAL_STORAGE),
       _hasLaunch(false), _hasCreate(false)
 {
-//    std::cout << "Ctr Base(" << xpos << "," << ypos << ")" << std::endl;
+    // the only way for a Base to save mineral. Warning if at a time player will be able to create base
+    _sm.mineralSaved(team, _mineralStorage);
 }
 
 Base::~Base()
@@ -67,7 +70,9 @@ void Base::launchMissile(Living* target)
         if(_mineralStorage >= Config::instance().BASE_MISSILE_PRICE)
         {
             _im.createMissile(this, target);
-            _mineralStorage -= Config::instance().BASE_MISSILE_PRICE;
+            _sm.missileCreated(_team);
+            _sm.missileLaunched(_team);
+            _setMineralStorage(-Config::instance().BASE_MISSILE_PRICE);
             _hasLaunch = true;
         }
     }
@@ -84,7 +89,7 @@ void Base::createMiningShip()
         if(_mineralStorage >= Config::instance().BASE_MININGSHIP_PRICE)
         {
             _im.createMiningShip(this);
-            _mineralStorage -= Config::instance().BASE_MININGSHIP_PRICE;
+            _setMineralStorage(-Config::instance().BASE_MININGSHIP_PRICE);
             _hasCreate = true;
         }
     }
@@ -116,9 +121,7 @@ unsigned int Base::pullMineral(MiningShip *ship, unsigned int mineralPoint)
             p = Config::instance().BASE_MAX_MINERAL_STORAGE - _mineralStorage;
 
         p = ship->_release(p);
-        _mineralStorage += p;
-        /* How can I do this ?
-        _gm.mineralSaved(ship->team(), mineralPoint); */
+        _setMineralStorage(p);
     }
     else
         std::cout << "WARNING: pullMineral from ennemy is forbidden" << std::endl;
@@ -155,7 +158,7 @@ unsigned int Base::repair(unsigned int points, Living *item)
     if(p > _mineralStorage) // cannot put more than the current mineral storage
         p = _mineralStorage;
     p = item->_putLife(p); // p now contain the number of points actually added
-    _mineralStorage -= p;
+    _setMineralStorage(-p);
     return p;
 }
 
@@ -183,7 +186,7 @@ unsigned int Base::refuel(unsigned int points, Movable *item)
     if(p > _mineralStorage) // cannot put more than the current mineral storage
         p = _mineralStorage;
     p = item->_putFuel(p); // p now contain the number of points actually added
-    _mineralStorage -= p;
+    _setMineralStorage(-p);
     return p;
 }
 
@@ -194,7 +197,7 @@ void Base::createFighter()
         if(_mineralStorage >= Config::instance().BASE_FIGHTER_PRICE)
         {
             _im.createFighter(this);
-            _mineralStorage -= Config::instance().BASE_FIGHTER_PRICE;
+            _setMineralStorage(-Config::instance().BASE_FIGHTER_PRICE);
             _hasCreate = true;
         }
     }
@@ -225,9 +228,18 @@ unsigned int Base::giveMissiles(unsigned int nb, Fighter* fighter)
     }
 
     p = fighter->_addMissiles(p);
-    _mineralStorage -= p * Config::instance().BASE_MISSILE_PRICE;
+    _sm.missileCreated(_team, p);
+    _setMineralStorage(- p * Config::instance().BASE_MISSILE_PRICE);
 
     return p;
+}
+
+void Base::_setMineralStorage(int n)
+{
+    _mineralStorage += n;
+    // a base cannot save mineral storage, so update stat only when mineral are spent
+    if(n < 0)
+        _sm.mineralSpent(_team, -n);
 }
 
 std::ostream& operator<< (std::ostream& os, const Base& b)

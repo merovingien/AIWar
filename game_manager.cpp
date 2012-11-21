@@ -81,6 +81,7 @@ const StatManager& GameManager::getStatManager() const
 
 void GameManager::update(unsigned int ticks)
 {
+    _sm->nextRound();
     _im->update(ticks);
 }
 

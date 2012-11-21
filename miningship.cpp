@@ -25,6 +25,8 @@
 #include "mineral.hpp"
 #include "base.hpp"
 
+#include "stat_manager.hpp"
+
 using namespace aiwar::core;
 
 MiningShip::MiningShip(GameManager& gm, Key k, double xpos, double ypos, Team team, PlayFunction& pf)
@@ -68,7 +70,7 @@ unsigned int MiningShip::extract(Mineral *m)
         {
             unsigned int toExtract = ( (Config::instance().MININGSHIP_MAX_MINERAL_STORAGE-_mineralStorage) < Config::instance().MININGSHIP_MINERAL_EXTRACT ) ? (Config::instance().MININGSHIP_MAX_MINERAL_STORAGE-_mineralStorage) : Config::instance().MININGSHIP_MINERAL_EXTRACT;
             extracted = m->_takeLife(toExtract);
-            _mineralStorage += extracted;
+            _setMineralStorage(extracted);
         }
         else
         {
@@ -102,14 +104,21 @@ unsigned int MiningShip::_release(unsigned int mp)
     if(mp <= _mineralStorage)
     {
         p = mp;
-        _mineralStorage -= mp;
     }
     else
     {
         p = _mineralStorage;
-        _mineralStorage = 0;
     }
+    _setMineralStorage(-p);
     return p;
+}
+
+void MiningShip::_setMineralStorage(int n)
+{
+    _mineralStorage += n;
+    // a miningShip cannot spend mineral storage, so update stat only when minerals are saved
+    if(n > 0)
+        _sm.mineralSaved(_team, n);
 }
 
 std::ostream& operator<< (std::ostream& os, const MiningShip& t)

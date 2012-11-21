@@ -57,6 +57,8 @@ namespace aiwar {
              */
             void _preUpdate(unsigned int tick);
 
+            void _setMineralStorage(int n);
+
             unsigned int _mineralStorage; ///< Number of mineral units stored
 
             bool _hasExtracted;

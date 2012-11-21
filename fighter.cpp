@@ -19,6 +19,8 @@
 
 #include "fighter.hpp"
 
+#include "stat_manager.hpp"
+
 using namespace aiwar::core;
 
 Fighter::Fighter(GameManager &gm, Key k, double px, double py, Team team, PlayFunction& pf)
@@ -30,6 +32,7 @@ Fighter::Fighter(GameManager &gm, Key k, double px, double py, Team team, PlayFu
       _missiles(Config::instance().FIGHTER_START_MISSILE),
       _hasLaunch(false)
 {
+    _sm.missileCreated(team, _missiles);
 }
 
 Fighter::~Fighter()
@@ -66,6 +69,7 @@ void Fighter::launchMissile(Living* target)
         {
             _im.createMissile(this, target);
             _missiles--;
+            _sm.missileLaunched(_team);
             _hasLaunch = true;
         }
     }

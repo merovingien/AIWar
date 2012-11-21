@@ -99,6 +99,7 @@ namespace aiwar {
 
         private:
             void _preUpdate(unsigned int tick);
+            void _setMineralStorage(int n);
 
             unsigned int _mineralStorage;
             bool _hasLaunch;

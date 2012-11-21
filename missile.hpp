@@ -37,7 +37,6 @@ namespace aiwar {
 
         private:
             const Key _target;
-
         };
 
     } // namespace aiwar::core
