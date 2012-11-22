@@ -14,24 +14,27 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "fighter.hpp"
 
+#include "stat_manager.hpp"
+
 using namespace aiwar::core;
 
-Fighter::Fighter(ItemManager &im, Key k, double px, double py, Team team, PlayFunction& pf)
-    : Item(im, k, px, py, Config::instance().FIGHTER_SIZE_X, Config::instance().FIGHTER_SIZE_Y, Config::instance().FIGHTER_DETECTION_RADIUS),
-      Movable(im, k, Config::instance().FIGHTER_SPEED, Config::instance().FIGHTER_START_FUEL, Config::instance().FIGHTER_MAX_FUEL, Config::instance().FIGHTER_MOVE_CONSO),
-      Living(im, k, Config::instance().FIGHTER_START_LIFE, Config::instance().FIGHTER_MAX_LIFE),
+Fighter::Fighter(GameManager &gm, Key k, double px, double py, Team team, PlayFunction& pf)
+    : Item(gm, k, px, py, Config::instance().FIGHTER_SIZE_X, Config::instance().FIGHTER_SIZE_Y, Config::instance().FIGHTER_DETECTION_RADIUS),
+      Movable(gm, k, Config::instance().FIGHTER_SPEED, Config::instance().FIGHTER_START_FUEL, Config::instance().FIGHTER_MAX_FUEL, Config::instance().FIGHTER_MOVE_CONSO),
+      Living(gm, k, Config::instance().FIGHTER_START_LIFE, Config::instance().FIGHTER_MAX_LIFE),
       Playable(team, pf),
-      Memory(im, k, Config::instance().FIGHTER_MEMORY_SIZE),
+      Memory(gm, k, Config::instance().FIGHTER_MEMORY_SIZE),
       _missiles(Config::instance().FIGHTER_START_MISSILE),
       _hasLaunch(false)
 {
+    _sm.missileCreated(team, _missiles);
 }
-	 
+
 Fighter::~Fighter()
 {
 }
@@ -62,12 +65,13 @@ void Fighter::launchMissile(Living* target)
 {
     if(!_hasLaunch)
     {
-	if(_missiles > 0)
-	{
-	    _im.createMissile(this, target);
-	    _missiles--;
-	    _hasLaunch = true;
-	}
+        if(_missiles > 0)
+        {
+            _im.createMissile(this, target);
+            _missiles--;
+            _sm.missileLaunched(_team);
+            _hasLaunch = true;
+        }
     }
 }
 
@@ -75,8 +79,8 @@ unsigned int Fighter::_addMissiles(unsigned int nb)
 {
     unsigned int p = nb;
     if(p > Config::instance().FIGHTER_MAX_MISSILE - _missiles)
-	p = Config::instance().FIGHTER_MAX_MISSILE - _missiles;
-    
+        p = Config::instance().FIGHTER_MAX_MISSILE - _missiles;
+
     _missiles += p;
 
     return p;

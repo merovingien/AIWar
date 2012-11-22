@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "renderer_dummy.hpp"
@@ -43,13 +43,13 @@ bool RendererDummy::initialize(const std::string&)
 {
     return true;
 }
-	    
+
 bool RendererDummy::finalize()
 {
     return true;
 }
 
-bool RendererDummy::render(const aiwar::core::ItemManager &, const aiwar::core::GameManager::Stat &, bool)
+bool RendererDummy::render(const aiwar::core::ItemManager &, const aiwar::core::StatManager &, bool)
 {
     return true;
 }

@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "test_handler.hpp"
@@ -83,21 +83,21 @@ void TestHandler::play_miningship(aiwar::core::Playable* item)
     Item::ItemSet::iterator it;
     for(it = neighbours.begin() ; it != neighbours.end() ; it++)
     {
-	Mineral *m = dynamic_cast<Mineral*>(*it);
-	if(m) // m is a Mineral
-	{
-	    double d = self->distanceTo(m);
-	    if(d <= Config::instance().MININGSHIP_MINING_RADIUS)
-	    {
-		/*unsigned int e =*/ self->extract(m);
-//		cout << *self << ": Meet a Mineral, extracted: " << e << endl;
-	    }
-	    else
-	    {
-		self->rotateTo(m);
-		self->move();
-	    }
-	}
+        Mineral *m = dynamic_cast<Mineral*>(*it);
+        if(m) // m is a Mineral
+        {
+            double d = self->distanceTo(m);
+            if(d <= Config::instance().MININGSHIP_MINING_RADIUS)
+            {
+                /*unsigned int e =*/ self->extract(m);
+//              cout << *self << ": Meet a Mineral, extracted: " << e << endl;
+            }
+            else
+            {
+                self->rotateTo(m);
+                self->move();
+            }
+        }
     }
 
     self->rotateOf(15);
@@ -121,27 +121,27 @@ void TestHandler::play_base(aiwar::core::Playable* item)
     Item::ItemSet::iterator it;
     for(it = neighbours.begin() ; it != neighbours.end() ; ++it)
     {
-	aiwar::core::MiningShip *s = dynamic_cast<aiwar::core::MiningShip*>(*it);
-	if(s)
-	{
-	    if(! self->isFriend(s))
-	    {
-		self->launchMissile(s);
-//		cout << *self << ": launch a missile to " << *s << endl;
-	    }
-	    else
-	    {
-		self->setMemory(0, 5, s);
-		/*int i =*/ self->getMemory<int>(0, s);
-//		cout << *self << ": get Memory from " << *s << ": " << i << endl;
-	    }
-	}
+        aiwar::core::MiningShip *s = dynamic_cast<aiwar::core::MiningShip*>(*it);
+        if(s)
+        {
+            if(! self->isFriend(s))
+            {
+                self->launchMissile(s);
+//              cout << *self << ": launch a missile to " << *s << endl;
+            }
+            else
+            {
+                self->setMemory(0, 5, s);
+                /*int i =*/ self->getMemory<int>(0, s);
+//              cout << *self << ": get Memory from " << *s << ": " << i << endl;
+            }
+        }
     }
 
     if(self->mineralStorage() > Config::instance().BASE_MININGSHIP_PRICE*2)
     {
-	self->createMiningShip();
-//	cout << *self << ": create a new MiningShip" << endl;
+        self->createMiningShip();
+//      cout << *self << ": create a new MiningShip" << endl;
     }
 
 //    cout << *self << ": Life: " << self->life() << endl;
@@ -165,14 +165,14 @@ void TestHandler::play_fighter(aiwar::core::Playable* item)
     Item::ItemSet::iterator it;
     for(it = neighbours.begin() ; it != neighbours.end() ; ++it)
     {
-	aiwar::core::MiningShip *s = dynamic_cast<aiwar::core::MiningShip*>(*it);
-	if(s)
-	{
-	    if(! self->isFriend(s))
-	    {
-		self->launchMissile(s);
-//		cout << *self << ": launch a missile to " << *s << endl;
-	    }
-	}
-    }  
+        aiwar::core::MiningShip *s = dynamic_cast<aiwar::core::MiningShip*>(*it);
+        if(s)
+        {
+            if(! self->isFriend(s))
+            {
+                self->launchMissile(s);
+//              cout << *self << ": launch a missile to " << *s << endl;
+            }
+        }
+    }
 }

@@ -14,21 +14,21 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
  */
 
-#ifndef TEST_HANDLER_HPP
-#define TEST_HANDLER_HPP
+#ifndef HANDLER_DUMMY_HPP
+#define HANDLER_DUMMY_HPP
 
 #include "handler_interface.hpp"
 
-class TestHandler : public aiwar::core::HandlerInterface
+class HandlerDummy : public aiwar::core::HandlerInterface
 {
 public:
     typedef aiwar::core::Config::Player P;
     typedef aiwar::core::PlayFunction PF;
 
-    TestHandler();
+    HandlerDummy();
 
     bool initialize();
     bool finalize();
@@ -52,4 +52,4 @@ private:
 
 
 
-#endif /* TEST_HANDLER_HPP */
+#endif /* HANDLER_DUMMY_HPP */

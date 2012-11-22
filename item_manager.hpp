@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef ITEM_MANAGER_HPP
@@ -28,59 +28,61 @@
 namespace aiwar {
     namespace core {
 
-	class Item;
-	class Living;
-	class Missile;
-	class Base;
-	class MiningShip;
-	class Mineral;
-	class Fighter;
+        class Item;
+        class Living;
+        class Missile;
+        class Base;
+        class MiningShip;
+        class Mineral;
+        class Fighter;
 
-	class GameManager;
+        class GameManager;
 
 
-	class ItemManager
-	{
-	public:
-	    typedef unsigned long ItemKey;
-	    typedef std::map<ItemKey, Item*> ItemMap;
+        class ItemManager
+        {
+        public:
+            typedef unsigned long ItemKey;
+            typedef std::map<ItemKey, Item*> ItemMap;
 
-	    ItemManager(GameManager& gm);
-	    ~ItemManager();
+            ItemManager(GameManager& gm);
+            ~ItemManager();
 
-	    void update(unsigned int tick);
+            bool init();
 
-	    Missile* createMissile(Item* launcher, Living* target);
-	    Base* createBase(double px, double py, Team team);
-	    MiningShip* createMiningShip(double px, double py, Team team);  // for debug only
-	    MiningShip* createMiningShip(Base* base);
-	    Mineral* createMineral(double px, double py);
-	    Fighter* createFighter(double px, double py, Team team);
-	    Fighter* createFighter(Base* base);
+            void update(unsigned int tick);
 
-	    void applyOffset(double &px, double &py) const;
-	    void undoOffset(double &px, double &py) const;
+            Missile* createMissile(Item* launcher, Living* target);
+            Base* createBase(double px, double py, Team team);
+            MiningShip* createMiningShip(double px, double py, Team team);  // for debug only
+            MiningShip* createMiningShip(Base* base);
+            Mineral* createMineral(double px, double py);
+            Fighter* createFighter(double px, double py, Team team);
+            Fighter* createFighter(Base* base);
 
-	    bool exists(ItemKey key) const;
-	    Item* get(ItemKey key) const;
-	    ItemMap::const_iterator begin() const;
-	    ItemMap::const_iterator end() const;
-	        
-	    bool loadMap(const std::string& mapFile);
+            void applyOffset(double &px, double &py) const;
+            void undoOffset(double &px, double &py) const;
 
-	private:
-	    // no copy
-	    ItemManager(const ItemManager&);
-	    ItemManager& operator=(const ItemManager&);
+            bool exists(ItemKey key) const;
+            Item* get(ItemKey key) const;
+            ItemMap::const_iterator begin() const;
+            ItemMap::const_iterator end() const;
 
-	    ItemKey _getNextItemKey();
-    
-	    GameManager& _gm;
-	    ItemKey _currentItemId;
-	    ItemMap _itemMap;
-	    double _xOffset;
-	    double _yOffset;
-	};
+            bool loadMap(const std::string& mapFile);
+
+        private:
+            // no copy
+            ItemManager(const ItemManager&);
+            ItemManager& operator=(const ItemManager&);
+
+            ItemKey _getNextItemKey();
+
+            GameManager& _gm;
+            ItemKey _currentItemId;
+            ItemMap _itemMap;
+            double _xOffset;
+            double _yOffset;
+        };
 
     } // namespace aiwar::core
 } // namespace aiwar

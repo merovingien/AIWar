@@ -14,64 +14,64 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef RENDERER_INTERFACE_HPP
 #define RENDERER_INTERFACE_HPP
 
-#include "item_manager.hpp"
 #include "game_manager.hpp"
+#include "item_manager.hpp"
+#include "stat_manager.hpp"
 
 namespace aiwar {
     namespace renderer {
 
-	/**
-	 * \brief Interface for all renderer objects
-	 */
-	class RendererInterface
-	{
-	public:
-	    virtual ~RendererInterface() {}
+        /**
+         * \brief Interface for all renderer objects
+         */
+        class RendererInterface
+        {
+        public:
+            virtual ~RendererInterface() {}
 
-	    virtual std::string getName() const = 0;
-	    virtual std::string getVersion() const = 0;
+            virtual std::string getName() const = 0;
+            virtual std::string getVersion() const = 0;
 
-	    /**
-	     * \brief Called by the core manager to initialize the renderer object
-	     * \param params A string containg renderer parameters
-	     * \return True if initialization succeeded
-	     */
-	    virtual bool initialize(const std::string& params) = 0;
-	    
-	    /**
-	     * \brief Finalize the renderer object
-	     * \return True if the renderer ended successfully
-	     *
-	     * This method must not block. If implementation has to do something special
-	     * at the end of a battle, it can be done in the render function when the
-	     * gameover flag is set.
-	     */
-	    virtual bool finalize() = 0;
+            /**
+             * \brief Called by the core manager to initialize the renderer object
+             * \param params A string containg renderer parameters
+             * \return True if initialization succeeded
+             */
+            virtual bool initialize(const std::string& params) = 0;
 
-	    /**
-	     * \brief Render the battle state
-	     * \param begin an iterator that points on the first item
-	     * \param end an iterator that points after the last item
-	     * \param stat a statistic object giving global information about the battle
-	     * \param gameover True if game is over
-	     * \return True if the game continues, false to stop the game
-	     *
-	     * The begin iterators is pointing on the first item. Renderer object must not copy and use
-	     * the iterator outside of this function, because it will be certainlly
-	     * invalidated just after this function returns. The same applies for stat object.
-	     * If gameover is true, this is the last call to the renderer update. When 
-	     * the function return, the core manager will clean and exit the game.
-	     */
-	    virtual bool render(const aiwar::core::ItemManager &itemManager,
-				const aiwar::core::GameManager::Stat &stats,
-				bool gameover) = 0;
-	};
+            /**
+             * \brief Finalize the renderer object
+             * \return True if the renderer ended successfully
+             *
+             * This method must not block. If implementation has to do something special
+             * at the end of a battle, it can be done in the render function when the
+             * gameover flag is set.
+             */
+            virtual bool finalize() = 0;
+
+            /**
+             * \brief Render the battle state
+             * \param itemManager an object giving information on items
+             * \param statManager a statistic object giving global information about the battle
+             * \param gameover True if game is over
+             * \return True if the game continues, false to stop the game
+             *
+             * The itemManager and statManager must not be saved accross the
+             * call of this function because they will be certainlly
+             * invalidated just after this function returns.
+             * If gameover is true, this is the last call to the renderer update. When
+             * the function return, the core manager will clean and exit the game.
+             */
+            virtual bool render(const aiwar::core::ItemManager &itemManager,
+                                const aiwar::core::StatManager &statManager,
+                                bool gameover) = 0;
+        };
 
     } // aiwar::renderer
 } // aiwar

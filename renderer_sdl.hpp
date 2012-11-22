@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef RENDERER_SDL_HPP
@@ -27,36 +27,36 @@
 namespace aiwar {
     namespace renderer {
 
-	class RendererSDLDraw;
+        class RendererSDLDraw;
 
-	class RendererSDL : public RendererInterface
-	{
-	public:
-	    RendererSDL();
-	    ~RendererSDL();
+        class RendererSDL : public RendererInterface
+        {
+        public:
+            RendererSDL();
+            ~RendererSDL();
 
-	    std::string getName() const;
-	    std::string getVersion() const;
+            std::string getName() const;
+            std::string getVersion() const;
 
-	    bool initialize(const std::string& params);
-	    
-	    bool finalize();
+            bool initialize(const std::string& params);
 
-	    bool render(const aiwar::core::ItemManager &itemManager,
-			const aiwar::core::GameManager::Stat &stats,
-			bool gameover);
+            bool finalize();
 
-	private:
-	    SDL_Surface *_screen;
-	    RendererSDLDraw *_drawer;
-	    bool _manual;
+            bool render(const aiwar::core::ItemManager &itemManager,
+                        const aiwar::core::StatManager &statManager,
+                        bool gameover);
 
-	    Uint32 _frameDelay;
-	    Uint32 _playDelay;
+        private:
+            SDL_Surface *_screen;
+            RendererSDLDraw *_drawer;
+            bool _manual;
 
-	    Uint32 _startTimeFrame;
-	    Uint32 _startTimePlay;
-	};
+            Uint32 _frameDelay;
+            Uint32 _playDelay;
+
+            Uint32 _startTimeFrame;
+            Uint32 _startTimePlay;
+        };
 
     } // aiwar::renderer
 } // aiwar

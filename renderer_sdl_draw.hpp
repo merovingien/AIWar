@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef RENDERER_SDL_DRAW_HPP
@@ -34,79 +34,78 @@ struct SDL_Rect;
 namespace aiwar {
 
     namespace core {
-	class Config;
-	class Item;
-	class Mineral;
-	class Missile;
-	class MiningShip;
-	class Base;
-	class Fighter;
-	class ItemManager;
+        class Config;
+        class Item;
+        class Mineral;
+        class Missile;
+        class MiningShip;
+        class Base;
+        class Fighter;
+        class ItemManager;
     }
-    
+
     namespace renderer {
 
-	class RendererSDLDraw
-	{
-	public:
-	    RendererSDLDraw(SDL_Surface *s);
-	    ~RendererSDLDraw();
+        class RendererSDLDraw
+        {
+        public:
+            RendererSDLDraw(SDL_Surface *s);
+            ~RendererSDLDraw();
 
-	    void preDraw();
-		void draw(const core::Item *item, const aiwar::core::ItemManager &im);
-	    void drawStats();
-	    void postDraw();
+            void preDraw();
+            void draw(const core::Item *item, const aiwar::core::ItemManager &im);
+            void drawStats();
+            void postDraw();
+            
+            void debug(bool active);
+            void toggleDebug();
 
-	    void debug(bool active);
-	    void toggleDebug();
+        private:
 
-	private:
-	    
-	    enum ItemType {
-		BLUE_MININGSHIP,
-		BLUE_BASE,
-		RED_MININGSHIP,
-		RED_BASE,
-		BLUE_FIGHTER,
-		RED_FIGHTER,
-		MISSILE,
-		MINERAL
-	    };
+            enum ItemType {
+                BLUE_MININGSHIP,
+                BLUE_BASE,
+                RED_MININGSHIP,
+                RED_BASE,
+                BLUE_FIGHTER,
+                RED_FIGHTER,
+                MISSILE,
+                MINERAL
+            };
 
-		void _drawMineral(const core::Mineral *m, const aiwar::core::ItemManager &im);
-		void _drawMissile(const core::Missile *m, const aiwar::core::ItemManager &im);
-		void _drawMiningShip(const core::MiningShip *m, const aiwar::core::ItemManager &im);
-		void _drawBase(const core::Base *b, const aiwar::core::ItemManager &im);
-		void _drawFighter(const core::Fighter *f, const aiwar::core::ItemManager &im);
-	    void _drawText(SDL_Surface* surface, const char* string, int x, int y, TTF_Font* font, bool centered = false);
-	  
-	    void _addSurface(ItemType, SDL_Surface* surf);
-	    SDL_Surface* _getSurface(ItemType) const;
+            void _drawMineral(const core::Mineral *m, const aiwar::core::ItemManager &im);
+            void _drawMissile(const core::Missile *m, const aiwar::core::ItemManager &im);
+            void _drawMiningShip(const core::MiningShip *m, const aiwar::core::ItemManager &im);
+            void _drawBase(const core::Base *b, const aiwar::core::ItemManager &im);
+            void _drawFighter(const core::Fighter *f, const aiwar::core::ItemManager &im);
+            void _drawText(SDL_Surface* surface, const char* string, int x, int y, TTF_Font* font, bool centered = false);
 
-		aiwar::core::Config& _cfg;
+            void _addSurface(ItemType, SDL_Surface* surf);
+            SDL_Surface* _getSurface(ItemType) const;
 
-	    bool _debug;
-	    SDL_Surface *_screen;
-	    SDL_Rect *_world_rect;
-	    SDL_Surface *_world_surface;
-	    std::map<ItemType, SDL_Surface*> _surfaceMap;
+            aiwar::core::Config& _cfg;
 
-	  SDL_Surface *_statsSurface;
-	  SDL_Rect* _statsRect;
+            bool _debug;
+            SDL_Surface *_screen;
+            SDL_Rect *_world_rect;
+            SDL_Surface *_world_surface;
+            std::map<ItemType, SDL_Surface*> _surfaceMap;
 
-	  std::ostringstream *_debugText;
-	  std::ostringstream *_statsText;
+            SDL_Surface *_statsSurface;
+            SDL_Rect* _statsRect;
 
-	  SDL_Color _foregroundDebugTextColor;
-	  SDL_Color _foregroundStatsTextColor;
-	  SDL_Color _backgroundTextColor;
+            std::ostringstream *_debugText;
+            std::ostringstream *_statsText;
 
-	  // Fonts
-	  TTF_Font* _debugFont;
-	  TTF_Font* _statsFont;
+            SDL_Color _foregroundDebugTextColor;
+            SDL_Color _foregroundStatsTextColor;
+            SDL_Color _backgroundTextColor;
 
-	};
-
+            // Fonts
+            TTF_Font* _debugFont;
+            TTF_Font* _statsFont;
+        };
+        
     }
 }
 

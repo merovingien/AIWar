@@ -14,17 +14,19 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "item.hpp"
+
+#include "game_manager.hpp"
 
 #include <iostream>
 #include <cmath>
 
 using namespace aiwar::core;
 
-Item::Item(ItemManager &im, Key k, double px, double py, double sx, double sy, double detection) : _im(im), _key(k), _toRemoveFlag(false), _xpos(px), _ypos(py), _xsize(sx), _ysize(sy), _detection_radius(detection)
+Item::Item(GameManager &gm, Key k, double px, double py, double sx, double sy, double detection) : _im(gm.getItemManager()), _sm(gm.getStatManager()), _key(k), _toRemoveFlag(false), _xpos(px), _ypos(py), _xsize(sx), _ysize(sy), _detection_radius(detection)
 {
 //    std::cout << "Ctr Item(" << px << "," << py << ") -> " << this << std::endl;
 }
@@ -51,18 +53,18 @@ Item::ItemSet Item::neighbours() const
     ItemManager::ItemMap::const_iterator cit;
     for(cit = _im.begin() ; cit != _im.end() ; cit++)
     {
-	Item* i = cit->second;
-	if(i->_key == this->_key)
-	    continue;
+        Item* i = cit->second;
+        if(i->_key == this->_key)
+            continue;
 
-	if(i->_toRemove())
-	    continue;
+        if(i->_toRemove())
+            continue;
 
-	double distance = (i->_xpos - _xpos) * (i->_xpos - _xpos) + (i->_ypos - _ypos) * (i->_ypos - _ypos);
-	if(distance > _detection_radius * _detection_radius)
-	    continue;
+        double distance = (i->_xpos - _xpos) * (i->_xpos - _xpos) + (i->_ypos - _ypos) * (i->_ypos - _ypos);
+        if(distance > _detection_radius * _detection_radius)
+            continue;
 
-	res.insert(i);
+        res.insert(i);
     }
 
     return res;

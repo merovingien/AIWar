@@ -31,36 +31,38 @@
 namespace aiwar {
     namespace core {
 
-	class Mineral;
-	class Base;
+        class Mineral;
+        class Base;
 
-	class MiningShip : virtual public Item, public Movable, public Living, public Playable, public Memory
-	{
-	public:
-	    MiningShip(ItemManager& im, Key k, double xpos, double ypos, Team team, PlayFunction& pf);
-	    ~MiningShip();
+        class MiningShip : virtual public Item, public Movable, public Living, public Playable, public Memory
+        {
+        public:
+            MiningShip(GameManager& gm, Key k, double xpos, double ypos, Team team, PlayFunction& pf);
+            ~MiningShip();
 
-	    void update(unsigned int tick);
+            void update(unsigned int tick);
 
-	    unsigned int extract(Mineral *m);
-	    unsigned int mineralStorage() const;
-	    unsigned int pushMineral(Base *base, unsigned int mineralPoints);
+            unsigned int extract(Mineral *m);
+            unsigned int mineralStorage() const;
+            unsigned int pushMineral(Base *base, unsigned int mineralPoints);
 
-	    // helper function only called by a base item
-	    unsigned int _release(unsigned int mineralPoint);
+            // helper function only called by a base item
+            unsigned int _release(unsigned int mineralPoint);
 
-	private:
-	    /**
-	     * \brief Initialize the MiningShip
-	     *
-	     * Reset _hasExtracted
-	     */
-	    void _preUpdate(unsigned int tick);
+        private:
+            /**
+             * \brief Initialize the MiningShip
+             *
+             * Reset _hasExtracted
+             */
+            void _preUpdate(unsigned int tick);
 
-	    unsigned int _mineralStorage; ///< Number of mineral units stored
+            void _setMineralStorage(int n);
 
-	    bool _hasExtracted;
-	};
+            unsigned int _mineralStorage; ///< Number of mineral units stored
+
+            bool _hasExtracted;
+        };
 
     } // namespace aiwar::core
 } // namespace aiwar

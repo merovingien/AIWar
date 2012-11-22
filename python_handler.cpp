@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "python_handler.hpp"
@@ -33,16 +33,16 @@ PythonHandler::~PythonHandler()
 {
     if(_initFlag)
     {
-	// do unload for each player, or do it in player map
+        // do unload for each player, or do it in player map
 
-	
-	finalize();
+
+        finalize();
     }
 
     // clean memory, should not be there but in finalyse or unload
     PlayerMap::iterator it;
     for(it = _playerMap.begin() ; it != _playerMap.end() ; ++it)
-	delete it->second;
+        delete it->second;
 }
 
 bool PythonHandler::initialize()
@@ -56,29 +56,39 @@ bool PythonHandler::initialize()
     free(p);
     if(!path)
     {
-	PyErr_Print();
-	return false;
+        PyErr_Print();
+        return false;
     }
-    
+
     PyObject *point = PyString_FromString(".");
     if(!point)
     {
-	PyErr_Print();
-	return false;
+        PyErr_Print();
+        return false;
     }
 
     int ret = PyList_Insert(path, 0, point);
     Py_DECREF(point);
     if(ret != 0)
     {
-	PyErr_Print();
-	return false;
+        PyErr_Print();
+        return false;
     }
 
     // init aiwar module
     if(!initAiwarModule())
-	return false;
+        return false;
 
+    // import random module and set the seed
+    std::ostringstream oss;
+    oss << "import random; random.seed(" << aiwar::core::Config::instance().seed << ")";
+    if(PyRun_SimpleString(oss.str().c_str()) != 0)
+    {
+        std::cerr << "Fail to set the random seed\n";
+        return false;
+    }
+
+    // initilization is done
     _initFlag = true;
 
     return true;
@@ -100,73 +110,73 @@ bool PythonHandler::load(P player, const std::string &moduleName)
     PyObject *pName = PyString_FromString(moduleName.c_str());
     if(!pName)
     {
-	PyErr_Print();
-	return false;
+        PyErr_Print();
+        return false;
     }
 
     PyObject *pModule = PyImport_Import(pName);
     Py_DECREF(pName);
     if(!pModule)
     {
-	PyErr_Print();
-	return false;
+        PyErr_Print();
+        return false;
     }
 
     // load and check MiningShipHandler
     PyObject *pMiningShip_Handler = PyObject_GetAttrString(pModule, "play_miningship");
     if(!pMiningShip_Handler)
     {
-	Py_DECREF(pModule);
-	PyErr_Print();
-	return false;
+        Py_DECREF(pModule);
+        PyErr_Print();
+        return false;
     }
 
     if(!PyCallable_Check(pMiningShip_Handler))
     {
-	Py_CLEAR(pMiningShip_Handler);
-	Py_DECREF(pModule);
-	PyErr_Print();
-	return false;
+        Py_CLEAR(pMiningShip_Handler);
+        Py_DECREF(pModule);
+        PyErr_Print();
+        return false;
     }
 
     // load and check Base Handler
     PyObject *pBase_Handler = PyObject_GetAttrString(pModule, "play_base");
     if(!pBase_Handler)
     {
-	Py_CLEAR(pMiningShip_Handler);
-	Py_DECREF(pModule);
-	PyErr_Print();
-	return false;
+        Py_CLEAR(pMiningShip_Handler);
+        Py_DECREF(pModule);
+        PyErr_Print();
+        return false;
     }
 
     if(!PyCallable_Check(pMiningShip_Handler))
     {
-	Py_CLEAR(pMiningShip_Handler);
-	Py_CLEAR(pBase_Handler);
-	Py_DECREF(pModule);
-	PyErr_Print();
-	return false;
+        Py_CLEAR(pMiningShip_Handler);
+        Py_CLEAR(pBase_Handler);
+        Py_DECREF(pModule);
+        PyErr_Print();
+        return false;
     }
 
     // load and check Fighter Handler
     PyObject *pFighter_Handler = PyObject_GetAttrString(pModule, "play_fighter");
     if(!pFighter_Handler)
     {
-	Py_CLEAR(pMiningShip_Handler);
-	Py_CLEAR(pBase_Handler);
-	Py_DECREF(pModule);
-	PyErr_Print();
-	return false;
+        Py_CLEAR(pMiningShip_Handler);
+        Py_CLEAR(pBase_Handler);
+        Py_DECREF(pModule);
+        PyErr_Print();
+        return false;
     }
 
     if(!PyCallable_Check(pFighter_Handler))
     {
-	Py_CLEAR(pMiningShip_Handler);
-	Py_CLEAR(pBase_Handler);
-	Py_CLEAR(pFighter_Handler);
-	Py_DECREF(pModule);
-	PyErr_Print();
-	return false;
+        Py_CLEAR(pMiningShip_Handler);
+        Py_CLEAR(pBase_Handler);
+        Py_CLEAR(pFighter_Handler);
+        Py_DECREF(pModule);
+        PyErr_Print();
+        return false;
     }
 
     // add handlers to player map
@@ -191,11 +201,11 @@ PythonHandler::PF& PythonHandler::get_BaseHandler(P player)
     PlayerMap::iterator it = _playerMap.find(player);
     if(it != _playerMap.end())
     {
-	return it->second->baseHandler;
+        return it->second->baseHandler;
     }
     else
     {
-	throw std::runtime_error("Player not registered");
+        throw std::runtime_error("Player not registered");
     }
 }
 
@@ -204,11 +214,11 @@ PythonHandler::PF& PythonHandler::get_MiningShipHandler(P player)
     PlayerMap::iterator it = _playerMap.find(player);
     if(it != _playerMap.end())
     {
-	return it->second->miningShipHandler;
+        return it->second->miningShipHandler;
     }
     else
     {
-	throw std::runtime_error("Player not registered");
+        throw std::runtime_error("Player not registered");
     }
 }
 
@@ -217,11 +227,11 @@ PythonHandler::PF& PythonHandler::get_FighterHandler(P player)
     PlayerMap::iterator it = _playerMap.find(player);
     if(it != _playerMap.end())
     {
-	return it->second->fighterHandler;
+        return it->second->fighterHandler;
     }
     else
     {
-	throw std::runtime_error("Player not registered");
+        throw std::runtime_error("Player not registered");
     }
 }
 
@@ -231,25 +241,25 @@ void PythonHandler::play_miningShip(PyObject *pHandler, aiwar::core::Playable *i
     aiwar::core::MiningShip *m = dynamic_cast<aiwar::core::MiningShip*>(item);
     if(!m)
     {
-	std::cerr << "Bad cast error : play_miningShip_py expects MiningShip* argument" << std::endl;
-	throw std::runtime_error("Bad cast error : play_miningShip_py expects MiningShip* argument");
+        std::cerr << "Bad cast error : play_miningShip_py expects MiningShip* argument" << std::endl;
+        throw std::runtime_error("Bad cast error : play_miningShip_py expects MiningShip* argument");
     }
 
     PyObject *pM = MiningShip_New(m);
     if(!pM)
     {
-	std::cerr << "Error while creating new MiningShip python object" << std::endl;
-	PyErr_Print();
-	throw std::runtime_error("Error while creating new MiningShip python object");
+        std::cerr << "Error while creating new MiningShip python object" << std::endl;
+        PyErr_Print();
+        throw std::runtime_error("Error while creating new MiningShip python object");
     }
 
     PyObject *pResult = PyObject_CallFunctionObjArgs(pHandler, pM, NULL);
     Py_DECREF(pM);
     if(!pResult)
     {
-	std::cerr << "Error while calling pMiningShip_Handler" << std::endl;
-	PyErr_Print();
-	throw aiwar::core::HandlerError(item->team(), "Error while calling pMiningShip_Handler");
+        std::cerr << "Error while calling pMiningShip_Handler" << std::endl;
+        PyErr_Print();
+        throw aiwar::core::HandlerError(item->team(), "Error while calling pMiningShip_Handler");
     }
     Py_DECREF(pResult);
 }
@@ -260,16 +270,16 @@ void PythonHandler::play_base(PyObject *pHandler, aiwar::core::Playable *item)
     aiwar::core::Base *b = dynamic_cast<aiwar::core::Base*>(item);
     if(!b)
     {
-	std::cerr << "Bad cast error: play_base expects Base* argument" << std::endl;
-	throw std::runtime_error("Bad cast error: play_base expects Base* argument");
+        std::cerr << "Bad cast error: play_base expects Base* argument" << std::endl;
+        throw std::runtime_error("Bad cast error: play_base expects Base* argument");
     }
 
     PyObject *pB = Base_New(b);
     if(!pB)
     {
-	std::cerr << "Error while creating new Base python object" << std::endl;
-	PyErr_Print();
-	throw std::runtime_error("Error while creating new Base python object");
+        std::cerr << "Error while creating new Base python object" << std::endl;
+        PyErr_Print();
+        throw std::runtime_error("Error while creating new Base python object");
     }
 
     // call the python function
@@ -277,9 +287,9 @@ void PythonHandler::play_base(PyObject *pHandler, aiwar::core::Playable *item)
     Py_DECREF(pB);
     if(!pResult)
     {
-	std::cerr << "Error while calling pBase_Handler" << std::endl;
-	PyErr_Print();
-	throw aiwar::core::HandlerError(item->team(), "Error while calling pBase_Handler");
+        std::cerr << "Error while calling pBase_Handler" << std::endl;
+        PyErr_Print();
+        throw aiwar::core::HandlerError(item->team(), "Error while calling pBase_Handler");
     }
     Py_DECREF(pResult);
 }
@@ -290,16 +300,16 @@ void PythonHandler::play_fighter(PyObject *pHandler, aiwar::core::Playable *item
     aiwar::core::Fighter *f = dynamic_cast<aiwar::core::Fighter*>(item);
     if(!f)
     {
-	std::cerr << "Bad cast error : play_fighter expects Fighter* argument" << std::endl;
-	throw std::runtime_error("Bad cast error : play_fighter expects Fighter* argument");
+        std::cerr << "Bad cast error : play_fighter expects Fighter* argument" << std::endl;
+        throw std::runtime_error("Bad cast error : play_fighter expects Fighter* argument");
     }
 
     PyObject *pF = Fighter_New(f);
     if(!pF)
     {
-	std::cerr << "Error while creating new Fighter python object" << std::endl;
-	PyErr_Print();
-	throw std::runtime_error("Error while creating new Fighter python object");
+        std::cerr << "Error while creating new Fighter python object" << std::endl;
+        PyErr_Print();
+        throw std::runtime_error("Error while creating new Fighter python object");
     }
 
     // call the python function
@@ -307,9 +317,9 @@ void PythonHandler::play_fighter(PyObject *pHandler, aiwar::core::Playable *item
     Py_DECREF(pF);
     if(!pResult)
     {
-	std::cerr << "Error while calling pFighter_Handler" << std::endl;
-	PyErr_Print();
-	throw aiwar::core::HandlerError(item->team(), "Error while calling pFighter_Handler");
+        std::cerr << "Error while calling pFighter_Handler" << std::endl;
+        PyErr_Print();
+        throw aiwar::core::HandlerError(item->team(), "Error while calling pFighter_Handler");
     }
     Py_DECREF(pResult);
 }

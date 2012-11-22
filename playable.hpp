@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef PLAYABLE_HPP
@@ -27,52 +27,52 @@
 namespace aiwar {
     namespace core {
 
-	class Playable;
+        class Playable;
 
-	class PlayFunction
-	{
-	public:
-	    PlayFunction() {}
-	    virtual ~PlayFunction() {}
-	    virtual void operator()(Playable*) = 0;
-	
-	private:
-	    PlayFunction(const PlayFunction&);
-	    PlayFunction& operator=(const PlayFunction&);
-	};
-	    
-	class DefaultPlayFunction : public PlayFunction
-	{
-	public:
-	    DefaultPlayFunction(void (*pf)(Playable*)) : _fun_ptr(pf) {}
-	    void operator()(Playable* p) { if(_fun_ptr) _fun_ptr(p); }
-		
-	private:
-	    void (*_fun_ptr)(Playable*);
-	};
+        class PlayFunction
+        {
+        public:
+            PlayFunction() {}
+            virtual ~PlayFunction() {}
+            virtual void operator()(Playable*) = 0;
 
-	class Playable
-	{
-	public:
-	    static DefaultPlayFunction playNoOp;
+        private:
+            PlayFunction(const PlayFunction&);
+            PlayFunction& operator=(const PlayFunction&);
+        };
 
-	    virtual ~Playable();
+        class DefaultPlayFunction : public PlayFunction
+        {
+        public:
+            DefaultPlayFunction(void (*pf)(Playable*)) : _fun_ptr(pf) {}
+            void operator()(Playable* p) { if(_fun_ptr) _fun_ptr(p); }
 
-	    Team team() const;
-	    bool isFriend(const Playable* p) const;
+        private:
+            void (*_fun_ptr)(Playable*);
+        };
 
-	    void log(const std::string &msg);
-	    std::string getLog() const;
+        class Playable
+        {
+        public:
+            static DefaultPlayFunction playNoOp;
 
-	protected:
-	    Playable(Team team, PlayFunction& play);
-	
-	    void _preUpdate(unsigned long ticks);
-    
-	    Team _team;
-	    PlayFunction& _play;
-	    std::ostringstream _log;
-	};
+            virtual ~Playable();
+
+            Team team() const;
+            bool isFriend(const Playable* p) const;
+
+            void log(const std::string &msg);
+            std::string getLog() const;
+
+        protected:
+            Playable(Team team, PlayFunction& play);
+
+            void _preUpdate(unsigned long ticks);
+
+            Team _team;
+            PlayFunction& _play;
+            std::ostringstream _log;
+        };
 
 
     } /* namespace aiwar::core */

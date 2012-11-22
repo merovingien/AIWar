@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "renderer_sdl_draw.hpp"
@@ -108,7 +108,7 @@ RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::insta
     _backgroundTextColor.r = 0;
     _backgroundTextColor.g = 0;
     _backgroundTextColor.b = 0;
-    
+
     _debugText = new std::ostringstream();
     _debugFont = TTF_OpenFont("./fonts/Jura-Medium.ttf", SMALL_FONT_SIZE);
     _statsText = new std::ostringstream();
@@ -118,114 +118,111 @@ RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::insta
 
 RendererSDLDraw::~RendererSDLDraw()
 {
-  std::map<ItemType, SDL_Surface*>::iterator it;
-  for(it = _surfaceMap.begin() ; it != _surfaceMap.end() ; ++it)
-    SDL_FreeSurface(it->second);
+    std::map<ItemType, SDL_Surface*>::iterator it;
+    for(it = _surfaceMap.begin() ; it != _surfaceMap.end() ; ++it)
+        SDL_FreeSurface(it->second);
 
-  SDL_FreeSurface(_world_surface);
-  delete _world_rect;
+    SDL_FreeSurface(_world_surface);
+    delete _world_rect;
 
-  SDL_FreeSurface(_statsSurface);
-  delete _statsRect;
-    
-  // fonts, colors and text
-  delete _debugText;
-  delete _statsText;
-  TTF_CloseFont(_debugFont);
-  TTF_CloseFont(_statsFont);
+    SDL_FreeSurface(_statsSurface);
+    delete _statsRect;
+
+    // fonts, colors and text
+    delete _debugText;
+    delete _statsText;
+    TTF_CloseFont(_debugFont);
+    TTF_CloseFont(_statsFont);
 
 }
 
 void RendererSDLDraw::_addSurface(ItemType t, SDL_Surface* s)
 {
-  _surfaceMap[t] = s;
+    _surfaceMap[t] = s;
 }
 
 SDL_Surface* RendererSDLDraw::_getSurface(ItemType t) const
 {
-  std::map<ItemType, SDL_Surface*>::const_iterator cit = _surfaceMap.find(t);
-  if(cit != _surfaceMap.end())
-    return cit->second;
-  return NULL;
+    std::map<ItemType, SDL_Surface*>::const_iterator cit = _surfaceMap.find(t);
+    if(cit != _surfaceMap.end())
+        return cit->second;
+    return NULL;
 }
 
 void RendererSDLDraw::preDraw()
 {
-  SDL_FillRect(_world_surface, NULL, SDL_MapRGB(_screen->format,0,0,0));
-  SDL_FillRect(_statsSurface, NULL, SDL_MapRGB(_screen->format,0,0,0));
+    SDL_FillRect(_world_surface, NULL, SDL_MapRGB(_screen->format,0,0,0));
+    SDL_FillRect(_statsSurface, NULL, SDL_MapRGB(_screen->format,0,0,0));
 }
 
 void RendererSDLDraw::draw(const aiwar::core::Item *item, const aiwar::core::ItemManager &im)
 {
-  const aiwar::core::Mineral *mineral;
-  const aiwar::core::Missile *missile;
-  const aiwar::core::MiningShip *miningShip;
-  const aiwar::core::Base *base;
-  const aiwar::core::Fighter *fighter;
+    const aiwar::core::Mineral *mineral;
+    const aiwar::core::Missile *missile;
+    const aiwar::core::MiningShip *miningShip;
+    const aiwar::core::Base *base;
+    const aiwar::core::Fighter *fighter;
 
-  if((mineral = dynamic_cast<const aiwar::core::Mineral*>(item)))
-      _drawMineral(mineral, im);
-  else if((missile = dynamic_cast<const aiwar::core::Missile*>(item)))
-      _drawMissile(missile, im);
-  else if((miningShip = dynamic_cast<const aiwar::core::MiningShip*>(item)))
-      _drawMiningShip(miningShip, im);
-  else if((base = dynamic_cast<const aiwar::core::Base*>(item)))
-      _drawBase(base, im);
-  else if((fighter = dynamic_cast<const aiwar::core::Fighter*>(item)))
-      _drawFighter(fighter, im);
+    if((mineral = dynamic_cast<const aiwar::core::Mineral*>(item)))
+        _drawMineral(mineral, im);
+    else if((missile = dynamic_cast<const aiwar::core::Missile*>(item)))
+        _drawMissile(missile, im);
+    else if((miningShip = dynamic_cast<const aiwar::core::MiningShip*>(item)))
+        _drawMiningShip(miningShip, im);
+    else if((base = dynamic_cast<const aiwar::core::Base*>(item)))
+        _drawBase(base, im);
+    else if((fighter = dynamic_cast<const aiwar::core::Fighter*>(item)))
+        _drawFighter(fighter, im);
 }
 
 void RendererSDLDraw::drawStats()
 {
-  _statsText->str("");
-  *_statsText << "AIWar";
-  _drawText(_statsSurface, _statsText->str().c_str() , 10, 10, _statsFont);
+    _statsText->str("");
+    *_statsText << "AIWar";
+    _drawText(_statsSurface, _statsText->str().c_str() , 10, 10, _statsFont);
 
 
-  //first team y pos
-  int y = 50;
+    //first team y pos
+    int y = 50;
 
-  _statsText->str("");
-  *_statsText << "Fighters : " << 10;
-  _drawText(_statsSurface, _statsText->str().c_str() , 10, y, _debugFont);
-  _statsText->str("");
-  *_statsText << "MiningShips : " << 10;
-  _drawText(_statsSurface, _statsText->str().c_str() , 10, y + SMALL_FONT_SIZE, _debugFont);
-  _statsText->str("");
-  *_statsText << "Minerals : " << 10;
-  _drawText(_statsSurface, _statsText->str().c_str() , 10,  y + 2 * SMALL_FONT_SIZE, _debugFont);
+    _statsText->str("");
+    *_statsText << "Fighters : " << 10;
+    _drawText(_statsSurface, _statsText->str().c_str() , 10, y, _debugFont);
+    _statsText->str("");
+    *_statsText << "MiningShips : " << 10;
+    _drawText(_statsSurface, _statsText->str().c_str() , 10, y + SMALL_FONT_SIZE, _debugFont);
+    _statsText->str("");
+    *_statsText << "Minerals : " << 10;
+    _drawText(_statsSurface, _statsText->str().c_str() , 10,  y + 2 * SMALL_FONT_SIZE, _debugFont);
 
-  // second team
-  y = 150;
+    // second team
+    y = 150;
 
-  _statsText->str("");
-  *_statsText << "Fighters : " << 10;
-  _drawText(_statsSurface, _statsText->str().c_str() , 10, y, _debugFont);
-  _statsText->str("");
-  *_statsText << "MiningShips : " << 10;
-  _drawText(_statsSurface, _statsText->str().c_str() , 10, y + SMALL_FONT_SIZE, _debugFont);
-  _statsText->str("");
-  *_statsText << "Minerals : " << 10;
-  _drawText(_statsSurface, _statsText->str().c_str() , 10, y + 2* SMALL_FONT_SIZE, _debugFont);
-
-  
-
+    _statsText->str("");
+    *_statsText << "Fighters : " << 10;
+    _drawText(_statsSurface, _statsText->str().c_str() , 10, y, _debugFont);
+    _statsText->str("");
+    *_statsText << "MiningShips : " << 10;
+    _drawText(_statsSurface, _statsText->str().c_str() , 10, y + SMALL_FONT_SIZE, _debugFont);
+    _statsText->str("");
+    *_statsText << "Minerals : " << 10;
+    _drawText(_statsSurface, _statsText->str().c_str() , 10, y + 2* SMALL_FONT_SIZE, _debugFont);
 }
 
 void RendererSDLDraw::postDraw()
 {
-  SDL_BlitSurface(_world_surface, NULL, _screen, _world_rect);
-  SDL_BlitSurface(_statsSurface, NULL, _screen, _statsRect);
+    SDL_BlitSurface(_world_surface, NULL, _screen, _world_rect);
+    SDL_BlitSurface(_statsSurface, NULL, _screen, _statsRect);
 }
 
 void RendererSDLDraw::debug(bool active)
 {
-  _debug = active;
+    _debug = active;
 }
 
 void RendererSDLDraw::toggleDebug()
 {
-  _debug = !_debug;
+    _debug = !_debug;
 }
 
 void RendererSDLDraw::_drawMineral(const aiwar::core::Mineral *m, const aiwar::core::ItemManager &im)
@@ -234,20 +231,20 @@ void RendererSDLDraw::_drawMineral(const aiwar::core::Mineral *m, const aiwar::c
     double py = m->ypos();
     im.undoOffset(px, py);
 
-  if (_debug)
+    if (_debug)
     {
-      _debugText->str("");
-      *_debugText << m->life();
-      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont, true);
+        _debugText->str("");
+        *_debugText << m->life();
+        _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont, true);
     }
-  else
+    else
     {
-      SDL_Rect r;
-      r.x = static_cast<Sint16>(px - _cfg.MINERAL_SIZE_X/2);
-      r.y = static_cast<Sint16>(py - _cfg.MINERAL_SIZE_Y/2);
-      r.w = static_cast<Uint16>(_cfg.MINERAL_SIZE_X);
-      r.h = static_cast<Uint16>(_cfg.MINERAL_SIZE_Y);
-      SDL_FillRect(_world_surface, &r, SDL_MapRGB(_world_surface->format, 0,255,128));
+        SDL_Rect r;
+        r.x = static_cast<Sint16>(px - _cfg.MINERAL_SIZE_X/2);
+        r.y = static_cast<Sint16>(py - _cfg.MINERAL_SIZE_Y/2);
+        r.w = static_cast<Uint16>(_cfg.MINERAL_SIZE_X);
+        r.h = static_cast<Uint16>(_cfg.MINERAL_SIZE_Y);
+        SDL_FillRect(_world_surface, &r, SDL_MapRGB(_world_surface->format, 0,255,128));
     }
 }
 
@@ -257,27 +254,27 @@ void RendererSDLDraw::_drawBase(const aiwar::core::Base *b, const aiwar::core::I
     double py = b->ypos();
     im.undoOffset(px, py);
 
-  if (_debug)
+    if (_debug)
     {
-      _debugText->str("");
-      *_debugText << b->mineralStorage();
-      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont, true);
+        _debugText->str("");
+        *_debugText << b->mineralStorage();
+        _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont, true);
     }
-  else
+    else
     {
-      SDL_Rect r;
-      r.x = static_cast<Sint16>(px - _cfg.BASE_SIZE_X/2);
-      r.y = static_cast<Sint16>(py - _cfg.BASE_SIZE_Y/2);
-      r.w = static_cast<Uint16>(_cfg.BASE_SIZE_X);
-      r.h = static_cast<Uint16>(_cfg.BASE_SIZE_Y);
+        SDL_Rect r;
+        r.x = static_cast<Sint16>(px - _cfg.BASE_SIZE_X/2);
+        r.y = static_cast<Sint16>(py - _cfg.BASE_SIZE_Y/2);
+        r.w = static_cast<Uint16>(_cfg.BASE_SIZE_X);
+        r.h = static_cast<Uint16>(_cfg.BASE_SIZE_Y);
 
-      Uint32 color = SDL_MapRGB(_world_surface->format, 0,255,0);
-      if(b->team() == BLUE_TEAM)
-	color = SDL_MapRGB(_world_surface->format, 0,0,255);
-      else if(b->team() == RED_TEAM)
-	color = SDL_MapRGB(_world_surface->format, 255,0,0);
+        Uint32 color = SDL_MapRGB(_world_surface->format, 0,255,0);
+        if(b->team() == BLUE_TEAM)
+            color = SDL_MapRGB(_world_surface->format, 0,0,255);
+        else if(b->team() == RED_TEAM)
+            color = SDL_MapRGB(_world_surface->format, 255,0,0);
 
-      SDL_FillRect(_world_surface, &r, color);
+        SDL_FillRect(_world_surface, &r, color);
     }
 }
 
@@ -287,42 +284,42 @@ void RendererSDLDraw::_drawMiningShip(const aiwar::core::MiningShip *m, const ai
     double py = m->ypos();
     im.undoOffset(px, py);
 
-  if (_debug)
+    if (_debug)
     {
-      // draw vision circle
-      circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.MININGSHIP_DETECTION_RADIUS), 255,255,0,255);
-      
-      // draw mining circle
-      circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.MININGSHIP_MINING_RADIUS), 190,192,192,255);
+        // draw vision circle
+        circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.MININGSHIP_DETECTION_RADIUS), 255,255,0,255);
 
-      // draw communication circle
-      circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS), 0,192,128,255);
-      
-      _debugText->str("");
-      *_debugText << m->fuel() << " - " << m->mineralStorage();
-      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont, true);
+        // draw mining circle
+        circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.MININGSHIP_MINING_RADIUS), 190,192,192,255);
+
+        // draw communication circle
+        circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS), 0,192,128,255);
+
+        _debugText->str("");
+        *_debugText << m->fuel() << " - " << m->mineralStorage();
+        _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont);
 
     }
-  else
+    else
     {
-      SDL_Surface *rs = NULL;
+        SDL_Surface *rs = NULL;
 
-      // rotate the ship
-      if(m->team() == RED_TEAM)
-	rs = rotozoomSurface(_getSurface(RED_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
-      else if(m->team() == BLUE_TEAM)
-	rs = rotozoomSurface(_getSurface(BLUE_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
+        // rotate the ship
+        if(m->team() == RED_TEAM)
+            rs = rotozoomSurface(_getSurface(RED_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
+        else if(m->team() == BLUE_TEAM)
+            rs = rotozoomSurface(_getSurface(BLUE_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
 
-      SDL_Rect r;
-      r.x = static_cast<Sint16>(px) - rs->w/2;
-      r.y = static_cast<Sint16>(py) - rs->h/2;
-      r.w = rs->w;
-      r.h = rs->h;
+        SDL_Rect r;
+        r.x = static_cast<Sint16>(px) - rs->w/2;
+        r.y = static_cast<Sint16>(py) - rs->h/2;
+        r.w = rs->w;
+        r.h = rs->h;
 
-      //    std::cout << "MiningShip size: (" << r.w << "," << r.h << ")\n"; 
+        //    std::cout << "MiningShip size: (" << r.w << "," << r.h << ")\n";
 
-      SDL_BlitSurface(rs, NULL, _world_surface, &r);
-      SDL_FreeSurface(rs);
+        SDL_BlitSurface(rs, NULL, _world_surface, &r);
+        SDL_FreeSurface(rs);
     }
 }
 
@@ -335,7 +332,7 @@ void RendererSDLDraw::_drawMissile(const aiwar::core::Missile *m, const aiwar::c
     SDL_Surface* tmp = SDL_CreateRGBSurface(_world_surface->flags, static_cast<int>(_cfg.MISSILE_SIZE_X), static_cast<int>(_cfg.MISSILE_SIZE_Y), _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
 
     SDL_FillRect(tmp, NULL, SDL_MapRGB(_world_surface->format, 255,0,255));
-  
+
     // rotate the missile
     SDL_Surface *rs = rotozoomSurface(tmp, m->angle(), 1.0, SMOOTHING_OFF);
 
@@ -356,74 +353,60 @@ void RendererSDLDraw::_drawFighter(const aiwar::core::Fighter *f, const aiwar::c
     double py = f->ypos();
     im.undoOffset(px, py);
 
-  if(_debug)
+    if(_debug)
     {
-      // draw vision circle
-      circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.FIGHTER_DETECTION_RADIUS), 255,255,0,255);
-      
-      // draw communication circle
-      circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS), 0,192,128,255);
-      
-      _debugText->str("");
-      *_debugText << f->fuel() << " - " << f->missiles();
-      _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont, true);
-      
+        // draw vision circle
+        circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.FIGHTER_DETECTION_RADIUS), 255,255,0,255);
+
+        // draw communication circle
+        circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS), 0,192,128,255);
+
+        _debugText->str("");
+        *_debugText << f->fuel() << " - " << f->missiles();
+        _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont);
+
     }
-  else
+    else
     {
-      SDL_Surface *rs = NULL;
-      
-      // rotate the ship
-      if(f->team() == RED_TEAM)
-	rs = rotozoomSurface(_getSurface(RED_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
-      else if(f->team() == BLUE_TEAM)
-	rs = rotozoomSurface(_getSurface(BLUE_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
-      
-      SDL_Rect r;
-      r.x = static_cast<Sint16>(px) - rs->w/2;
-      r.y = static_cast<Sint16>(py) - rs->h/2;
-      r.w = rs->w;
-      r.h = rs->h;
-      
-      SDL_BlitSurface(rs, NULL, _world_surface, &r);
-      SDL_FreeSurface(rs);
+        SDL_Surface *rs = NULL;
+
+        // rotate the ship
+        if(f->team() == RED_TEAM)
+            rs = rotozoomSurface(_getSurface(RED_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+        else if(f->team() == BLUE_TEAM)
+            rs = rotozoomSurface(_getSurface(BLUE_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+
+        SDL_Rect r;
+        r.x = static_cast<Sint16>(px) - rs->w/2;
+        r.y = static_cast<Sint16>(py) - rs->h/2;
+        r.w = rs->w;
+        r.h = rs->h;
+
+        SDL_BlitSurface(rs, NULL, _world_surface, &r);
+        SDL_FreeSurface(rs);
     }
 }
 
 void RendererSDLDraw::_drawText(SDL_Surface* surface, const char* string, int x, int y, TTF_Font* font, bool centered)
 {
+    // use TTF_RenderText_Solid ?
+    SDL_Surface* textSurface = TTF_RenderText_Shaded(font, string, _foregroundDebugTextColor, _backgroundTextColor);
 
-  // use TTF_RenderText_Solid ?
-  SDL_Surface* textSurface = TTF_RenderText_Shaded(font, string, _foregroundDebugTextColor, _backgroundTextColor);
+    SDL_Rect textLocation;
 
-  SDL_Rect textLocation;
-/*
-  int w,h;
-  if(TTF_SizeText(_debugFont, string, &w, &h) == 0) // TTF_SizeText return 0 on success
-  {
-      std::cout << "Text " << string <<  " has a size !!! \n";
-      textLocation.x =  x - w/2; 
-      textLocation.y = y - h/2;
-  } else {
-      std::cout << "TTF_GetError: " << TTF_GetError() << " : " << string << "\n";
-      textLocation.x =  x; 
-      textLocation.y = y;
-  }
-*/
+    if(centered)
+    {
+        textLocation.x = x - textSurface->w / 2;
+        textLocation.y = y - textSurface->h / 2;
+    }
+    else
+    {
+        textLocation.x = x;
+        textLocation.y = y;
+    }
+    textLocation.w =  0;
+    textLocation.h = 0;
 
-  if(centered)
-  {
-      textLocation.x = x - textSurface->w / 2;
-      textLocation.y = y - textSurface->h / 2;
-  }
-  else
-  {
-      textLocation.x = x;
-      textLocation.y = y;
-  }
-  textLocation.w =  0;
-  textLocation.h = 0;
-  
-  SDL_BlitSurface(textSurface, NULL, surface, &textLocation);
-  SDL_FreeSurface(textSurface);
+    SDL_BlitSurface(textSurface, NULL, surface, &textLocation);
+    SDL_FreeSurface(textSurface);
 }

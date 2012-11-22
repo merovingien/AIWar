@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "memory.hpp"
@@ -25,7 +25,7 @@
 
 using namespace aiwar::core;
 
-Memory::Memory(ItemManager& im, Key k, unsigned int size) : Item(im, k), _memory(size)
+Memory::Memory(GameManager& gm, Key k, unsigned int size) : Item(gm, k), _memory(size)
 {
 //    std::cout << "sizeof MemorySlot: " << sizeof(MemorySlot) << std::endl;
     assert(sizeof(MemorySlot) == 4); // check size of MemorySlot -> must be 32 bits
@@ -43,80 +43,80 @@ unsigned int Memory::memorySize() const
 namespace aiwar {
     namespace core {
 
-	template<>
-	void Memory::setMemory(unsigned int index, int value)
-	{
-	    try
-	    {
-		_memory.at(index).i = value;
-	    }
-	    catch(const std::out_of_range &)
-	    {
-	    }
-	}
+        template<>
+        void Memory::setMemory(unsigned int index, int value)
+        {
+            try
+            {
+                _memory.at(index).i = value;
+            }
+            catch(const std::out_of_range &)
+            {
+            }
+        }
 
-	template<>
-	void Memory::setMemory(unsigned int index, unsigned int value)
-	{
-	    try
-	    {
-		_memory.at(index).u = value;
-	    }
-	    catch(const std::out_of_range &)
-	    {
-	    }
-	}
+        template<>
+        void Memory::setMemory(unsigned int index, unsigned int value)
+        {
+            try
+            {
+                _memory.at(index).u = value;
+            }
+            catch(const std::out_of_range &)
+            {
+            }
+        }
 
-	template<>
-	void Memory::setMemory(unsigned int index, float value)
-	{
-	    try
-	    {
-		_memory.at(index).f = value;
-	    }
-	    catch(const std::out_of_range &)
-	    {
-	    }
-	}
+        template<>
+        void Memory::setMemory(unsigned int index, float value)
+        {
+            try
+            {
+                _memory.at(index).f = value;
+            }
+            catch(const std::out_of_range &)
+            {
+            }
+        }
 
-	template<>
-	int Memory::getMemory(unsigned int index) const
-	{
-	    try
-	    {
-		return _memory.at(index).i;
-	    }
-	    catch(const std::out_of_range &)
-	    {
-		return 0;
-	    }
-	}
+        template<>
+        int Memory::getMemory(unsigned int index) const
+        {
+            try
+            {
+                return _memory.at(index).i;
+            }
+            catch(const std::out_of_range &)
+            {
+                return 0;
+            }
+        }
 
-	template<>
-	unsigned int Memory::getMemory(unsigned int index) const
-	{
-	    try
-	    {
-		return _memory.at(index).u;
-	    }
-	    catch(const std::out_of_range &)
-	    {
-		return 0u;
-	    }
-	}
+        template<>
+        unsigned int Memory::getMemory(unsigned int index) const
+        {
+            try
+            {
+                return _memory.at(index).u;
+            }
+            catch(const std::out_of_range &)
+            {
+                return 0u;
+            }
+        }
 
-	template<>
-	float Memory::getMemory(unsigned int index) const
-	{
-	    try
-	    {
-		return _memory.at(index).f;
-	    }
-	    catch(const std::out_of_range &)
-	    {
-		return 0.0f;
-	    }
-	}
+        template<>
+        float Memory::getMemory(unsigned int index) const
+        {
+            try
+            {
+                return _memory.at(index).f;
+            }
+            catch(const std::out_of_range &)
+            {
+                return 0.0f;
+            }
+        }
 
     } /* namespace aiwar::core */
 } /* namespace aiwar */

@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef GAME_MANAGER_HPP
@@ -28,96 +28,65 @@
 namespace aiwar {
     namespace core {
 
-	class ItemManager;
+        class ItemManager;
+        class StatManager;
 
-	class Item;
-	class Base;
-	class MiningShip;
-	class Fighter;
-	class Missile;
-	class Mineral;
+        class Item;
+        class Base;
+        class MiningShip;
+        class Fighter;
+        class Missile;
+        class Mineral;
 
-	class GameManager
-	{
-	public:
-	    class Stat
-	    {
-	    public:
-		Stat();
-	    private:
-		Stat(const Stat&);
-		Stat& operator=(const Stat&);
-	    };
+        class GameManager
+        {
+        public:
+            GameManager();
+            ~GameManager();
 
-	    GameManager();
-	    ~GameManager();
-	    
-	    void registerTeam(Team team, PlayFunction& pfBase, PlayFunction& pfMiningShip, PlayFunction& pfFighter);
+            void registerTeam(Team team, PlayFunction& pfBase, PlayFunction& pfMiningShip, PlayFunction& pfFighter);
 
-	    bool initItemManager();
-	    const ItemManager& getItemManager() const;
+            bool init();
 
-	    PlayFunction& getBasePF(Team team) const;
-	    PlayFunction& getMiningShipPF(Team team) const;
-	    PlayFunction& getFighterPF(Team team) const;
+            ItemManager& getItemManager();
+            const ItemManager& getItemManager() const;
 
-	    void update(unsigned int ticks);
+            StatManager& getStatManager();
+            const StatManager& getStatManager() const;
 
-	    // slots
-	    void baseCreated(const Base*);
-	    void baseDestroyed(const Base*);
-	    void miningShipCreated(const MiningShip*);
-	    void miningShipDestroyed(const MiningShip*);
-	    void fighterCreated(const Fighter*);
-	    void fighterDestroyed(const Fighter*);
-	    void missileCreated(const Missile*);
-	    void missileDestroyed(const Missile*);
-	    void mineralCreated(const Mineral*);
-	    void mineralDestroyed(const Mineral*);
-	    void mineralSaved(const Team, const  unsigned int);
-	    void mineralSpent(const Team, const  unsigned int);
-	    void itemDestroyed(const Item*);
+            PlayFunction& getBasePF(Team team) const;
+            PlayFunction& getMiningShipPF(Team team) const;
+            PlayFunction& getFighterPF(Team team) const;
 
-	    void printStat() const;
-	    const Stat& getStat() const;
+            void update(unsigned int ticks);
 
-	    bool gameOver() const;
-	    Team getWinner() const;
+            bool gameOver() const;
+            Team getWinner() const;
 
-	private:
-	    class TeamInfo;
+        private:
+            class TeamInfo;
 
-	    typedef std::map<Team, TeamInfo> TeamMap;
+            typedef std::map<Team, TeamInfo> TeamMap;
 
-	    const TeamInfo& _getTeamInfo(Team team) const;
+            const TeamInfo& _getTeamInfo(Team team) const;
 
-	    TeamMap _teamMap;
-	    ItemManager *_im;
-	    Stat _stat;
-	};
+            TeamMap _teamMap;
+            ItemManager *_im;
+            StatManager *_sm;
+        };
 
 
-	class GameManager::TeamInfo
-	{
-	public:
-	    TeamInfo(PlayFunction& pfb = Playable::playNoOp, PlayFunction& pfm = Playable::playNoOp, PlayFunction& pff = Playable::playNoOp);
+        class GameManager::TeamInfo
+        {
+        public:
+            TeamInfo(PlayFunction& pfb = Playable::playNoOp, PlayFunction& pfm = Playable::playNoOp, PlayFunction& pff = Playable::playNoOp);
 
-	    PlayFunction& play_base;
-	    PlayFunction& play_miningShip;
-	    PlayFunction& play_fighter;
-
-	    unsigned int nb_base;
-	    unsigned int nb_base_max;
-	    unsigned int nb_miningShip;
-	    unsigned int nb_miningShip_max;
-	    unsigned int nb_fighter;
-	    unsigned int nb_fighter_max;
-	    unsigned int nb_mineral_spent;
-	    unsigned int nb_mineral_saved;
-	};
+            PlayFunction& play_base;
+            PlayFunction& play_miningShip;
+            PlayFunction& play_fighter;
+        };
 
     } // aiwar::core
 } // aiwar
-
 
 #endif /* GAME_MANAGER_HPP */

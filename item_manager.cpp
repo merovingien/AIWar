@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "item_manager.hpp"
@@ -28,6 +28,7 @@
 #include "fighter.hpp"
 
 #include "game_manager.hpp"
+#include "stat_manager.hpp"
 
 #include <stdexcept>
 #include <cstdlib>
@@ -43,13 +44,6 @@ ItemManager::ItemManager(GameManager& gm) : _gm(gm), _currentItemId(0)
     _yOffset = static_cast<double>(std::rand() % 50000) + 1.0;
 
     std::cout << "ItemManager: position offset: " << _xOffset << "x" << _yOffset << "\n";
-
-    std::cout << "ItemManager: Loading the map... ";
-    if(!this->loadMap(Config::instance().mapFile))
-    {
-	throw std::runtime_error("Error while loading map file");
-    }
-    std::cout << "Done\n";
 }
 
 ItemManager::~ItemManager()
@@ -58,8 +52,20 @@ ItemManager::~ItemManager()
     // delete all items
     for(it = _itemMap.begin() ; it != _itemMap.end() ; ++it)
     {
-	delete it->second;
+        delete it->second;
     }
+}
+
+bool ItemManager::init()
+{
+    std::cout << "ItemManager: Loading the map... ";
+    if(!this->loadMap(Config::instance().mapFile))
+    {
+        std::cerr << "Error while loading map file\n";
+        return false;
+    }
+    std::cout << "Done\n";
+    return true;
 }
 
 void ItemManager::update(unsigned int tick)
@@ -69,56 +75,50 @@ void ItemManager::update(unsigned int tick)
     // update all items if not to remove
     for(it = _itemMap.begin() ; it != _itemMap.end() ; ++it)
     {
-	i = it->second;
-	if(!i->_toRemove())
-	    i->update(tick);
+        i = it->second;
+        if(!i->_toRemove())
+            i->update(tick);
     }
 
     // remove some items
     for(it = _itemMap.begin() ; it != _itemMap.end() ; )
     {
-	// keep trace of the current iterator *before* increment
-	tmp = it++;
-	
-	i = tmp->second;
-	if(i->_toRemove())
-	{
-	    _gm.itemDestroyed(i);
-	    delete i;
-	    _itemMap.erase(tmp);  // this unvalidates tmp, but 'it' has been updated before
-	}
+        // keep trace of the current iterator *before* increment
+        tmp = it++;
+
+        i = tmp->second;
+        if(i->_toRemove())
+        {
+            _gm.getStatManager().itemDestroyed(i);
+            delete i;
+            _itemMap.erase(tmp);  // this unvalidates tmp, but 'it' has been updated before
+        }
     }
 }
 
 Missile* ItemManager::createMissile(Item* launcher, Living* target)
 {
     ItemKey k = _getNextItemKey();
-    Missile *m = new Missile(*this, k, launcher->xpos(), launcher->ypos(), target);
+    Missile *m = new Missile(_gm, k, launcher->xpos(), launcher->ypos(), target);
     _itemMap.insert(ItemMap::value_type(k, m));
-    _gm.missileCreated(m);
-    /* How can I do this ? But warning, because this function is called when launching missile already bought !
-    _gm.mineralSpent(launcher->team(), Config::instance().BASE_MISSILE_PRICE);*/
     return m;
 }
 
 Base* ItemManager::createBase(double px, double py, Team team)
 {
     ItemKey k = _getNextItemKey();
-    Base *b = new Base(*this, k, px, py, team, _gm.getBasePF(team));
+    Base *b = new Base(_gm, k, px, py, team, _gm.getBasePF(team));
     _itemMap.insert(ItemMap::value_type(k, b));
-    _gm.baseCreated(b);
-    /* Need the price of base !
-    _gm.mineralSpent(team, Config::instance().BASE_CreateBase_PRICE);*/
+    _gm.getStatManager().baseCreated(b);
     return b;
 }
 
 MiningShip* ItemManager::createMiningShip(double px, double py, Team team)
 {
     ItemKey k = _getNextItemKey();
-    MiningShip *t = new MiningShip(*this, k, px, py, team, _gm.getMiningShipPF(team));
+    MiningShip *t = new MiningShip(_gm, k, px, py, team, _gm.getMiningShipPF(team));
     _itemMap.insert(ItemMap::value_type(k, t));
-    _gm.miningShipCreated(t);
-    _gm.mineralSpent(team, Config::instance().BASE_MININGSHIP_PRICE);
+    _gm.getStatManager().miningShipCreated(t);
     return t;
 }
 
@@ -130,19 +130,17 @@ MiningShip* ItemManager::createMiningShip(Base* base)
 Mineral* ItemManager::createMineral(double px, double py)
 {
     ItemKey k = _getNextItemKey();
-    Mineral *m = new Mineral(*this, k, px, py);
+    Mineral *m = new Mineral(_gm, k, px, py);
     _itemMap.insert(ItemMap::value_type(k, m));
-    _gm.mineralCreated(m);
     return m;
 }
 
 Fighter* ItemManager::createFighter(double px, double py, Team team)
 {
     ItemKey k = _getNextItemKey();
-    Fighter *f = new Fighter(*this, k, px, py, team, _gm.getFighterPF(team));
+    Fighter *f = new Fighter(_gm, k, px, py, team, _gm.getFighterPF(team));
     _itemMap.insert(ItemMap::value_type(k, f));
-    _gm.fighterCreated(f);
-    _gm.mineralSpent(team, Config::instance().BASE_FIGHTER_PRICE);
+    _gm.getStatManager().fighterCreated(f);
     return f;
 }
 
@@ -160,9 +158,9 @@ Item* ItemManager::get(ItemKey key) const
 {
     ItemMap::const_iterator cit = _itemMap.find(key);
     if(cit != _itemMap.end())
-	return cit->second;
+        return cit->second;
     else
-	return NULL;
+        return NULL;
 }
 
 void ItemManager::applyOffset(double &px, double &py) const
@@ -186,7 +184,7 @@ ItemManager::ItemMap::const_iterator ItemManager::end() const
 {
     return _itemMap.end();
 }
-	    
+
 ItemManager::ItemKey ItemManager::_getNextItemKey()
 {
     ItemKey k = _currentItemId++;
@@ -198,8 +196,8 @@ bool ItemManager::loadMap(const std::string& mapFile)
     TiXmlDocument doc(mapFile.c_str());
     if(!doc.LoadFile())
     {
-	std::cerr << "Cannot load map file: \"" << mapFile << "\"\n";
-	return false;
+        std::cerr << "Cannot load map file: \"" << mapFile << "\"\n";
+        return false;
     }
 
     TiXmlElement *pRoot, *pElem;
@@ -208,8 +206,8 @@ bool ItemManager::loadMap(const std::string& mapFile)
     pRoot = doc.RootElement();
     if(!pRoot || pRoot->ValueStr() != "items")
     {
-	std::cerr << "Parse error - Bad root element tag, must be \"items\"\n";
-	return false;
+        std::cerr << "Parse error - Bad root element tag, must be \"items\"\n";
+        return false;
     }
 
     // read all items
@@ -219,56 +217,56 @@ bool ItemManager::loadMap(const std::string& mapFile)
     pElem = 0;
     for(pElem=pRoot->FirstChildElement("item") ; pElem ; pElem=pElem->NextSiblingElement("item"))
     {
-	if(pElem->QueryDoubleAttribute("x", &x) != TIXML_SUCCESS)
-	{
-	    std::cerr << "Parse error - No or bad \"x\" attribute\n";
-	    return false;
-	}
+        if(pElem->QueryDoubleAttribute("x", &x) != TIXML_SUCCESS)
+        {
+            std::cerr << "Parse error - No or bad \"x\" attribute\n";
+            return false;
+        }
 
-	if(pElem->QueryDoubleAttribute("y", &y) != TIXML_SUCCESS)
-	{
-	    std::cerr << "Parse error - No or bad \"y\" attribute\n";
-	    return false;
-	}
+        if(pElem->QueryDoubleAttribute("y", &y) != TIXML_SUCCESS)
+        {
+            std::cerr << "Parse error - No or bad \"y\" attribute\n";
+            return false;
+        }
 
-	if(pElem->QueryStringAttribute("type", &stype) != TIXML_SUCCESS)
-	{
-	    std::cerr << "Parse error - No \"type\" attribute\n";
-	    return false;
-	}
-	
-	applyOffset(x, y);
+        if(pElem->QueryStringAttribute("type", &stype) != TIXML_SUCCESS)
+        {
+            std::cerr << "Parse error - No \"type\" attribute\n";
+            return false;
+        }
 
-	if(stype == "MINERAL")
-	{
-	    // load a mineral
-	    createMineral(x, y);
-	}
-	else if(stype == "BASE" || stype == "MININGSHIP" || stype == "FIGHTER")
-	{
-	    // get team
-	    if(pElem->QueryStringAttribute("team", &steam) != TIXML_SUCCESS)
-	    {
-		std::cerr << "Parse error - No \"team\" attribute\n";
-		return false;
-	    }
-	    if(steam == "BLUE")
-		team = BLUE_TEAM;
-	    else if(steam == "RED")
-		team = RED_TEAM;
-	    else
-	    {
-		std::cerr << "Parse error - Bad \"team\" attribute\n";
-		return false;
-	    }
+        applyOffset(x, y);
 
-	    if(stype == "BASE")
-		createBase(x, y, team);
-	    else if(stype == "MININGSHIP")
-		createMiningShip(x, y, team);
-	    else
-		createFighter(x, y, team);
-	}
+        if(stype == "MINERAL")
+        {
+            // load a mineral
+            createMineral(x, y);
+        }
+        else if(stype == "BASE" || stype == "MININGSHIP" || stype == "FIGHTER")
+        {
+            // get team
+            if(pElem->QueryStringAttribute("team", &steam) != TIXML_SUCCESS)
+            {
+                std::cerr << "Parse error - No \"team\" attribute\n";
+                return false;
+            }
+            if(steam == "BLUE")
+                team = BLUE_TEAM;
+            else if(steam == "RED")
+                team = RED_TEAM;
+            else
+            {
+                std::cerr << "Parse error - Bad \"team\" attribute\n";
+                return false;
+            }
+
+            if(stype == "BASE")
+                createBase(x, y, team);
+            else if(stype == "MININGSHIP")
+                createMiningShip(x, y, team);
+            else
+                createFighter(x, y, team);
+        }
     }
 
     return true;

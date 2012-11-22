@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef HANDLER_INTERFACE_HPP
@@ -29,31 +29,31 @@
 namespace aiwar {
     namespace core {
 
-	class HandlerInterface
-	{
-	public:
-	    virtual ~HandlerInterface() {}
-    
-	    virtual bool initialize() = 0;
-	    virtual bool finalize() = 0;
+        class HandlerInterface
+        {
+        public:
+            virtual ~HandlerInterface() {}
 
-	    virtual bool load(Config::Player player, const std::string& params) = 0;
-	    virtual bool unload(Config::Player player) = 0;
+            virtual bool initialize() = 0;
+            virtual bool finalize() = 0;
 
-	    virtual PlayFunction& get_BaseHandler(Config::Player player) = 0;
-	    virtual PlayFunction& get_MiningShipHandler(Config::Player player) = 0;
-	    virtual PlayFunction& get_FighterHandler(Config::Player player) = 0;
-	};
+            virtual bool load(Config::Player player, const std::string& params) = 0;
+            virtual bool unload(Config::Player player) = 0;
 
-	class HandlerError : public std::runtime_error
-	{
-	public:
-	    HandlerError(Team team, const std::string &what) : std::runtime_error(what), _team(team) {}
-	    const Team& team() const { return _team; }
+            virtual PlayFunction& get_BaseHandler(Config::Player player) = 0;
+            virtual PlayFunction& get_MiningShipHandler(Config::Player player) = 0;
+            virtual PlayFunction& get_FighterHandler(Config::Player player) = 0;
+        };
 
-	private:
-	    Team _team;
-	};
+        class HandlerError : public std::runtime_error
+        {
+        public:
+            HandlerError(Team team, const std::string &what) : std::runtime_error(what), _team(team) {}
+            const Team& team() const { return _team; }
+
+        private:
+            Team _team;
+        };
 
     } // aiwar::core
 } // aiwar

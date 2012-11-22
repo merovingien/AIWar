@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef RENDERER_DUMMY_HPP
@@ -25,24 +25,24 @@
 namespace aiwar {
     namespace renderer {
 
-	class RendererDummy : public RendererInterface
-	{
-	public:
-	    RendererDummy();
-	    ~RendererDummy();
-	    
-	    std::string getName() const;
-	    std::string getVersion() const;
+        class RendererDummy : public RendererInterface
+        {
+        public:
+            RendererDummy();
+            ~RendererDummy();
 
-	    bool initialize(const std::string& params);
-	    
-	    bool finalize();
+            std::string getName() const;
+            std::string getVersion() const;
 
-	    bool render(const aiwar::core::ItemManager &itemManager,
-			const aiwar::core::GameManager::Stat &stats,
-			bool gameover);
-	};
-	
+            bool initialize(const std::string& params);
+
+            bool finalize();
+
+            bool render(const aiwar::core::ItemManager &itemManager,
+                        const aiwar::core::StatManager &statManager,
+                        bool gameover);
+        };
+
     } // aiwar::renderer
 } // aiwar
 

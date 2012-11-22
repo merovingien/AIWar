@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "living.hpp"
@@ -23,11 +23,11 @@
 
 using namespace aiwar::core;
 
-Living::Living(ItemManager& im, Key k) : Item(im, k), _maxLife(0), _life(0)
+Living::Living(GameManager& gm, Key k) : Item(gm, k), _maxLife(0), _life(0)
 {
 }
 
-Living::Living(ItemManager& im, Key k, unsigned int life, unsigned int maxLife) : Item(im, k), _maxLife(maxLife), _life(life)
+Living::Living(GameManager& gm, Key k, unsigned int life, unsigned int maxLife) : Item(gm, k), _maxLife(maxLife), _life(life)
 {
 }
 
@@ -40,11 +40,11 @@ unsigned int Living::_takeLife(unsigned int v, bool kill)
 {
     unsigned int tmp = _life;
     if(v <= _life)
-	_life -= v;
+        _life -= v;
     else
-	_life = 0;
+        _life = 0;
     if(kill && _life == 0)
-	_toRemoveFlag = true;
+        _toRemoveFlag = true;
     return (tmp - _life);
 }
 
@@ -53,7 +53,7 @@ unsigned int Living::_putLife(unsigned int v)
     unsigned int tmp = _life;
     _life += v;
     if(_life > _maxLife)
-	_life = _maxLife;
+        _life = _maxLife;
     return (_life - tmp);
 }
 

@@ -30,80 +30,81 @@
 namespace aiwar {
     namespace core {
 
-	class MiningShip;
-	class Movable;
-	class Fighter;
+        class MiningShip;
+        class Movable;
+        class Fighter;
 
-	class Base : virtual public Item, public Living, public Playable, public Memory
-	{
-	public:
-	    Base(ItemManager &im, Key k, double xpos, double ypos, Team team, PlayFunction& pf);
-	    ~Base();
+        class Base : virtual public Item, public Living, public Playable, public Memory
+        {
+        public:
+            Base(GameManager &gm, Key k, double xpos, double ypos, Team team, PlayFunction& pf);
+            ~Base();
 
-	    void update(unsigned int tick);
+            void update(unsigned int tick);
 
-	    /**
-	     * \brief Launch a missile to the target
-	     * \param target The targetted item. Take care that it can be a friend or a mineral.
-	     *
-	     * The missile is launch only if the base has enough mineral points to create it. Mineral points are consumed
-	     */
-	    void launchMissile(Living* target);
-    
-	    void createMiningShip();
-    
-	    /**
-	     * \brief Get the current number of mineral points stored in the base.
-	     * \return The current number of mineral points stored in the base.
-	     */
-	    unsigned int mineralStorage() const;
-   
-	    /**
-	     * \brief Get mineral points from a MiningShip of the same team
-	     * \return The number of mineral points taken from the MiningShip
-	     */
-	    unsigned int pullMineral(MiningShip* ship, unsigned int mineralPoints);
-    
-	    /**
-	     * \brief Repair itself by converting mineralPoint in lifePoint
-	     * \param points Number of point to convert
-	     * \return Number of point actually converted
-	     *
-	     * The base cannot have more the BASE_MAX_LIFE and cannot convert more than its current mineral storage capacity.
-	     */
-	    unsigned int repair(unsigned int points);
+            /**
+             * \brief Launch a missile to the target
+             * \param target The targetted item. Take care that it can be a friend or a mineral.
+             *
+             * The missile is launch only if the base has enough mineral points to create it. Mineral points are consumed
+             */
+            void launchMissile(Living* target);
 
-	    /**
-	     * \brief Repair a friend
-	     * \param points Number of points to convert
-	     * \param item Item to repair
-	     * \return Number of point actually converted
-	     *
-	     * The base cannot push more than the max live point of item and cannot convert more than its current mineral storage capacity.
-	     */
-	    unsigned int repair(unsigned int points, Living *item);
+            void createMiningShip();
 
-	    /**
-	     * \brief Fuel a friend
-	     * \param points Number of points to convert
-	     * \param item Item to refuel
-	     * \return Number of points actually converted
-	     *
-	     * The base converts its mineral points to fuel. The base cannot push more than the max fuel capacity of the item and cannot convert more than its own mineral storage.
-	     */
-	    unsigned int refuel(unsigned int points, Movable *item);
+            /**
+             * \brief Get the current number of mineral points stored in the base.
+             * \return The current number of mineral points stored in the base.
+             */
+            unsigned int mineralStorage() const;
 
-	    void createFighter();
+            /**
+             * \brief Get mineral points from a MiningShip of the same team
+             * \return The number of mineral points taken from the MiningShip
+             */
+            unsigned int pullMineral(MiningShip* ship, unsigned int mineralPoints);
 
-	    unsigned int giveMissiles(unsigned int nb, Fighter* fighter);
+            /**
+             * \brief Repair itself by converting mineralPoint in lifePoint
+             * \param points Number of point to convert
+             * \return Number of point actually converted
+             *
+             * The base cannot have more the BASE_MAX_LIFE and cannot convert more than its current mineral storage capacity.
+             */
+            unsigned int repair(unsigned int points);
 
-	private:
-	    void _preUpdate(unsigned int tick);
-	    
-	    unsigned int _mineralStorage;
-	    bool _hasLaunch;
-	    bool _hasCreate;
-	};
+            /**
+             * \brief Repair a friend
+             * \param points Number of points to convert
+             * \param item Item to repair
+             * \return Number of point actually converted
+             *
+             * The base cannot push more than the max live point of item and cannot convert more than its current mineral storage capacity.
+             */
+            unsigned int repair(unsigned int points, Living *item);
+
+            /**
+             * \brief Fuel a friend
+             * \param points Number of points to convert
+             * \param item Item to refuel
+             * \return Number of points actually converted
+             *
+             * The base converts its mineral points to fuel. The base cannot push more than the max fuel capacity of the item and cannot convert more than its own mineral storage.
+             */
+            unsigned int refuel(unsigned int points, Movable *item);
+
+            void createFighter();
+
+            unsigned int giveMissiles(unsigned int nb, Fighter* fighter);
+
+        private:
+            void _preUpdate(unsigned int tick);
+            void _setMineralStorage(int n);
+
+            unsigned int _mineralStorage;
+            bool _hasLaunch;
+            bool _hasCreate;
+        };
 
     } // namespace aiwar::core
 } // namespace aiwar

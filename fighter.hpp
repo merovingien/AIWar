@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AIWar.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef FIGHTER_HPP
@@ -29,29 +29,27 @@
 namespace aiwar {
     namespace core {
 
-	class Fighter : virtual public Item, public Movable, public Living, public Playable, public Memory
-	{
-	public:
-	    Fighter(ItemManager &im, Key k, double px, double py, Team team, PlayFunction& pf);
-	    ~Fighter();
+        class Fighter : virtual public Item, public Movable, public Living, public Playable, public Memory
+        {
+        public:
+            Fighter(GameManager &gm, Key k, double px, double py, Team team, PlayFunction& pf);
+            ~Fighter();
 
-	    void update(unsigned int tick);
+            void update(unsigned int tick);
 
-	    unsigned int missiles() const;
-	    void launchMissile(Living* target);
+            unsigned int missiles() const;
+            void launchMissile(Living* target);
 
-	    unsigned int _addMissiles(unsigned int nb);
+            unsigned int _addMissiles(unsigned int nb);
 
-	private:
-	    void _preUpdate(unsigned int tick);
+        private:
+            void _preUpdate(unsigned int tick);
 
-	    unsigned int _missiles;
-	    bool _hasLaunch;
-	};
+            unsigned int _missiles;
+            bool _hasLaunch;
+        };
 
     } // namespace core
 } // namespace aiwar
-
-
 
 #endif /* FIGHTER_HPP */

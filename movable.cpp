@@ -23,7 +23,7 @@
 #include <cmath>
 
 #ifndef M_PI
-#	define M_PI 3.1415926535897932384626433832795
+#       define M_PI 3.1415926535897932384626433832795
 #endif
 
 using namespace aiwar::core;
@@ -32,8 +32,8 @@ Movable::~Movable()
 {
 }
 
-Movable::Movable(ItemManager& im, Key k, double speed, unsigned int startFuel, unsigned int maxFuel, unsigned int moveConso, double angle)
-    : Item(im, k), _xdest(0.0), _ydest(0.0), _speed(speed), _angle(angle), _fuel(startFuel), _maxFuel(maxFuel), _moveConso(moveConso), _hasMoved(false)
+Movable::Movable(GameManager& gm, Key k, double speed, unsigned int startFuel, unsigned int maxFuel, unsigned int moveConso, double angle)
+    : Item(gm, k), _xdest(0.0), _ydest(0.0), _speed(speed), _angle(angle), _fuel(startFuel), _maxFuel(maxFuel), _moveConso(moveConso), _hasMoved(false)
 {
     // update _xdest and _ydest with the real position of the item.
     // _xpos and _ypos has been set with the value given in the constructor of the final item.
@@ -62,10 +62,10 @@ void Movable::move()
 {
     if(!_hasMoved && doMove())
     {
-	_xdest += cos(_angle * M_PI / 180.0) * _speed;
-	_ydest -= sin(_angle * M_PI / 180.0) * _speed;
-    
-	_hasMoved = true;
+        _xdest += cos(_angle * M_PI / 180.0) * _speed;
+        _ydest -= sin(_angle * M_PI / 180.0) * _speed;
+
+        _hasMoved = true;
     }
 }
 
@@ -99,7 +99,7 @@ void Movable::preUpdate()
 bool Movable::doMove()
 {
     if(_fuel < _moveConso)
-	return false;
+        return false;
 
     _fuel -= _moveConso;
     return true;
@@ -109,7 +109,7 @@ unsigned int Movable::_putFuel(unsigned int points)
 {
     unsigned int p = points;
     if(p > _maxFuel - _fuel)
-	p = _maxFuel - _fuel;
+        p = _maxFuel - _fuel;
 
     _fuel += p;
 
