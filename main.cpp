@@ -254,6 +254,7 @@ int main(int argc, char* argv[])
     ph.finalize();
 
     std::cout << "Exiting gracefully...\n";
+    std::cout << "(seed: " << cfg.seed << ")\n";
 
     return 0;
 }
