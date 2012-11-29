@@ -33,14 +33,8 @@ Movable::~Movable()
 }
 
 Movable::Movable(GameManager& gm, Key k, double speed, unsigned int startFuel, unsigned int maxFuel, unsigned int moveConso, double angle)
-    : Item(gm, k), _xdest(0.0), _ydest(0.0), _speed(speed), _angle(angle), _fuel(startFuel), _maxFuel(maxFuel), _moveConso(moveConso), _hasMoved(false)
+    : Item(gm, k), _speed(speed), _angle(angle), _fuel(startFuel), _maxFuel(maxFuel), _moveConso(moveConso), _hasMoved(false)
 {
-    // update _xdest and _ydest with the real position of the item.
-    // _xpos and _ypos has been set with the value given in the constructor of the final item.
-    _xdest = _xpos;
-    _ydest = _ypos;
-
-//    std::cout << "Ctr Movable()" << std::endl;
 }
 
 void Movable::rotateOf(double angle)
@@ -62,8 +56,8 @@ void Movable::move()
 {
     if(!_hasMoved && doMove())
     {
-        _xdest += cos(_angle * M_PI / 180.0) * _speed;
-        _ydest -= sin(_angle * M_PI / 180.0) * _speed;
+        _xpos += cos(_angle * M_PI / 180.0) * _speed;
+        _ypos -= sin(_angle * M_PI / 180.0) * _speed;
 
         _hasMoved = true;
     }
@@ -74,25 +68,13 @@ double Movable::angle() const
     return _angle;
 }
 
-double Movable::xdest() const
-{
-    return _xdest;
-}
-
-double Movable::ydest() const
-{
-    return _ydest;
-}
-
 unsigned int Movable::fuel() const
 {
     return _fuel;
 }
 
-void Movable::preUpdate()
+void Movable::_preUpdate(unsigned int)
 {
-    _xpos = _xdest;
-    _ypos = _ydest;
     _hasMoved = false;
 }
 

@@ -37,9 +37,9 @@ Missile::~Missile()
 {
 }
 
-void Missile::update(unsigned int)
+void Missile::update(unsigned int tick)
 {
-    Movable::preUpdate();
+    Movable::_preUpdate(tick);
 
     // check if the target is still alive
     Living *target = dynamic_cast<Living*>(_im.get(_target));
