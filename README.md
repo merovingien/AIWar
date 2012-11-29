@@ -11,11 +11,14 @@ AIWar is a game that let you create artificial intelligences to control space sh
 
 This section describes the compilation process. If you prefer use a pre-compiled version (currently available for Windows only) of the program, just go to section INSTALL below.
 
-Dependancies:
+Direct dependancies:
 - tinyxml
 - python (2.7 is the only tested version)
 - SDL
 - SDL_gfx
+- SDL_ttf
+
+SDL_ttf needs libfreetype that needs zlib to run.
 
 Currently AIWar only works on Linux and Windows. Other platforms have not been tested yet.
 
@@ -25,8 +28,9 @@ To compile AIWar, just install dev packages of the libraries listed above, and r
 
 _Windows_
 
-You need Visual C++ 2008 (Express Edition works fine), TinyXML, SDL and SDL_gfx headers, and python 2.7 (python headers are distributed with the python installer).
+You need Visual C++ 2008 (Express Edition works fine), TinyXML, SDL, SDL_gfx and SDL_ttf headers, and python 2.7 (python headers are distributed with the python installer).
 Open AIWar.sln and compile in Release mode (to compile in Debug mode, you must have a debug version of python, which is not distributed by the python maintainers on windows, but if you compile it yourself, it should work !).
+You also need dlls of libfreetype and zlib. See SDL_tff requierements.
 
 *INSTALL*
 
