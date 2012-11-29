@@ -58,7 +58,7 @@ void MiningShip::update(unsigned int tick)
 
     _play(this);
 
-    std::cout << getLog();
+//    std::cout << getLog();
 }
 
 unsigned int MiningShip::extract(Mineral *m)

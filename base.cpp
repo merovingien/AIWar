@@ -60,7 +60,7 @@ void Base::update(unsigned int tick)
 
     _play(this);
 
-    std::cout << getLog();
+//    std::cout << getLog();
 }
 
 void Base::launchMissile(Living* target)

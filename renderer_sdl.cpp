@@ -21,6 +21,9 @@
 
 #include "renderer_sdl_draw.hpp"
 
+#include "item.hpp"
+#include "playable.hpp"
+
 #include <iostream>
 #include <SDL/SDL.h>
 #include <SDL/SDL_ttf.h>
@@ -53,7 +56,7 @@ std::string RendererSDL::getName() const
 
 std::string RendererSDL::getVersion() const
 {
-    return "0.2.0";
+    return "0.3.0";
 }
 
 bool RendererSDL::initialize(const std::string& params)
@@ -110,6 +113,9 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
 
     bool play = false; // shall we return to play
 
+    // update itemExMap at each round
+    _updateItemEx(itemManager);
+
     while(cont && (gameover || !play))
     {
         bool process = false; // shall we process events and draw
@@ -160,6 +166,9 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
         // shall we process ?
         if(process)
         {
+            bool click = false;
+            int mx, my;
+
             _startTimeFrame = SDL_GetTicks();
 
             // treat all events
@@ -197,6 +206,13 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
                     default:
                         break;
                     }
+                    break;
+
+                case SDL_MOUSEBUTTONDOWN:
+                    click = true;
+                    mx = e.button.x;
+                    my = e.button.y;
+                    break;
 
                 default:
                     break;
@@ -206,11 +222,21 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
             /* actualisation de l'écran */
             // SDL_FillRect(_screen, NULL, SDL_MapRGB(_screen->format,0,0,0)); not necessary ?
 
-            _drawer->preDraw();
+            _drawer->preDraw(click, mx, my);
 
-            aiwar::core::ItemManager::ItemMap::const_iterator cit;
-            for(cit = itemManager.begin() ; cit != itemManager.end() ; ++cit)
-                _drawer->draw(cit->second, itemManager);
+            ItemExMap::iterator it;
+            for(it = _itemExMap.begin() ; it != _itemExMap.end() ; ++it)
+            {
+                // draw
+                _drawer->draw(&it->second, itemManager);
+
+                // print log if selected
+                if(it->second.selected)
+                    std::cout << it->second.logStream.str();
+
+                // flush logStream
+                it->second.logStream.str("");
+            }
 
             _drawer->drawStats();
 
@@ -224,4 +250,50 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
     _startTimePlay = SDL_GetTicks();
 
     return cont;
+}
+
+/// \todo improve it by reading each map only once: they are sorted !!!
+void RendererSDL::_updateItemEx(const aiwar::core::ItemManager& itemManager)
+{
+    aiwar::core::ItemManager::ItemMap::const_iterator it_src;
+    ItemExMap::iterator it_loc, it_del;
+/*
+    std::cout << "avant: \nItemMap:   [";
+    for(it_src = itemManager.begin() ; it_src != itemManager.end() ; ++it_src)
+        std::cout << it_src->first << ", ";
+    std::cout << "]\nItemExMap: [";
+    for(it_loc = _itemExMap.begin() ; it_loc != _itemExMap.end() ; ++it_loc)
+        std::cout << it_loc->first << ", ";
+    std::cout << "]\n";
+*/
+    for(it_src = itemManager.begin() ; it_src != itemManager.end() ; ++it_src)
+    {
+        ItemEx &ite = _itemExMap[it_src->first];
+        ite.item = it_src->second;
+        const aiwar::core::Playable* p = dynamic_cast<const aiwar::core::Playable*>(it_src->second);
+        if(p)
+            ite.logStream << p->getLog();
+    }
+
+    for(it_loc = _itemExMap.begin() ; it_loc != _itemExMap.end() ; )
+    {
+        it_del = it_loc;
+        ++it_loc;
+
+        if(!itemManager.exists(it_del->first))
+            _itemExMap.erase(it_del);
+    }
+}
+
+RendererSDL::ItemEx::ItemEx() : item(NULL), selected(false), logStream()
+{
+}
+
+RendererSDL::ItemEx::ItemEx(const ItemEx& o) : item(o.item), selected(o.selected), logStream()
+{
+    logStream << o.logStream.str();
+}
+
+RendererSDL::ItemEx::~ItemEx()
+{
 }

@@ -24,6 +24,8 @@
 #include <sstream>
 #include <SDL/SDL_ttf.h>
 
+#include "renderer_sdl.hpp" // for RendererSDL::ItemEx
+
 struct SDL_Surface;
 struct SDL_Rect;
 
@@ -52,8 +54,8 @@ namespace aiwar {
             RendererSDLDraw(SDL_Surface *s);
             ~RendererSDLDraw();
 
-            void preDraw();
-            void draw(const core::Item *item, const aiwar::core::ItemManager &im);
+            void preDraw(bool clicked, int xmouse, int ymouse);
+            void draw(RendererSDL::ItemEx *itemEx, const aiwar::core::ItemManager &im);
             void drawStats();
             void postDraw();
             
@@ -63,21 +65,24 @@ namespace aiwar {
         private:
 
             enum ItemType {
-                BLUE_MININGSHIP,
                 BLUE_BASE,
-                RED_MININGSHIP,
-                RED_BASE,
+                BLUE_MININGSHIP,
                 BLUE_FIGHTER,
+                RED_BASE,
+                RED_MININGSHIP,
                 RED_FIGHTER,
+                SELECTED_BASE,
+                SELECTED_MININGSHIP,
+                SELECTED_FIGHTER,
                 MISSILE,
                 MINERAL
             };
 
-            void _drawMineral(const core::Mineral *m, const aiwar::core::ItemManager &im);
-            void _drawMissile(const core::Missile *m, const aiwar::core::ItemManager &im);
-            void _drawMiningShip(const core::MiningShip *m, const aiwar::core::ItemManager &im);
-            void _drawBase(const core::Base *b, const aiwar::core::ItemManager &im);
-            void _drawFighter(const core::Fighter *f, const aiwar::core::ItemManager &im);
+            void _drawMineral(const RendererSDL::ItemEx *m, const aiwar::core::ItemManager &im);
+            void _drawMissile(const RendererSDL::ItemEx *m, const aiwar::core::ItemManager &im);
+            void _drawMiningShip(const RendererSDL::ItemEx *m, const aiwar::core::ItemManager &im);
+            void _drawBase(const RendererSDL::ItemEx *b, const aiwar::core::ItemManager &im);
+            void _drawFighter(const RendererSDL::ItemEx *f, const aiwar::core::ItemManager &im);
             void _drawText(SDL_Surface* surface, const char* string, int x, int y, TTF_Font* font, bool centered = false);
 
             void _addSurface(ItemType, SDL_Surface* surf);
@@ -104,6 +109,9 @@ namespace aiwar {
             // Fonts
             TTF_Font* _debugFont;
             TTF_Font* _statsFont;
+
+            bool _clicked;
+            int _xmouse, _ymouse;
         };
         
     }

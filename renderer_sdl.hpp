@@ -46,9 +46,17 @@ namespace aiwar {
                         const aiwar::core::StatManager &statManager,
                         bool gameover);
 
+
+            class ItemEx;
+            typedef aiwar::core::ItemManager::ItemKey ItemExKey;
+            typedef std::map<ItemExKey, ItemEx> ItemExMap;
+
         private:
+            void _updateItemEx(const aiwar::core::ItemManager& itemManager);
+
             SDL_Surface *_screen;
             RendererSDLDraw *_drawer;
+            ItemExMap _itemExMap;
             bool _manual;
 
             Uint32 _frameDelay;
@@ -56,6 +64,18 @@ namespace aiwar {
 
             Uint32 _startTimeFrame;
             Uint32 _startTimePlay;
+        };
+
+        class RendererSDL::ItemEx
+        {
+        public:
+            ItemEx();
+            ItemEx(const ItemEx&);
+            ~ItemEx();
+
+            const aiwar::core::Item *item;
+            bool selected;
+            std::ostringstream logStream;
         };
 
     } // aiwar::renderer

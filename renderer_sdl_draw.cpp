@@ -56,7 +56,7 @@ RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::insta
 
     // create item surfaces
 
-    // red miningShip
+    // ***red miningShip***
     SDL_Surface* tmp = SDL_CreateRGBSurface(_world_surface->flags, static_cast<int>(_cfg.MININGSHIP_SIZE_X), static_cast<int>(_cfg.MININGSHIP_SIZE_Y), _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
 
     // transparent background
@@ -65,7 +65,7 @@ RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::insta
     filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.MININGSHIP_SIZE_Y), static_cast<Sint16>(_cfg.MININGSHIP_SIZE_X),static_cast<Sint16>(_cfg.MININGSHIP_SIZE_Y)/2, 255,0,0,255);
     _addSurface(RED_MININGSHIP, tmp);
 
-    // blue miningShip
+    // ***blue miningShip***
     tmp = SDL_CreateRGBSurface(_world_surface->flags, static_cast<int>(_cfg.MININGSHIP_SIZE_X), static_cast<int>(_cfg.MININGSHIP_SIZE_Y), _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
 
     // transparent background
@@ -74,26 +74,47 @@ RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::insta
     filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.MININGSHIP_SIZE_Y), static_cast<Sint16>(_cfg.MININGSHIP_SIZE_X),static_cast<Sint16>(_cfg.MININGSHIP_SIZE_Y)/2, 0,0,255,255);
     _addSurface(BLUE_MININGSHIP, tmp);
 
-    // red fighter
+    // ***selected miningShip***
+    tmp = SDL_CreateRGBSurface(_world_surface->flags, static_cast<int>(_cfg.MININGSHIP_SIZE_X), static_cast<int>(_cfg.MININGSHIP_SIZE_Y), _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
+
+    // transparent background
+    SDL_FillRect(tmp, NULL, SDL_MapRGBA(_world_surface->format, 0,0,0,255));
+    // yellow triangle
+    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.MININGSHIP_SIZE_Y), static_cast<Sint16>(_cfg.MININGSHIP_SIZE_X),static_cast<Sint16>(_cfg.MININGSHIP_SIZE_Y)/2, 255,255,0,255);
+    _addSurface(SELECTED_MININGSHIP, tmp);
+
+    // ***red fighter***
     tmp = SDL_CreateRGBSurface(_world_surface->flags, static_cast<int>(_cfg.FIGHTER_SIZE_X), static_cast<int>(_cfg.FIGHTER_SIZE_Y), _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
 
     // transparent background
     SDL_FillRect(tmp, NULL, SDL_MapRGBA(_world_surface->format, 0,0,0,255));
-    // red triangle
+    // red triangles
     filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/3, static_cast<Sint16>(_cfg.FIGHTER_SIZE_X),0, 255,0,0,255);
     filledTrigonRGBA(tmp, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/3*2, static_cast<Sint16>(_cfg.FIGHTER_SIZE_X),static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), 255,0,0,255);
     filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), static_cast<Sint16>(_cfg.FIGHTER_SIZE_X)/2,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/2, 255,0,0,255);
     _addSurface(RED_FIGHTER, tmp);
 
-    // blue fighter
+    // ***blue fighter***
     tmp = SDL_CreateRGBSurface(_world_surface->flags, static_cast<int>(_cfg.FIGHTER_SIZE_X), static_cast<int>(_cfg.FIGHTER_SIZE_Y), _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
 
     // transparent background
     SDL_FillRect(tmp, NULL, SDL_MapRGBA(_world_surface->format, 0,0,0,255));
-    // red triangle
-    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), static_cast<Sint16>(_cfg.FIGHTER_SIZE_X),0, 0,0,255,255);
-    filledTrigonRGBA(tmp, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), 0,0, static_cast<Sint16>(_cfg.FIGHTER_SIZE_X),static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), 0,0,255,255);
+    // blue triangles
+    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/3, static_cast<Sint16>(_cfg.FIGHTER_SIZE_X),0, 0,0,255,255);
+    filledTrigonRGBA(tmp, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/3*2, static_cast<Sint16>(_cfg.FIGHTER_SIZE_X),static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), 0,0,255,255);
+    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), static_cast<Sint16>(_cfg.FIGHTER_SIZE_X)/2,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/2, 0,0,255,255);
     _addSurface(BLUE_FIGHTER, tmp);
+
+    // ***selected fighter***
+    tmp = SDL_CreateRGBSurface(_world_surface->flags, static_cast<int>(_cfg.FIGHTER_SIZE_X), static_cast<int>(_cfg.FIGHTER_SIZE_Y), _world_surface->format->BitsPerPixel, _world_surface->format->Rmask, _world_surface->format->Gmask, _world_surface->format->Bmask, _world_surface->format->Amask);
+
+    // transparent background
+    SDL_FillRect(tmp, NULL, SDL_MapRGBA(_world_surface->format, 0,0,0,255));
+    // yellow triangles
+    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/3, static_cast<Sint16>(_cfg.FIGHTER_SIZE_X),0, 255,255,0,255);
+    filledTrigonRGBA(tmp, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/3*2, static_cast<Sint16>(_cfg.FIGHTER_SIZE_X),static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), 255,255,0,255);
+    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), static_cast<Sint16>(_cfg.FIGHTER_SIZE_X)/2,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/2, 255,255,0,255);
+    _addSurface(SELECTED_FIGHTER, tmp);
 
     // fonts, colors and text
     // should use SDL_MapRGB ?
@@ -149,13 +170,17 @@ SDL_Surface* RendererSDLDraw::_getSurface(ItemType t) const
     return NULL;
 }
 
-void RendererSDLDraw::preDraw()
+void RendererSDLDraw::preDraw(bool clicked, int xm, int ym)
 {
+    _clicked = clicked;
+    _xmouse = xm;
+    _ymouse = ym;
+
     SDL_FillRect(_world_surface, NULL, SDL_MapRGB(_screen->format,0,0,0));
     SDL_FillRect(_statsSurface, NULL, SDL_MapRGB(_screen->format,0,0,0));
 }
 
-void RendererSDLDraw::draw(const aiwar::core::Item *item, const aiwar::core::ItemManager &im)
+void RendererSDLDraw::draw(RendererSDL::ItemEx *itemEx, const aiwar::core::ItemManager &im)
 {
     const aiwar::core::Mineral *mineral;
     const aiwar::core::Missile *missile;
@@ -163,16 +188,32 @@ void RendererSDLDraw::draw(const aiwar::core::Item *item, const aiwar::core::Ite
     const aiwar::core::Base *base;
     const aiwar::core::Fighter *fighter;
 
-    if((mineral = dynamic_cast<const aiwar::core::Mineral*>(item)))
-        _drawMineral(mineral, im);
-    else if((missile = dynamic_cast<const aiwar::core::Missile*>(item)))
-        _drawMissile(missile, im);
-    else if((miningShip = dynamic_cast<const aiwar::core::MiningShip*>(item)))
-        _drawMiningShip(miningShip, im);
-    else if((base = dynamic_cast<const aiwar::core::Base*>(item)))
-        _drawBase(base, im);
-    else if((fighter = dynamic_cast<const aiwar::core::Fighter*>(item)))
-        _drawFighter(fighter, im);
+    if(_clicked)
+    {
+        double px = itemEx->item->xpos();
+        double py = itemEx->item->ypos();
+        im.undoOffset(px, py);
+
+        // check if this item is clicked
+        if(px - itemEx->item->_xSize()/2 <= _xmouse &&
+           px + itemEx->item->_xSize()/2 >= _xmouse &&
+           py - itemEx->item->_ySize()/2 <= _ymouse &&
+           py + itemEx->item->_xSize()/2 >= _ymouse)
+        {
+            itemEx->selected = !itemEx->selected;
+        }
+    }
+
+    if((mineral = dynamic_cast<const aiwar::core::Mineral*>(itemEx->item)))
+        _drawMineral(itemEx, im);
+    else if((missile = dynamic_cast<const aiwar::core::Missile*>(itemEx->item)))
+        _drawMissile(itemEx, im);
+    else if((miningShip = dynamic_cast<const aiwar::core::MiningShip*>(itemEx->item)))
+        _drawMiningShip(itemEx, im);
+    else if((base = dynamic_cast<const aiwar::core::Base*>(itemEx->item)))
+        _drawBase(itemEx, im);
+    else if((fighter = dynamic_cast<const aiwar::core::Fighter*>(itemEx->item)))
+        _drawFighter(itemEx, im);
 }
 
 void RendererSDLDraw::drawStats()
@@ -225,8 +266,10 @@ void RendererSDLDraw::toggleDebug()
     _debug = !_debug;
 }
 
-void RendererSDLDraw::_drawMineral(const aiwar::core::Mineral *m, const aiwar::core::ItemManager &im)
+void RendererSDLDraw::_drawMineral(const RendererSDL::ItemEx *ite, const aiwar::core::ItemManager &im)
 {
+    const aiwar::core::Mineral *m = dynamic_cast<const aiwar::core::Mineral*>(ite->item);
+
     double px = m->xpos();
     double py = m->ypos();
     im.undoOffset(px, py);
@@ -248,8 +291,10 @@ void RendererSDLDraw::_drawMineral(const aiwar::core::Mineral *m, const aiwar::c
     }
 }
 
-void RendererSDLDraw::_drawBase(const aiwar::core::Base *b, const aiwar::core::ItemManager &im)
+void RendererSDLDraw::_drawBase(const RendererSDL::ItemEx *ite, const aiwar::core::ItemManager &im)
 {
+    const aiwar::core::Base *b = dynamic_cast<const aiwar::core::Base*>(ite->item);
+
     double px = b->xpos();
     double py = b->ypos();
     im.undoOffset(px, py);
@@ -269,7 +314,9 @@ void RendererSDLDraw::_drawBase(const aiwar::core::Base *b, const aiwar::core::I
         r.h = static_cast<Uint16>(_cfg.BASE_SIZE_Y);
 
         Uint32 color = SDL_MapRGB(_world_surface->format, 0,255,0);
-        if(b->team() == BLUE_TEAM)
+        if(ite->selected)
+            color = SDL_MapRGB(_world_surface->format, 255,255,0);
+        else if(b->team() == BLUE_TEAM)
             color = SDL_MapRGB(_world_surface->format, 0,0,255);
         else if(b->team() == RED_TEAM)
             color = SDL_MapRGB(_world_surface->format, 255,0,0);
@@ -278,8 +325,10 @@ void RendererSDLDraw::_drawBase(const aiwar::core::Base *b, const aiwar::core::I
     }
 }
 
-void RendererSDLDraw::_drawMiningShip(const aiwar::core::MiningShip *m, const aiwar::core::ItemManager &im)
+void RendererSDLDraw::_drawMiningShip(const RendererSDL::ItemEx *ite, const aiwar::core::ItemManager &im)
 {
+    const aiwar::core::MiningShip *m = dynamic_cast<const aiwar::core::MiningShip*>(ite->item);
+
     double px = m->xpos();
     double py = m->ypos();
     im.undoOffset(px, py);
@@ -298,14 +347,15 @@ void RendererSDLDraw::_drawMiningShip(const aiwar::core::MiningShip *m, const ai
         _debugText->str("");
         *_debugText << m->fuel() << " - " << m->mineralStorage();
         _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont);
-
     }
     else
     {
         SDL_Surface *rs = NULL;
 
         // rotate the ship
-        if(m->team() == RED_TEAM)
+        if(ite->selected)
+            rs = rotozoomSurface(_getSurface(SELECTED_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
+        else if(m->team() == RED_TEAM)
             rs = rotozoomSurface(_getSurface(RED_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
         else if(m->team() == BLUE_TEAM)
             rs = rotozoomSurface(_getSurface(BLUE_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
@@ -316,15 +366,15 @@ void RendererSDLDraw::_drawMiningShip(const aiwar::core::MiningShip *m, const ai
         r.w = rs->w;
         r.h = rs->h;
 
-        //    std::cout << "MiningShip size: (" << r.w << "," << r.h << ")\n";
-
         SDL_BlitSurface(rs, NULL, _world_surface, &r);
         SDL_FreeSurface(rs);
     }
 }
 
-void RendererSDLDraw::_drawMissile(const aiwar::core::Missile *m, const aiwar::core::ItemManager &im)
+void RendererSDLDraw::_drawMissile(const RendererSDL::ItemEx *ite, const aiwar::core::ItemManager &im)
 {
+    const aiwar::core::Missile *m = dynamic_cast<const aiwar::core::Missile*>(ite->item);
+
     double px = m->xpos();
     double py = m->ypos();
     im.undoOffset(px, py);
@@ -347,8 +397,10 @@ void RendererSDLDraw::_drawMissile(const aiwar::core::Missile *m, const aiwar::c
     SDL_FreeSurface(tmp);
 }
 
-void RendererSDLDraw::_drawFighter(const aiwar::core::Fighter *f, const aiwar::core::ItemManager &im)
+void RendererSDLDraw::_drawFighter(const RendererSDL::ItemEx *ite, const aiwar::core::ItemManager &im)
 {
+    const aiwar::core::Fighter *f = dynamic_cast<const aiwar::core::Fighter*>(ite->item);
+
     double px = f->xpos();
     double py = f->ypos();
     im.undoOffset(px, py);
@@ -371,7 +423,9 @@ void RendererSDLDraw::_drawFighter(const aiwar::core::Fighter *f, const aiwar::c
         SDL_Surface *rs = NULL;
 
         // rotate the ship
-        if(f->team() == RED_TEAM)
+        if(ite->selected)
+            rs = rotozoomSurface(_getSurface(SELECTED_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+        else if(f->team() == RED_TEAM)
             rs = rotozoomSurface(_getSurface(RED_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
         else if(f->team() == BLUE_TEAM)
             rs = rotozoomSurface(_getSurface(BLUE_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);

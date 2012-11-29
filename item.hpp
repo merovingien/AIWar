@@ -78,6 +78,9 @@ namespace aiwar {
 
             Key _getKey() const;
 
+            double _xSize() const;
+            double _ySize() const;
+
         protected:
             Item(GameManager &gm, Key k, double px = 0.0, double py = 0.0, double sx = 0.0, double sy = 0.0, double detection = 0.0);
 

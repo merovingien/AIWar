@@ -90,3 +90,13 @@ Item::Key Item::_getKey() const
 {
     return _key;
 }
+
+double Item::_xSize() const
+{
+    return _xsize;
+}
+
+double Item::_ySize() const
+{
+    return _ysize;
+}

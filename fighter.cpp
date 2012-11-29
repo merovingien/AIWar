@@ -53,7 +53,7 @@ void Fighter::update(unsigned int tick)
 
     _play(this);
 
-    std::cout << getLog();
+//    std::cout << getLog();
 }
 
 unsigned int Fighter::missiles() const
