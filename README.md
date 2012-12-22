@@ -39,6 +39,8 @@ If you have compiled the program, there is nothing to do, just go the the RUN se
 If you use a pre-compile version for Windows, you must have the Visual Studio 2008 SP1 Redistributable Package (x86) installed. You can find it on the Microsoft website : http://www.microsoft.com/en-us/download/details.aspx?id=5582.
 It's free.
 
+You can find compiled versions for AIWar here: https://www.dropbox.com/sh/b6p8w3j7kfbuua9/0Zp4-5rdwS
+
 Then unzip the archive in a folder, where you want on your computer, and keep going to the next section.
 
 *RUN*
