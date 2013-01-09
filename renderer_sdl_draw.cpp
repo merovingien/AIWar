@@ -36,6 +36,13 @@ using namespace aiwar::renderer;
 using aiwar::core::BLUE_TEAM;
 using aiwar::core::RED_TEAM;
 
+// FONT_COLOR
+const SDL_Color BLACK_COLOR = { 0x00, 0x00, 0x00, 0 };
+const SDL_Color BLUE_COLOR = { 0x00, 0x00, 0xFF, 0 };
+const SDL_Color RED_COLOR = { 0xFF, 0x00, 0x00, 0 };
+const SDL_Color WHITE_COLOR = { 0xFF, 0xFF, 0xFF, 0 };
+const SDL_Color BG_COLOR = BLACK_COLOR;
+
 RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::instance()), _debug(_cfg.debug), _screen(screen)
 {
     _world_rect = new SDL_Rect();
@@ -116,29 +123,19 @@ RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::insta
     filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), static_cast<Sint16>(_cfg.FIGHTER_SIZE_X)/2,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/2, 255,255,0,255);
     _addSurface(SELECTED_FIGHTER, tmp);
 
-    // fonts, colors and text
-    // should use SDL_MapRGB ?
-    _foregroundStatsTextColor.r = 255;
-    _foregroundStatsTextColor.g = 0;
-    _foregroundStatsTextColor.b = 0;
 
-    _foregroundDebugTextColor.r = 255;
-    _foregroundDebugTextColor.g = 255;
-    _foregroundDebugTextColor.b = 255;
-
-    _backgroundTextColor.r = 0;
-    _backgroundTextColor.g = 0;
-    _backgroundTextColor.b = 0;
-
-    _debugText = new std::ostringstream();
-    _debugFont = TTF_OpenFont("./fonts/Jura-Medium.ttf", SMALL_FONT_SIZE);
-    _statsText = new std::ostringstream();
-    _statsFont = TTF_OpenFont("./fonts/DouarOutline.ttf", BIG_FONT_SIZE);
-
+    /// \todo add test to check OpenFont
+    _statsFont = TTF_OpenFont("./fonts/Jura-Medium.ttf", SMALL_FONT_SIZE);
+    _aiwarFont = TTF_OpenFont("./fonts/DouarOutline.ttf", BIG_FONT_SIZE);
 }
 
 RendererSDLDraw::~RendererSDLDraw()
 {
+    // fonts
+    TTF_CloseFont(_aiwarFont);
+    TTF_CloseFont(_statsFont);
+
+    // item surfaces
     std::map<ItemType, SDL_Surface*>::iterator it;
     for(it = _surfaceMap.begin() ; it != _surfaceMap.end() ; ++it)
         SDL_FreeSurface(it->second);
@@ -148,13 +145,6 @@ RendererSDLDraw::~RendererSDLDraw()
 
     SDL_FreeSurface(_statsSurface);
     delete _statsRect;
-
-    // fonts, colors and text
-    delete _debugText;
-    delete _statsText;
-    TTF_CloseFont(_debugFont);
-    TTF_CloseFont(_statsFont);
-
 }
 
 void RendererSDLDraw::_addSurface(ItemType t, SDL_Surface* s)
@@ -216,38 +206,77 @@ void RendererSDLDraw::draw(RendererSDL::ItemEx *itemEx, const aiwar::core::ItemM
         _drawFighter(itemEx, im);
 }
 
-void RendererSDLDraw::drawStats()
+void RendererSDLDraw::drawStats(const aiwar::core::StatManager &sm)
 {
-    _statsText->str("");
-    *_statsText << "AIWar";
-    _drawText(_statsSurface, _statsText->str().c_str() , 10, 10, _statsFont);
+    std::ostringstream statsText;
+    const int FONT_HEIGHT = TTF_FontLineSkip(_statsFont);
 
+    statsText << "AIWar";
+    _drawText(_statsSurface, statsText.str(), STATS_SIZE_WIDTH/2, 20, _aiwarFont, WHITE_COLOR, BG_COLOR, true);
 
-    //first team y pos
     int y = 50;
 
-    _statsText->str("");
-    *_statsText << "Fighters : " << 10;
-    _drawText(_statsSurface, _statsText->str().c_str() , 10, y, _debugFont);
-    _statsText->str("");
-    *_statsText << "MiningShips : " << 10;
-    _drawText(_statsSurface, _statsText->str().c_str() , 10, y + SMALL_FONT_SIZE, _debugFont);
-    _statsText->str("");
-    *_statsText << "Minerals : " << 10;
-    _drawText(_statsSurface, _statsText->str().c_str() , 10,  y + 2 * SMALL_FONT_SIZE, _debugFont);
+    // round
+    statsText.str("");
+    statsText << "Round #" << sm.round();
+    _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, WHITE_COLOR, BG_COLOR);
+    y += FONT_HEIGHT;
 
-    // second team
-    y = 150;
+    //BLUE team y pos
+    y += FONT_HEIGHT;
 
-    _statsText->str("");
-    *_statsText << "Fighters : " << 10;
-    _drawText(_statsSurface, _statsText->str().c_str() , 10, y, _debugFont);
-    _statsText->str("");
-    *_statsText << "MiningShips : " << 10;
-    _drawText(_statsSurface, _statsText->str().c_str() , 10, y + SMALL_FONT_SIZE, _debugFont);
-    _statsText->str("");
-    *_statsText << "Minerals : " << 10;
-    _drawText(_statsSurface, _statsText->str().c_str() , 10, y + 2* SMALL_FONT_SIZE, _debugFont);
+    statsText.str("");
+    statsText << "Bases (current/max):         " << sm.baseCurrent(BLUE_TEAM) << " / " << sm.baseMax(BLUE_TEAM);
+    _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, BLUE_COLOR, BG_COLOR);
+    y += FONT_HEIGHT;
+
+    statsText.str("");
+    statsText << "Fighters (current/max):      " << sm.fighterCurrent(BLUE_TEAM) << " / " << sm.fighterMax(BLUE_TEAM);
+    _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, BLUE_COLOR, BG_COLOR);
+    y += FONT_HEIGHT;
+
+    statsText.str("");
+    statsText << "MiningShips (current/max):   " << sm.miningShipCurrent(BLUE_TEAM) << " / " << sm.miningShipMax(BLUE_TEAM);
+    _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, BLUE_COLOR, BG_COLOR);
+    y += FONT_HEIGHT;
+
+    statsText.str("");
+    statsText << "Missiles (created/launched): " << sm.missileCreated(BLUE_TEAM) << " / " << sm.missileLaunched(BLUE_TEAM);
+    _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, BLUE_COLOR, BG_COLOR);
+    y += FONT_HEIGHT;
+
+    statsText.str("");
+    statsText << "Minerals (spent/saved):      " << sm.mineralSpent(BLUE_TEAM) << " / " << sm.mineralSaved(BLUE_TEAM);
+    _drawText(_statsSurface, statsText.str(), 10,  y, _statsFont, BLUE_COLOR, BG_COLOR);
+    y += FONT_HEIGHT;
+
+    // RED team
+    y += FONT_HEIGHT;
+
+    statsText.str("");
+    statsText << "Bases (current/max):         " << sm.baseCurrent(RED_TEAM) << " / " << sm.baseMax(RED_TEAM);
+    _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, RED_COLOR, BG_COLOR);
+    y += FONT_HEIGHT;
+
+    statsText.str("");
+    statsText << "Fighters (current/max):      " << sm.fighterCurrent(RED_TEAM) << " / " << sm.fighterMax(RED_TEAM);
+    _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, RED_COLOR, BG_COLOR);
+    y += FONT_HEIGHT;
+
+    statsText.str("");
+    statsText << "MiningShips (current/max):   " << sm.miningShipCurrent(RED_TEAM) << " / " << sm.miningShipMax(RED_TEAM);
+    _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, RED_COLOR, BG_COLOR);
+    y += FONT_HEIGHT;
+
+    statsText.str("");
+    statsText << "Missiles (created/launched): " << sm.missileCreated(RED_TEAM) << " / " << sm.missileLaunched(RED_TEAM);
+    _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, RED_COLOR, BG_COLOR);
+    y += FONT_HEIGHT;
+
+    statsText.str("");
+    statsText << "Minerals (spent/saved):      " << sm.mineralSpent(RED_TEAM) << " / " << sm.mineralSaved(RED_TEAM);
+    _drawText(_statsSurface, statsText.str(), 10,  y, _statsFont, RED_COLOR, BG_COLOR);
+    y += FONT_HEIGHT;
 }
 
 void RendererSDLDraw::postDraw()
@@ -274,21 +303,12 @@ void RendererSDLDraw::_drawMineral(const RendererSDL::ItemEx *ite, const aiwar::
     double py = m->ypos();
     im.undoOffset(px, py);
 
-    if (_debug)
-    {
-        _debugText->str("");
-        *_debugText << m->life();
-        _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont, true);
-    }
-    else
-    {
-        SDL_Rect r;
-        r.x = static_cast<Sint16>(px - _cfg.MINERAL_SIZE_X/2);
-        r.y = static_cast<Sint16>(py - _cfg.MINERAL_SIZE_Y/2);
-        r.w = static_cast<Uint16>(_cfg.MINERAL_SIZE_X);
-        r.h = static_cast<Uint16>(_cfg.MINERAL_SIZE_Y);
-        SDL_FillRect(_world_surface, &r, SDL_MapRGB(_world_surface->format, 0,255,128));
-    }
+    SDL_Rect r;
+    r.x = static_cast<Sint16>(px - _cfg.MINERAL_SIZE_X/2);
+    r.y = static_cast<Sint16>(py - _cfg.MINERAL_SIZE_Y/2);
+    r.w = static_cast<Uint16>(_cfg.MINERAL_SIZE_X);
+    r.h = static_cast<Uint16>(_cfg.MINERAL_SIZE_Y);
+    SDL_FillRect(_world_surface, &r, SDL_MapRGB(_world_surface->format, 0,255,128));
 }
 
 void RendererSDLDraw::_drawBase(const RendererSDL::ItemEx *ite, const aiwar::core::ItemManager &im)
@@ -299,30 +319,21 @@ void RendererSDLDraw::_drawBase(const RendererSDL::ItemEx *ite, const aiwar::cor
     double py = b->ypos();
     im.undoOffset(px, py);
 
-    if (_debug)
-    {
-        _debugText->str("");
-        *_debugText << b->mineralStorage();
-        _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont, true);
-    }
-    else
-    {
-        SDL_Rect r;
-        r.x = static_cast<Sint16>(px - _cfg.BASE_SIZE_X/2);
-        r.y = static_cast<Sint16>(py - _cfg.BASE_SIZE_Y/2);
-        r.w = static_cast<Uint16>(_cfg.BASE_SIZE_X);
-        r.h = static_cast<Uint16>(_cfg.BASE_SIZE_Y);
+    SDL_Rect r;
+    r.x = static_cast<Sint16>(px - _cfg.BASE_SIZE_X/2);
+    r.y = static_cast<Sint16>(py - _cfg.BASE_SIZE_Y/2);
+    r.w = static_cast<Uint16>(_cfg.BASE_SIZE_X);
+    r.h = static_cast<Uint16>(_cfg.BASE_SIZE_Y);
 
-        Uint32 color = SDL_MapRGB(_world_surface->format, 0,255,0);
-        if(ite->selected)
-            color = SDL_MapRGB(_world_surface->format, 255,255,0);
-        else if(b->team() == BLUE_TEAM)
-            color = SDL_MapRGB(_world_surface->format, 0,0,255);
-        else if(b->team() == RED_TEAM)
-            color = SDL_MapRGB(_world_surface->format, 255,0,0);
+    Uint32 color = SDL_MapRGB(_world_surface->format, 0,255,0);
+    if(ite->selected)
+        color = SDL_MapRGB(_world_surface->format, 255,255,0);
+    else if(b->team() == BLUE_TEAM)
+        color = SDL_MapRGB(_world_surface->format, 0,0,255);
+    else if(b->team() == RED_TEAM)
+        color = SDL_MapRGB(_world_surface->format, 255,0,0);
 
-        SDL_FillRect(_world_surface, &r, color);
-    }
+    SDL_FillRect(_world_surface, &r, color);
 }
 
 void RendererSDLDraw::_drawMiningShip(const RendererSDL::ItemEx *ite, const aiwar::core::ItemManager &im)
@@ -343,32 +354,26 @@ void RendererSDLDraw::_drawMiningShip(const RendererSDL::ItemEx *ite, const aiwa
 
         // draw communication circle
         circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS), 0,192,128,255);
-
-        _debugText->str("");
-        *_debugText << m->fuel() << " - " << m->mineralStorage();
-        _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont);
     }
-    else
-    {
-        SDL_Surface *rs = NULL;
 
-        // rotate the ship
-        if(ite->selected)
-            rs = rotozoomSurface(_getSurface(SELECTED_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
-        else if(m->team() == RED_TEAM)
-            rs = rotozoomSurface(_getSurface(RED_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
-        else if(m->team() == BLUE_TEAM)
-            rs = rotozoomSurface(_getSurface(BLUE_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
+    SDL_Surface *rs = NULL;
 
-        SDL_Rect r;
-        r.x = static_cast<Sint16>(px) - rs->w/2;
-        r.y = static_cast<Sint16>(py) - rs->h/2;
-        r.w = rs->w;
-        r.h = rs->h;
+    // rotate the ship
+    if(ite->selected)
+        rs = rotozoomSurface(_getSurface(SELECTED_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
+    else if(m->team() == RED_TEAM)
+        rs = rotozoomSurface(_getSurface(RED_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
+    else if(m->team() == BLUE_TEAM)
+        rs = rotozoomSurface(_getSurface(BLUE_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
 
-        SDL_BlitSurface(rs, NULL, _world_surface, &r);
-        SDL_FreeSurface(rs);
-    }
+    SDL_Rect r;
+    r.x = static_cast<Sint16>(px) - rs->w/2;
+    r.y = static_cast<Sint16>(py) - rs->h/2;
+    r.w = rs->w;
+    r.h = rs->h;
+
+    SDL_BlitSurface(rs, NULL, _world_surface, &r);
+    SDL_FreeSurface(rs);
 }
 
 void RendererSDLDraw::_drawMissile(const RendererSDL::ItemEx *ite, const aiwar::core::ItemManager &im)
@@ -412,40 +417,31 @@ void RendererSDLDraw::_drawFighter(const RendererSDL::ItemEx *ite, const aiwar::
 
         // draw communication circle
         circleRGBA(_world_surface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS), 0,192,128,255);
-
-        _debugText->str("");
-        *_debugText << f->fuel() << " - " << f->missiles();
-        _drawText(_world_surface, _debugText->str().c_str() , static_cast<Sint16>(px), static_cast<Sint16>(py), _debugFont);
-
     }
-    else
-    {
-        SDL_Surface *rs = NULL;
 
-        // rotate the ship
-        if(ite->selected)
-            rs = rotozoomSurface(_getSurface(SELECTED_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
-        else if(f->team() == RED_TEAM)
-            rs = rotozoomSurface(_getSurface(RED_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
-        else if(f->team() == BLUE_TEAM)
-            rs = rotozoomSurface(_getSurface(BLUE_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+    SDL_Surface *rs = NULL;
 
-        SDL_Rect r;
-        r.x = static_cast<Sint16>(px) - rs->w/2;
-        r.y = static_cast<Sint16>(py) - rs->h/2;
-        r.w = rs->w;
-        r.h = rs->h;
+    // rotate the ship
+    if(ite->selected)
+        rs = rotozoomSurface(_getSurface(SELECTED_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+    else if(f->team() == RED_TEAM)
+        rs = rotozoomSurface(_getSurface(RED_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+    else if(f->team() == BLUE_TEAM)
+        rs = rotozoomSurface(_getSurface(BLUE_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
 
-        SDL_BlitSurface(rs, NULL, _world_surface, &r);
-        SDL_FreeSurface(rs);
-    }
+    SDL_Rect r;
+    r.x = static_cast<Sint16>(px) - rs->w/2;
+    r.y = static_cast<Sint16>(py) - rs->h/2;
+    r.w = rs->w;
+    r.h = rs->h;
+
+    SDL_BlitSurface(rs, NULL, _world_surface, &r);
+    SDL_FreeSurface(rs);
 }
 
-void RendererSDLDraw::_drawText(SDL_Surface* surface, const char* string, int x, int y, TTF_Font* font, bool centered)
+void RendererSDLDraw::_drawText(SDL_Surface* surface, const std::string &str, int x, int y, TTF_Font* font, const SDL_Color &fgColor, const SDL_Color &bgColor, bool centered)
 {
-    // use TTF_RenderText_Solid ?
-    SDL_Surface* textSurface = TTF_RenderText_Shaded(font, string, _foregroundDebugTextColor, _backgroundTextColor);
-
+    SDL_Surface* textSurface = TTF_RenderText_Shaded(font, str.c_str(), fgColor, bgColor);
     SDL_Rect textLocation;
 
     if(centered)

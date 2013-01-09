@@ -104,7 +104,7 @@ bool RendererSDL::finalize()
     return true;
 }
 
-bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwar::core::StatManager &, bool gameover)
+bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwar::core::StatManager &statManager, bool gameover)
 {
     SDL_Event e;
     bool cont = true;
@@ -238,7 +238,7 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
                 it->second.logStream.str("");
             }
 
-            _drawer->drawStats();
+            _drawer->drawStats(statManager);
 
             _drawer->postDraw();
 

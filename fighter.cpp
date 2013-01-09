@@ -69,7 +69,7 @@ void Fighter::launchMissile(Living* target)
         {
             _im.createMissile(this, target);
             _missiles--;
-            _sm.missileLaunched(_team);
+            _sm.missileLaunched(_team, 1);
             _hasLaunch = true;
         }
     }

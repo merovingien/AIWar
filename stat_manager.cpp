@@ -131,6 +131,16 @@ void StatManager::missileLaunched(const Team& t, unsigned int nb)
     info.nb_missile_launched += nb;
 }
 
+unsigned int StatManager::missileCreated(const Team& t) const
+{
+    return _teamMap.find(t)->second.nb_missile_created;
+}
+
+unsigned int StatManager::missileLaunched(const Team& t) const
+{
+    return _teamMap.find(t)->second.nb_missile_launched;
+}
+
 void StatManager::mineralSaved(const Team &t, unsigned int m)
 {
     TeamInfo &info = _teamMap[t];
@@ -141,6 +151,16 @@ void StatManager::mineralSpent(const Team &t, unsigned int m)
 {
     TeamInfo &info = _teamMap[t];
     info.nb_mineral_spent += m;
+}
+
+unsigned int StatManager::mineralSaved(const Team& t) const
+{
+    return _teamMap.find(t)->second.nb_mineral_saved;
+}
+
+unsigned int StatManager::mineralSpent(const Team& t) const
+{
+    return _teamMap.find(t)->second.nb_mineral_spent;
 }
 
 void StatManager::itemDestroyed(const Item* item)

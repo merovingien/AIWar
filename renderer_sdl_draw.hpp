@@ -44,6 +44,7 @@ namespace aiwar {
         class Base;
         class Fighter;
         class ItemManager;
+        class StatManager;
     }
 
     namespace renderer {
@@ -56,7 +57,7 @@ namespace aiwar {
 
             void preDraw(bool clicked, int xmouse, int ymouse);
             void draw(RendererSDL::ItemEx *itemEx, const aiwar::core::ItemManager &im);
-            void drawStats();
+            void drawStats(const aiwar::core::StatManager &sm);
             void postDraw();
             
             void debug(bool active);
@@ -83,12 +84,13 @@ namespace aiwar {
             void _drawMiningShip(const RendererSDL::ItemEx *m, const aiwar::core::ItemManager &im);
             void _drawBase(const RendererSDL::ItemEx *b, const aiwar::core::ItemManager &im);
             void _drawFighter(const RendererSDL::ItemEx *f, const aiwar::core::ItemManager &im);
-            void _drawText(SDL_Surface* surface, const char* string, int x, int y, TTF_Font* font, bool centered = false);
+
+            void _drawText(SDL_Surface* surface, const std::string &str, int x, int y, TTF_Font* font, const SDL_Color &fgColor, const SDL_Color &bgColor, bool centered = false);
 
             void _addSurface(ItemType, SDL_Surface* surf);
             SDL_Surface* _getSurface(ItemType) const;
 
-            aiwar::core::Config& _cfg;
+            const aiwar::core::Config& _cfg;
 
             bool _debug;
             SDL_Surface *_screen;
@@ -99,17 +101,11 @@ namespace aiwar {
             SDL_Surface *_statsSurface;
             SDL_Rect* _statsRect;
 
-            std::ostringstream *_debugText;
-            std::ostringstream *_statsText;
-
-            SDL_Color _foregroundDebugTextColor;
-            SDL_Color _foregroundStatsTextColor;
-            SDL_Color _backgroundTextColor;
-
             // Fonts
-            TTF_Font* _debugFont;
             TTF_Font* _statsFont;
+            TTF_Font* _aiwarFont;
 
+            // context
             bool _clicked;
             int _xmouse, _ymouse;
         };

@@ -53,10 +53,14 @@ namespace aiwar {
             void fighterDestroyed(const Fighter*);
             unsigned int fighterCurrent(const Team&) const;
             unsigned int fighterMax(const Team&) const;
-            void missileCreated(const Team&, unsigned int nb = 1);
-            void missileLaunched(const Team&, unsigned int nb = 1);
+            void missileCreated(const Team&, unsigned int);
+            void missileLaunched(const Team&, unsigned int);
+            unsigned int missileCreated(const Team&) const;
+            unsigned int missileLaunched(const Team&) const;
             void mineralSaved(const Team&, unsigned int);
             void mineralSpent(const Team&, unsigned int);
+            unsigned int mineralSaved(const Team&) const;
+            unsigned int mineralSpent(const Team&) const;
 
             void itemDestroyed(const Item*);
 

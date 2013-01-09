@@ -70,8 +70,8 @@ void Base::launchMissile(Living* target)
         if(_mineralStorage >= Config::instance().BASE_MISSILE_PRICE)
         {
             _im.createMissile(this, target);
-            _sm.missileCreated(_team);
-            _sm.missileLaunched(_team);
+            _sm.missileCreated(_team, 1);
+            _sm.missileLaunched(_team, 1);
             _setMineralStorage(-Config::instance().BASE_MISSILE_PRICE);
             _hasLaunch = true;
         }
