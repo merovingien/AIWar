@@ -28,6 +28,8 @@
 
 #include "config.hpp"
 
+#include <sstream>
+
 #include <SDL/SDL.h>
 #include <SDL/SDL_gfxPrimitives.h>
 #include <SDL/SDL_rotozoom.h>
@@ -45,6 +47,7 @@ const SDL_Color BG_COLOR = BLACK_COLOR;
 
 RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::instance()), _debug(_cfg.debug), _screen(screen)
 {
+    // playground surface
     _world_rect = new SDL_Rect();
     _world_rect->x = 0;
     _world_rect->y = 0;
@@ -53,6 +56,7 @@ RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::insta
 
     _world_surface = SDL_CreateRGBSurface(_screen->flags, static_cast<int>(_cfg.WORLD_SIZE_X), static_cast<int>(_cfg.WORLD_SIZE_Y), _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
 
+    // stat surface
     _statsRect = new SDL_Rect();
     _statsRect->x = static_cast<Uint16>(_cfg.WORLD_SIZE_X);
     _statsRect->y = 0;
@@ -60,7 +64,7 @@ RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::insta
     _statsRect->h = static_cast<Uint16>(_cfg.WORLD_SIZE_Y);
 
     _statsSurface = SDL_CreateRGBSurface(_screen->flags, _statsRect->w, _statsRect->h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
-
+    
     // create item surfaces
 
     // ***red miningShip***

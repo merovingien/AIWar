@@ -21,7 +21,6 @@
 #define RENDERER_SDL_DRAW_HPP
 
 #include <map>
-#include <sstream>
 #include <SDL/SDL_ttf.h>
 
 #include "renderer_sdl.hpp" // for RendererSDL::ItemEx
@@ -99,7 +98,7 @@ namespace aiwar {
             std::map<ItemType, SDL_Surface*> _surfaceMap;
 
             SDL_Surface *_statsSurface;
-            SDL_Rect* _statsRect;
+            SDL_Rect *_statsRect;
 
             // Fonts
             TTF_Font* _statsFont;

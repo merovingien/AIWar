@@ -217,7 +217,7 @@ int main(int argc, char* argv[])
         try
         {
             gm.update(tick++);
-            gm.getStatManager().print();
+//            gm.getStatManager().print();
         }
         catch(const aiwar::core::HandlerError &e)
         {

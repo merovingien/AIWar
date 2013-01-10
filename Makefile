@@ -32,6 +32,7 @@ cxxsrc = config.cpp \
 	renderer_dummy.cpp \
 	renderer_sdl.cpp \
 	renderer_sdl_draw.cpp \
+	renderer_sdl_console.cpp \
 	main.cpp
 
 objects = $(cxxsrc:.cpp=.o)

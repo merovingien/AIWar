@@ -27,6 +27,7 @@
 namespace aiwar {
     namespace renderer {
 
+        class RendererSDLConsole;
         class RendererSDLDraw;
 
         class RendererSDL : public RendererInterface
@@ -55,6 +56,7 @@ namespace aiwar {
             void _updateItemEx(const aiwar::core::ItemManager& itemManager);
 
             SDL_Surface *_screen;
+            RendererSDLConsole *_console;
             RendererSDLDraw *_drawer;
             ItemExMap _itemExMap;
             bool _manual;

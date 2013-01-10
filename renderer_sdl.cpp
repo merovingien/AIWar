@@ -20,6 +20,7 @@
 #include "renderer_sdl.hpp"
 
 #include "renderer_sdl_draw.hpp"
+#include "renderer_sdl_console.hpp"
 
 #include "item.hpp"
 #include "playable.hpp"
@@ -77,6 +78,8 @@ bool RendererSDL::initialize(const std::string& params)
     _screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_HWSURFACE);
     SDL_WM_SetCaption("AIWar", NULL);
 
+    _console = new RendererSDLConsole(_screen);
+
     _drawer = new RendererSDLDraw(_screen);
     _drawer->debug(aiwar::core::Config::instance().debug);
 
@@ -93,11 +96,11 @@ bool RendererSDL::initialize(const std::string& params)
 
 bool RendererSDL::finalize()
 {
-    if(_drawer)
-    {
-        delete _drawer;
-        _drawer = NULL;
-    }
+    delete _drawer;
+    _drawer = NULL;
+
+    delete _console;
+    _console = NULL;
 
     TTF_Quit();
     SDL_Quit();
@@ -203,6 +206,10 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
                         _playDelay = PLAY_DELAY - _playDelay;
                         break;
 
+                    case SDLK_c: // togle console display
+                        _console->show(!_console->isShow());
+                        break;
+
                     default:
                         break;
                     }
@@ -219,10 +226,10 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
                 }
             }
 
-            /* actualisation de l'écran */
-            // SDL_FillRect(_screen, NULL, SDL_MapRGB(_screen->format,0,0,0)); not necessary ?
+            /* screen update */
 
             _drawer->preDraw(click, mx, my);
+            _console->preDraw();
 
             ItemExMap::iterator it;
             for(it = _itemExMap.begin() ; it != _itemExMap.end() ; ++it)
@@ -232,7 +239,10 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
 
                 // print log if selected
                 if(it->second.selected)
-                    std::cout << it->second.logStream.str();
+                {
+//                    std::cout << it->second.logStream.str();
+                    _console->appendText(it->second.logStream.str());
+                }
 
                 // flush logStream
                 it->second.logStream.str("");
@@ -240,7 +250,10 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
 
             _drawer->drawStats(statManager);
 
+            _console->draw();
+
             _drawer->postDraw();
+            _console->postDraw();
 
             SDL_Flip(_screen);
         }
