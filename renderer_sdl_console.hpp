@@ -52,8 +52,8 @@ namespace aiwar {
 
             SDL_Surface *_screen;
 
+            SDL_Rect _consoleRect;
             SDL_Surface *_consoleSurface;
-            SDL_Rect *_consoleRect;
 
             bool _show;
             std::vector<std::string> _queue;

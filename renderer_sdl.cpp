@@ -176,6 +176,7 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
         {
             bool click = false;
             int mx, my;
+            int dx = 0, dy = 0;
 
             _startTimeFrame = SDL_GetTicks();
 
@@ -216,6 +217,14 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
                         _console->show(!_console->isShow());
                         break;
 
+                    case SDLK_r: // reset viewport position
+                        _drawer->resetPosition();
+                        break;
+
+                    case SDLK_z: // reset zoom
+                        _drawer->resetZoom();
+                        break;
+
                     case SDLK_UP:   // console scrolling
                     case SDLK_DOWN:
                     case SDLK_HOME:
@@ -234,6 +243,14 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
                     my = e.button.y;
                     break;
 
+                case SDL_MOUSEMOTION:
+                    if(e.motion.state)
+                    {
+                        dx += e.motion.xrel;
+                        dy += e.motion.yrel;
+                    }
+                    break;
+
                 case SDL_VIDEORESIZE:
                     // can be optimised by doing it only at draw time
                     _screen = SDL_SetVideoMode(e.resize.w, e.resize.h, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_RESIZABLE);
@@ -248,7 +265,7 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
 
             /* screen update */
 
-            _drawer->preDraw(click, mx, my);
+            _drawer->preDraw(click, mx, my, dx, dy);
             _console->preDraw();
 
             ItemExMap::iterator it;

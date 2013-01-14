@@ -53,7 +53,7 @@ namespace aiwar {
             RendererSDLDraw(SDL_Surface *s);
             ~RendererSDLDraw();
 
-            void preDraw(bool clicked, int xmouse, int ymouse);
+            void preDraw(bool clicked, int xmouse, int ymouse, int dxViewPort, int dyViewPort);
             void draw(RendererSDL::ItemEx *itemEx, const aiwar::core::ItemManager &im);
             void drawStats(const aiwar::core::StatManager &sm);
             void postDraw();
@@ -61,6 +61,9 @@ namespace aiwar {
             
             void debug(bool active);
             void toggleDebug();
+
+            void resetPosition();
+            void resetZoom();
 
         private:
 
@@ -92,17 +95,19 @@ namespace aiwar {
             const aiwar::core::Config& _cfg;
 
             bool _debug;
+
             SDL_Surface *_screen;
-            SDL_Rect *_worldRect;
+            SDL_Rect _worldRect;
             SDL_Surface *_worldSurface;
+            SDL_Rect _viewPort;
             std::map<ItemType, SDL_Surface*> _surfaceMap;
 
+            SDL_Rect _statsRect;
             SDL_Surface *_statsSurface;
-            SDL_Rect *_statsRect;
 
             // Fonts
-            TTF_Font* _statsFont;
-            TTF_Font* _aiwarFont;
+            TTF_Font *_statsFont;
+            TTF_Font *_aiwarFont;
 
             // context
             bool _clicked;

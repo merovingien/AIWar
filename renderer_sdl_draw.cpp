@@ -50,22 +50,23 @@ const SDL_Color BG_COLOR = BLACK_COLOR;
 RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::instance()), _debug(_cfg.debug), _screen(screen)
 {
     // playground surface
-    _worldRect = new SDL_Rect();
-    _worldRect->x = 0;
-    _worldRect->y = 0;
-    _worldRect->w = _screen->w - STATS_WIDTH;
-    _worldRect->h = _screen->h;
+    _worldRect.x = 0;
+    _worldRect.y = 0;
+    _worldRect.w = _screen->w - STATS_WIDTH;
+    _worldRect.h = _screen->h;
 
-    _worldSurface = SDL_CreateRGBSurface(_screen->flags, _worldRect->w, _worldRect->h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
+    _worldSurface = SDL_CreateRGBSurface(_screen->flags, _worldRect.w, _worldRect.h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
+
+    // viewport
+    _viewPort = _worldRect;
 
     // stat surface
-    _statsRect = new SDL_Rect();
-    _statsRect->x = _worldRect->w;
-    _statsRect->y = 0;
-    _statsRect->w = STATS_WIDTH;
-    _statsRect->h = _screen->h;
+    _statsRect.x = _worldRect.w;
+    _statsRect.y = 0;
+    _statsRect.w = STATS_WIDTH;
+    _statsRect.h = _screen->h;
 
-    _statsSurface = SDL_CreateRGBSurface(_screen->flags, _statsRect->w, _statsRect->h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
+    _statsSurface = SDL_CreateRGBSurface(_screen->flags, _statsRect.w, _statsRect.h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
     
     // create item surfaces
 
@@ -147,10 +148,8 @@ RendererSDLDraw::~RendererSDLDraw()
         SDL_FreeSurface(it->second);
 
     SDL_FreeSurface(_worldSurface);
-    delete _worldRect;
 
     SDL_FreeSurface(_statsSurface);
-    delete _statsRect;
 }
 
 void RendererSDLDraw::_addSurface(ItemType t, SDL_Surface* s)
@@ -166,11 +165,14 @@ SDL_Surface* RendererSDLDraw::_getSurface(ItemType t) const
     return NULL;
 }
 
-void RendererSDLDraw::preDraw(bool clicked, int xm, int ym)
+void RendererSDLDraw::preDraw(bool clicked, int xm, int ym, int dxViewPort, int dyViewPort)
 {
     _clicked = clicked;
     _xmouse = xm;
     _ymouse = ym;
+
+    _viewPort.x -= dxViewPort;
+    _viewPort.y -= dyViewPort;
 
     SDL_FillRect(_worldSurface, NULL, SDL_MapRGB(_screen->format,0,0,0));
     SDL_FillRect(_statsSurface, NULL, SDL_MapRGB(_screen->format,0,0,0));
@@ -191,10 +193,10 @@ void RendererSDLDraw::draw(RendererSDL::ItemEx *itemEx, const aiwar::core::ItemM
         im.undoOffset(px, py);
 
         // check if this item is clicked
-        if(px - itemEx->item->_xSize()/2 <= _xmouse &&
-           px + itemEx->item->_xSize()/2 >= _xmouse &&
-           py - itemEx->item->_ySize()/2 <= _ymouse &&
-           py + itemEx->item->_xSize()/2 >= _ymouse)
+        if(px - itemEx->item->_xSize()/2 <= _xmouse + _viewPort.x &&
+           px + itemEx->item->_xSize()/2 >= _xmouse + _viewPort.x &&
+           py - itemEx->item->_ySize()/2 <= _ymouse + _viewPort.y &&
+           py + itemEx->item->_xSize()/2 >= _ymouse + _viewPort.y)
         {
             itemEx->selected = !itemEx->selected;
         }
@@ -287,8 +289,8 @@ void RendererSDLDraw::drawStats(const aiwar::core::StatManager &sm)
 
 void RendererSDLDraw::postDraw()
 {
-    SDL_BlitSurface(_worldSurface, NULL, _screen, _worldRect);
-    SDL_BlitSurface(_statsSurface, NULL, _screen, _statsRect);
+    SDL_BlitSurface(_worldSurface, NULL, _screen, &_worldRect);
+    SDL_BlitSurface(_statsSurface, NULL, _screen, &_statsRect);
 }
 
 void RendererSDLDraw::updateScreen(SDL_Surface *newScreen)
@@ -298,12 +300,12 @@ void RendererSDLDraw::updateScreen(SDL_Surface *newScreen)
     _screen = newScreen;
 
     // playground surface
-    _worldRect->x = 0;
-    _worldRect->y = 0;
-    _worldRect->w = _screen->w - STATS_WIDTH;
-    _worldRect->h = _screen->h;
+    _worldRect.x = 0;
+    _worldRect.y = 0;
+    _worldRect.w = _screen->w - STATS_WIDTH;
+    _worldRect.h = _screen->h;
 
-    tmp = SDL_CreateRGBSurface(_screen->flags, _worldRect->w, _worldRect->h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
+    tmp = SDL_CreateRGBSurface(_screen->flags, _worldRect.w, _worldRect.h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
     if(tmp)
     {
         SDL_FreeSurface(_worldSurface);
@@ -311,12 +313,12 @@ void RendererSDLDraw::updateScreen(SDL_Surface *newScreen)
     }
 
     // stat surface
-    _statsRect->x = _worldRect->w;
-    _statsRect->y = 0;
-    _statsRect->w = STATS_WIDTH;
-    _statsRect->h = _screen->h;
+    _statsRect.x = _worldRect.w;
+    _statsRect.y = 0;
+    _statsRect.w = STATS_WIDTH;
+    _statsRect.h = _screen->h;
 
-    tmp = SDL_CreateRGBSurface(_screen->flags, _statsRect->w, _statsRect->h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
+    tmp = SDL_CreateRGBSurface(_screen->flags, _statsRect.w, _statsRect.h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
     if(tmp)
     {
         SDL_FreeSurface(_statsSurface);
@@ -334,6 +336,17 @@ void RendererSDLDraw::toggleDebug()
     _debug = !_debug;
 }
 
+void RendererSDLDraw::resetPosition()
+{
+    _viewPort.x = 0;
+    _viewPort.y = 0;
+}
+
+void RendererSDLDraw::resetZoom()
+{
+
+}
+
 void RendererSDLDraw::_drawMineral(const RendererSDL::ItemEx *ite, const aiwar::core::ItemManager &im)
 {
     const aiwar::core::Mineral *m = dynamic_cast<const aiwar::core::Mineral*>(ite->item);
@@ -341,6 +354,8 @@ void RendererSDLDraw::_drawMineral(const RendererSDL::ItemEx *ite, const aiwar::
     double px = m->xpos();
     double py = m->ypos();
     im.undoOffset(px, py);
+    px -= _viewPort.x;
+    py -= _viewPort.y;
 
     SDL_Rect r;
     r.x = static_cast<Sint16>(px - _cfg.MINERAL_SIZE_X/2);
@@ -357,6 +372,8 @@ void RendererSDLDraw::_drawBase(const RendererSDL::ItemEx *ite, const aiwar::cor
     double px = b->xpos();
     double py = b->ypos();
     im.undoOffset(px, py);
+    px -= _viewPort.x;
+    py -= _viewPort.y;
 
     SDL_Rect r;
     r.x = static_cast<Sint16>(px - _cfg.BASE_SIZE_X/2);
@@ -382,6 +399,8 @@ void RendererSDLDraw::_drawMiningShip(const RendererSDL::ItemEx *ite, const aiwa
     double px = m->xpos();
     double py = m->ypos();
     im.undoOffset(px, py);
+    px -= _viewPort.x;
+    py -= _viewPort.y;
 
     if (_debug)
     {
@@ -422,6 +441,8 @@ void RendererSDLDraw::_drawMissile(const RendererSDL::ItemEx *ite, const aiwar::
     double px = m->xpos();
     double py = m->ypos();
     im.undoOffset(px, py);
+    px -= _viewPort.x;
+    py -= _viewPort.y;
 
     SDL_Surface* tmp = SDL_CreateRGBSurface(_worldSurface->flags, static_cast<int>(_cfg.MISSILE_SIZE_X), static_cast<int>(_cfg.MISSILE_SIZE_Y), _worldSurface->format->BitsPerPixel, _worldSurface->format->Rmask, _worldSurface->format->Gmask, _worldSurface->format->Bmask, _worldSurface->format->Amask);
 
@@ -448,6 +469,8 @@ void RendererSDLDraw::_drawFighter(const RendererSDL::ItemEx *ite, const aiwar::
     double px = f->xpos();
     double py = f->ypos();
     im.undoOffset(px, py);
+    px -= _viewPort.x;
+    py -= _viewPort.y;
 
     if(_debug)
     {

@@ -30,16 +30,15 @@ const int FONT_SIZE = 16;
 // colors
 const SDL_Color BLACK_COLOR = { 0x00, 0x00, 0x00, 0 };
 
-RendererSDLConsole::RendererSDLConsole(SDL_Surface *s) : _screen(s), _show(false), _firstLine(0)
+RendererSDLConsole::RendererSDLConsole(SDL_Surface *s) : _screen(s), _consoleSurface(NULL), _show(false), _firstLine(0)
 {
     // console surface
-    _consoleRect = new SDL_Rect();
-    _consoleRect->x = 0;
-    _consoleRect->y = 0;
-    _consoleRect->w = _screen->w;
-    _consoleRect->h = _screen->h;
+    _consoleRect.x = 0;
+    _consoleRect.y = 0;
+    _consoleRect.w = _screen->w;
+    _consoleRect.h = _screen->h;
 
-    _consoleSurface = SDL_CreateRGBSurface(_screen->flags, _consoleRect->w, _consoleRect->h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
+    _consoleSurface = SDL_CreateRGBSurface(_screen->flags, _consoleRect.w, _consoleRect.h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
     SDL_SetAlpha(_consoleSurface, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 
     _consoleFont = TTF_OpenFont("./fonts/Jura-Medium.ttf", FONT_SIZE);
@@ -51,7 +50,6 @@ RendererSDLConsole::~RendererSDLConsole()
     TTF_CloseFont(_consoleFont);
 
     SDL_FreeSurface(_consoleSurface);
-    delete _consoleRect;
 }
 
 void RendererSDLConsole::preDraw()
@@ -67,7 +65,7 @@ void RendererSDLConsole::draw()
     if(_show)
     {
         // compute max number of lines to print
-        unsigned int maxNbLine = _consoleRect->h / _FONT_LINE_SKIP;
+        unsigned int maxNbLine = _consoleRect.h / _FONT_LINE_SKIP;
         if(_queue.size() < maxNbLine)
             maxNbLine = _queue.size();
 
@@ -87,7 +85,7 @@ void RendererSDLConsole::postDraw()
 {
     if(_show)
     {
-        SDL_BlitSurface(_consoleSurface, NULL, _screen, _consoleRect);
+        SDL_BlitSurface(_consoleSurface, NULL, _screen, &_consoleRect);
     }
 }
 
@@ -98,12 +96,12 @@ void RendererSDLConsole::updateScreen(SDL_Surface *newScreen)
     _screen = newScreen;
 
     // console surface
-    _consoleRect->x = 0;
-    _consoleRect->y = 0;
-    _consoleRect->w = _screen->w;
-    _consoleRect->h = _screen->h;
+    _consoleRect.x = 0;
+    _consoleRect.y = 0;
+    _consoleRect.w = _screen->w;
+    _consoleRect.h = _screen->h;
 
-    tmp = SDL_CreateRGBSurface(_screen->flags, _consoleRect->w, _consoleRect->h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
+    tmp = SDL_CreateRGBSurface(_screen->flags, _consoleRect.w, _consoleRect.h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
     if(tmp)
     {
         SDL_FreeSurface(_consoleSurface);
