@@ -71,6 +71,10 @@ void RendererSDLConsole::draw()
         if(_queue.size() < maxNbLine)
             maxNbLine = _queue.size();
 
+        // compute first line
+        if(_firstLine + maxNbLine > _queue.size())
+            _firstLine = _queue.size() - maxNbLine;
+
         unsigned int i;
         for(i = 0 ; i < maxNbLine ; ++i)
         {
@@ -84,6 +88,27 @@ void RendererSDLConsole::postDraw()
     if(_show)
     {
         SDL_BlitSurface(_consoleSurface, NULL, _screen, _consoleRect);
+    }
+}
+
+void RendererSDLConsole::updateScreen(SDL_Surface *newScreen)
+{
+    SDL_Surface *tmp;
+
+    _screen = newScreen;
+
+    // console surface
+    _consoleRect->x = 0;
+    _consoleRect->y = 0;
+    _consoleRect->w = _screen->w;
+    _consoleRect->h = _screen->h;
+
+    tmp = SDL_CreateRGBSurface(_screen->flags, _consoleRect->w, _consoleRect->h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
+    if(tmp)
+    {
+        SDL_FreeSurface(_consoleSurface);
+        _consoleSurface = tmp;
+        SDL_SetAlpha(_consoleSurface, SDL_SRCALPHA | SDL_RLEACCEL, 128);
     }
 }
 
@@ -109,8 +134,8 @@ void RendererSDLConsole::scroll(SDLKey k)
             break;
 
         case SDLK_DOWN:
-            if(_firstLine + (_consoleRect->h / _FONT_LINE_SKIP) < _queue.size())
-               _firstLine++;
+            if(_firstLine < _queue.size() - 1)
+                _firstLine++;
             break;
 
         case SDLK_HOME:
@@ -118,10 +143,7 @@ void RendererSDLConsole::scroll(SDLKey k)
             break;
 
         case SDLK_END:
-            if( _queue.size() - (_consoleRect->h / _FONT_LINE_SKIP) > 0 )
-                _firstLine = _queue.size() - (_consoleRect->h / _FONT_LINE_SKIP);
-            else
-                _firstLine = 0;
+            _firstLine = _queue.size() - 1;
             break;
 
         default:
@@ -129,7 +151,6 @@ void RendererSDLConsole::scroll(SDLKey k)
         }
     }
 }
-
 
 void RendererSDLConsole::appendText(const std::string& txt)
 {
@@ -155,8 +176,7 @@ void RendererSDLConsole::appendText(const std::string& txt)
         }
 
         // update _firstLine
-        int n = _queue.size() - (_consoleRect->h / _FONT_LINE_SKIP);
-        _firstLine = n > 0 ? n : 0;
+        _firstLine = _queue.size() - 1;
     }
 }
 

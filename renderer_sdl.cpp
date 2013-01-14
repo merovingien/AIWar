@@ -41,7 +41,7 @@
 
 using namespace aiwar::renderer;
 
-RendererSDL::RendererSDL() : _drawer(NULL)
+RendererSDL::RendererSDL() : _console(NULL), _drawer(NULL)
 {
 }
 
@@ -75,7 +75,7 @@ bool RendererSDL::initialize(const std::string& params)
 //    printf("window manager available ? %d\n", info->wm_available);
     /*******/
 
-    _screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_HWSURFACE);
+    _screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_RESIZABLE);
     SDL_WM_SetCaption("AIWar", NULL);
 
     _console = new RendererSDLConsole(_screen);
@@ -232,6 +232,13 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
                     click = true;
                     mx = e.button.x;
                     my = e.button.y;
+                    break;
+
+                case SDL_VIDEORESIZE:
+                    // can be optimised by doing it only at draw time
+                    _screen = SDL_SetVideoMode(e.resize.w, e.resize.h, 32, SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_RESIZABLE);
+                    _drawer->updateScreen(_screen);
+                    _console->updateScreen(_screen);
                     break;
 
                 default:

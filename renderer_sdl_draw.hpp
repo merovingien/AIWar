@@ -28,7 +28,6 @@
 struct SDL_Surface;
 struct SDL_Rect;
 
-#define STATS_SIZE_WIDTH 200
 #define SMALL_FONT_SIZE 10
 #define BIG_FONT_SIZE 20
 
@@ -58,6 +57,7 @@ namespace aiwar {
             void draw(RendererSDL::ItemEx *itemEx, const aiwar::core::ItemManager &im);
             void drawStats(const aiwar::core::StatManager &sm);
             void postDraw();
+            void updateScreen(SDL_Surface *newScreen);
             
             void debug(bool active);
             void toggleDebug();
@@ -93,8 +93,8 @@ namespace aiwar {
 
             bool _debug;
             SDL_Surface *_screen;
-            SDL_Rect *_world_rect;
-            SDL_Surface *_world_surface;
+            SDL_Rect *_worldRect;
+            SDL_Surface *_worldSurface;
             std::map<ItemType, SDL_Surface*> _surfaceMap;
 
             SDL_Surface *_statsSurface;

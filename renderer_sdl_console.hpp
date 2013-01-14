@@ -38,6 +38,7 @@ namespace aiwar {
             void preDraw();
             void draw();
             void postDraw();
+            void updateScreen(SDL_Surface *newScreen);
 
             bool isShow() const;
             void show(bool b = true);
