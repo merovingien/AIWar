@@ -57,7 +57,7 @@ std::string RendererSDL::getName() const
 
 std::string RendererSDL::getVersion() const
 {
-    return "0.3.0";
+    return "0.4.0";
 }
 
 bool RendererSDL::initialize(const std::string& params)
@@ -118,6 +118,11 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
 
     // update itemExMap at each round
     _updateItemEx(itemManager);
+
+    // new round
+    std::ostringstream oss;
+    oss << "********************* Round #" << statManager.round() << " *********************";
+    _console->appendText(oss.str());
 
     while(cont && (gameover || !play))
     {
@@ -199,6 +204,7 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
                         break;
 
                     case SDLK_m: // toggle manual
+                    case SDLK_p: // <=> pause
                         _manual = !_manual;
                         break;
 
@@ -208,6 +214,13 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
 
                     case SDLK_c: // togle console display
                         _console->show(!_console->isShow());
+                        break;
+
+                    case SDLK_UP:   // console scrolling
+                    case SDLK_DOWN:
+                    case SDLK_HOME:
+                    case SDLK_END:
+                        _console->scroll(e.key.keysym.sym);
                         break;
 
                     default:

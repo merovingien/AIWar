@@ -24,10 +24,13 @@
 
 using namespace aiwar::renderer;
 
+// font size
+const int FONT_SIZE = 16;
+
 // colors
 const SDL_Color BLACK_COLOR = { 0x00, 0x00, 0x00, 0 };
 
-RendererSDLConsole::RendererSDLConsole(SDL_Surface *s) : _screen(s), _show(false)
+RendererSDLConsole::RendererSDLConsole(SDL_Surface *s) : _screen(s), _show(false), _firstLine(0)
 {
     // console surface
     _consoleRect = new SDL_Rect();
@@ -39,7 +42,7 @@ RendererSDLConsole::RendererSDLConsole(SDL_Surface *s) : _screen(s), _show(false
     _consoleSurface = SDL_CreateRGBSurface(_screen->flags, _consoleRect->w, _consoleRect->h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
     SDL_SetAlpha(_consoleSurface, SDL_SRCALPHA | SDL_RLEACCEL, 128);
 
-    _consoleFont = TTF_OpenFont("./fonts/Jura-Medium.ttf", 18);
+    _consoleFont = TTF_OpenFont("./fonts/Jura-Medium.ttf", FONT_SIZE);
     _FONT_LINE_SKIP = TTF_FontLineSkip(_consoleFont);
 }
 
@@ -69,11 +72,9 @@ void RendererSDLConsole::draw()
             maxNbLine = _queue.size();
 
         unsigned int i;
-        std::deque<std::string>::const_iterator cit = _queue.begin();
-        for(i = maxNbLine-1 ; i < maxNbLine ; --i)
+        for(i = 0 ; i < maxNbLine ; ++i)
         {
-            _drawText(*cit, i);
-            cit++;
+            _drawText(_queue.at(i + _firstLine), i);
         }
     }
 }
@@ -96,6 +97,40 @@ void RendererSDLConsole::show(bool b)
     _show = b;
 }
 
+void RendererSDLConsole::scroll(SDLKey k)
+{
+    if(_show)
+    {
+        switch(k)
+        {
+        case SDLK_UP:
+            if(_firstLine > 0)
+                _firstLine--;
+            break;
+
+        case SDLK_DOWN:
+            if(_firstLine + (_consoleRect->h / _FONT_LINE_SKIP) < _queue.size())
+               _firstLine++;
+            break;
+
+        case SDLK_HOME:
+            _firstLine = 0;
+            break;
+
+        case SDLK_END:
+            if( _queue.size() - (_consoleRect->h / _FONT_LINE_SKIP) > 0 )
+                _firstLine = _queue.size() - (_consoleRect->h / _FONT_LINE_SKIP);
+            else
+                _firstLine = 0;
+            break;
+
+        default:
+            break;
+        }
+    }
+}
+
+
 void RendererSDLConsole::appendText(const std::string& txt)
 {
     static unsigned long n = 0;
@@ -107,13 +142,21 @@ void RendererSDLConsole::appendText(const std::string& txt)
         std::string::size_type b = 0, e = 0;
         while((e = txt.find('\n', b)) != std::string::npos)
         {
-            oss << n++ << " - " << txt.substr(b, e-b);
-            _queue.push_front(oss.str());
+            oss << n++ << " | " << txt.substr(b, e-b);
+            _queue.push_back(oss.str());
             b = e+1;
             oss.str("");
         }
-        oss << n++ << " - " << txt.substr(b);
-        _queue.push_front(oss.str());
+        std::string last = txt.substr(b);
+        if(!last.empty())
+        {
+            oss << n++ << " | " << last;
+            _queue.push_back(oss.str());
+        }
+
+        // update _firstLine
+        int n = _queue.size() - (_consoleRect->h / _FONT_LINE_SKIP);
+        _firstLine = n > 0 ? n : 0;
     }
 }
 

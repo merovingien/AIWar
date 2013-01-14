@@ -20,7 +20,7 @@
 #ifndef RENDERER_SDL_CONSOLE_HPP
 #define RENDERER_SDL_CONSOLE_HPP
 
-#include <deque>
+#include <vector>
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_ttf.h>
@@ -41,6 +41,8 @@ namespace aiwar {
 
             bool isShow() const;
             void show(bool b = true);
+
+            void scroll(SDLKey k);
             
             void appendText(const std::string& txt);
 
@@ -53,10 +55,11 @@ namespace aiwar {
             SDL_Rect *_consoleRect;
 
             bool _show;
-            std::deque<std::string> _queue;
+            std::vector<std::string> _queue;
+            unsigned long _firstLine;
 
             TTF_Font *_consoleFont;
-            int _FONT_LINE_SKIP;
+            unsigned int _FONT_LINE_SKIP;
         };
 
     } // aiwar::renderer
