@@ -29,7 +29,7 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_ttf.h>
 
-#define SCREEN_WIDTH 1000
+#define SCREEN_WIDTH 1050
 #define SCREEN_HEIGHT 800
 //#define SPEED 400
 
@@ -175,8 +175,9 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
         if(process)
         {
             bool click = false;
-            int mx, my;
+            int mcx, mcy;
             int dx = 0, dy = 0;
+            int dz = 0;
 
             _startTimeFrame = SDL_GetTicks();
 
@@ -232,18 +233,26 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
                         _console->scroll(e.key.keysym.sym);
                         break;
 
+                    case SDLK_a: // zoom
+                        dz++;
+                        break;
+
+                    case SDLK_q: // dezoom
+                        dz--;
+                        break;
+
                     default:
                         break;
                     }
                     break;
 
-                case SDL_MOUSEBUTTONDOWN:
+                case SDL_MOUSEBUTTONDOWN: // manage clicks. Should be a list of clicks
                     click = true;
-                    mx = e.button.x;
-                    my = e.button.y;
+                    mcx = e.button.x;
+                    mcy = e.button.y;
                     break;
 
-                case SDL_MOUSEMOTION:
+                case SDL_MOUSEMOTION: // screen sliding
                     if(e.motion.state)
                     {
                         dx += e.motion.xrel;
@@ -265,7 +274,10 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
 
             /* screen update */
 
-            _drawer->preDraw(click, mx, my, dx, dy);
+            int mx, my;
+            SDL_GetMouseState(&mx, &my);
+
+            _drawer->preDraw(click, mcx, mcy, dx, dy, dz, mx, my);
             _console->preDraw();
 
             ItemExMap::iterator it;

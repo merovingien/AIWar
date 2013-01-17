@@ -29,6 +29,7 @@
 #include "config.hpp"
 
 #include <sstream>
+#include <cmath>
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_gfxPrimitives.h>
@@ -37,8 +38,6 @@
 using namespace aiwar::renderer;
 using aiwar::core::BLUE_TEAM;
 using aiwar::core::RED_TEAM;
-
-const Uint16 STATS_WIDTH = 200;
 
 // FONT_COLOR
 const SDL_Color BLACK_COLOR = { 0x00, 0x00, 0x00, 0 };
@@ -58,7 +57,8 @@ RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::insta
     _worldSurface = SDL_CreateRGBSurface(_screen->flags, _worldRect.w, _worldRect.h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
 
     // viewport
-    _viewPort = _worldRect;
+    resetPosition();
+    resetZoom();
 
     // stat surface
     _statsRect.x = _worldRect.w;
@@ -165,14 +165,38 @@ SDL_Surface* RendererSDLDraw::_getSurface(ItemType t) const
     return NULL;
 }
 
-void RendererSDLDraw::preDraw(bool clicked, int xm, int ym, int dxViewPort, int dyViewPort)
+bool RendererSDLDraw::_getPosOnScreen(const double &itemPx, const double &itemPy, Sint16 &screenPx, Sint16 &screenPy) const
+{
+    screenPx = static_cast<Sint16>((static_cast<double>(_worldRect.w) / 2.0) - (_vpX - itemPx) * _zoom);
+    screenPy = static_cast<Sint16>((static_cast<double>(_worldRect.h) / 2.0) - (_vpY - itemPy) * _zoom);
+
+    return (screenPx > 0 && screenPx < _worldRect.w && screenPy > 0 && screenPy < _worldRect.h);
+}
+
+bool RendererSDLDraw::_getMousePos(const int &mouseX, const int &mouseY, double &px, double &py) const
+{
+    px = _vpX - ( (static_cast<double>(_worldRect.w) / 2.0) - static_cast<double>(mouseX) ) / _zoom;
+    py = _vpY - ( (static_cast<double>(_worldRect.h) / 2.0) - static_cast<double>(mouseY) ) / _zoom;
+
+    return (mouseX > 0 && mouseX < _worldRect.w && mouseY > 0 && mouseY < _worldRect.h);
+}
+
+void RendererSDLDraw::preDraw(bool clicked, int xmc, int ymc, int dxViewPort, int dyViewPort, int dz, int xm, int ym)
 {
     _clicked = clicked;
-    _xmouse = xm;
-    _ymouse = ym;
+    _xmouseClick = xmc;
+    _ymouseClick = ymc;
 
-    _viewPort.x -= dxViewPort;
-    _viewPort.y -= dyViewPort;
+    _xmousePos = xm;
+    _ymousePos = ym;
+
+    _vpX -= static_cast<double>(dxViewPort) / _zoom;
+    _vpY -= static_cast<double>(dyViewPort) / _zoom;
+
+    if(dz > 0)
+        _zoom *= std::pow(1.25, dz);
+    else if(dz < 0)
+        _zoom /= std::pow(1.25, -dz);
 
     SDL_FillRect(_worldSurface, NULL, SDL_MapRGB(_screen->format,0,0,0));
     SDL_FillRect(_statsSurface, NULL, SDL_MapRGB(_screen->format,0,0,0));
@@ -192,11 +216,14 @@ void RendererSDLDraw::draw(RendererSDL::ItemEx *itemEx, const aiwar::core::ItemM
         double py = itemEx->item->ypos();
         im.undoOffset(px, py);
 
+        double mxc, myc;
+        _getMousePos(_xmouseClick, _ymouseClick, mxc, myc);
+
         // check if this item is clicked
-        if(px - itemEx->item->_xSize()/2 <= _xmouse + _viewPort.x &&
-           px + itemEx->item->_xSize()/2 >= _xmouse + _viewPort.x &&
-           py - itemEx->item->_ySize()/2 <= _ymouse + _viewPort.y &&
-           py + itemEx->item->_xSize()/2 >= _ymouse + _viewPort.y)
+        if(px - itemEx->item->_xSize()/2.0 / _zoom <= mxc &&
+           px + itemEx->item->_xSize()/2.0 / _zoom >= mxc &&
+           py - itemEx->item->_ySize()/2.0 / _zoom <= myc &&
+           py + itemEx->item->_xSize()/2.0 / _zoom >= myc)
         {
             itemEx->selected = !itemEx->selected;
         }
@@ -219,10 +246,18 @@ void RendererSDLDraw::drawStats(const aiwar::core::StatManager &sm)
     std::ostringstream statsText;
     const int FONT_HEIGHT = TTF_FontLineSkip(_statsFont);
 
+    // compute cursor position
+    double mx, my;
+    bool printMouse = _getMousePos(_xmousePos, _ymousePos, mx, my);
+    int y = 0;
+
+    // draw
+
     statsText << "AIWar";
     _drawText(_statsSurface, statsText.str(), STATS_WIDTH/2, 20, _aiwarFont, WHITE_COLOR, BG_COLOR, true);
+    y += FONT_HEIGHT;
 
-    int y = 50;
+    y += 4 * FONT_HEIGHT;
 
     // round
     statsText.str("");
@@ -234,27 +269,27 @@ void RendererSDLDraw::drawStats(const aiwar::core::StatManager &sm)
     y += FONT_HEIGHT;
 
     statsText.str("");
-    statsText << "Bases (current/max):         " << sm.baseCurrent(BLUE_TEAM) << " / " << sm.baseMax(BLUE_TEAM);
+    statsText << "Bases (current/max):  " << sm.baseCurrent(BLUE_TEAM) << " / " << sm.baseMax(BLUE_TEAM);
     _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, BLUE_COLOR, BG_COLOR);
     y += FONT_HEIGHT;
 
     statsText.str("");
-    statsText << "Fighters (current/max):      " << sm.fighterCurrent(BLUE_TEAM) << " / " << sm.fighterMax(BLUE_TEAM);
+    statsText << "Fighters (current/max):  " << sm.fighterCurrent(BLUE_TEAM) << " / " << sm.fighterMax(BLUE_TEAM);
     _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, BLUE_COLOR, BG_COLOR);
     y += FONT_HEIGHT;
 
     statsText.str("");
-    statsText << "MiningShips (current/max):   " << sm.miningShipCurrent(BLUE_TEAM) << " / " << sm.miningShipMax(BLUE_TEAM);
+    statsText << "MiningShips (current/max):  " << sm.miningShipCurrent(BLUE_TEAM) << " / " << sm.miningShipMax(BLUE_TEAM);
     _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, BLUE_COLOR, BG_COLOR);
     y += FONT_HEIGHT;
 
     statsText.str("");
-    statsText << "Missiles (created/launched): " << sm.missileCreated(BLUE_TEAM) << " / " << sm.missileLaunched(BLUE_TEAM);
+    statsText << "Missiles (launched/created): " << sm.missileLaunched(BLUE_TEAM) << " / " << sm.missileCreated(BLUE_TEAM);
     _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, BLUE_COLOR, BG_COLOR);
     y += FONT_HEIGHT;
 
     statsText.str("");
-    statsText << "Minerals (spent/saved):      " << sm.mineralSpent(BLUE_TEAM) << " / " << sm.mineralSaved(BLUE_TEAM);
+    statsText << "Minerals (spent/saved):  " << sm.mineralSpent(BLUE_TEAM) << " / " << sm.mineralSaved(BLUE_TEAM);
     _drawText(_statsSurface, statsText.str(), 10,  y, _statsFont, BLUE_COLOR, BG_COLOR);
     y += FONT_HEIGHT;
 
@@ -262,28 +297,45 @@ void RendererSDLDraw::drawStats(const aiwar::core::StatManager &sm)
     y += FONT_HEIGHT;
 
     statsText.str("");
-    statsText << "Bases (current/max):         " << sm.baseCurrent(RED_TEAM) << " / " << sm.baseMax(RED_TEAM);
+    statsText << "Bases (current/max):  " << sm.baseCurrent(RED_TEAM) << " / " << sm.baseMax(RED_TEAM);
     _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, RED_COLOR, BG_COLOR);
     y += FONT_HEIGHT;
 
     statsText.str("");
-    statsText << "Fighters (current/max):      " << sm.fighterCurrent(RED_TEAM) << " / " << sm.fighterMax(RED_TEAM);
+    statsText << "Fighters (current/max):  " << sm.fighterCurrent(RED_TEAM) << " / " << sm.fighterMax(RED_TEAM);
     _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, RED_COLOR, BG_COLOR);
     y += FONT_HEIGHT;
 
     statsText.str("");
-    statsText << "MiningShips (current/max):   " << sm.miningShipCurrent(RED_TEAM) << " / " << sm.miningShipMax(RED_TEAM);
+    statsText << "MiningShips (current/max):  " << sm.miningShipCurrent(RED_TEAM) << " / " << sm.miningShipMax(RED_TEAM);
     _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, RED_COLOR, BG_COLOR);
     y += FONT_HEIGHT;
 
     statsText.str("");
-    statsText << "Missiles (created/launched): " << sm.missileCreated(RED_TEAM) << " / " << sm.missileLaunched(RED_TEAM);
+    statsText << "Missiles (launched/created): " << sm.missileLaunched(RED_TEAM) << " / " << sm.missileCreated(RED_TEAM);
     _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, RED_COLOR, BG_COLOR);
     y += FONT_HEIGHT;
 
     statsText.str("");
-    statsText << "Minerals (spent/saved):      " << sm.mineralSpent(RED_TEAM) << " / " << sm.mineralSaved(RED_TEAM);
+    statsText << "Minerals (spent/saved):  " << sm.mineralSpent(RED_TEAM) << " / " << sm.mineralSaved(RED_TEAM);
     _drawText(_statsSurface, statsText.str(), 10,  y, _statsFont, RED_COLOR, BG_COLOR);
+    y += FONT_HEIGHT;
+
+    y += FONT_HEIGHT * 4;
+
+    // print zoom
+    statsText.str("");
+    statsText << "Zoom: " << _zoom;
+    _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, WHITE_COLOR, BG_COLOR);
+    y += FONT_HEIGHT;
+
+    // print mouse position
+    statsText.str("");
+    if(printMouse)
+        statsText << "Cursor: " << mx << "x" << my;
+    else
+        statsText << "Cursor: - x -";
+    _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, WHITE_COLOR, BG_COLOR);
     y += FONT_HEIGHT;
 }
 
@@ -312,6 +364,9 @@ void RendererSDLDraw::updateScreen(SDL_Surface *newScreen)
         _worldSurface = tmp;
     }
 
+    // zoom
+    resetZoom();
+
     // stat surface
     _statsRect.x = _worldRect.w;
     _statsRect.y = 0;
@@ -338,13 +393,16 @@ void RendererSDLDraw::toggleDebug()
 
 void RendererSDLDraw::resetPosition()
 {
-    _viewPort.x = 0;
-    _viewPort.y = 0;
+    _vpX = _cfg.WORLD_SIZE_X / 2.0;
+    _vpY = _cfg.WORLD_SIZE_Y / 2.0;
 }
 
 void RendererSDLDraw::resetZoom()
 {
+    double zx = static_cast<double>(_worldRect.w) / _cfg.WORLD_SIZE_X;
+    double zy = static_cast<double>(_worldRect.h) / _cfg.WORLD_SIZE_Y;
 
+    _zoom = zx < zy ? zx : zy;
 }
 
 void RendererSDLDraw::_drawMineral(const RendererSDL::ItemEx *ite, const aiwar::core::ItemManager &im)
@@ -354,12 +412,13 @@ void RendererSDLDraw::_drawMineral(const RendererSDL::ItemEx *ite, const aiwar::
     double px = m->xpos();
     double py = m->ypos();
     im.undoOffset(px, py);
-    px -= _viewPort.x;
-    py -= _viewPort.y;
+
+    Sint16 sx, sy;
+    _getPosOnScreen(px, py, sx, sy);
 
     SDL_Rect r;
-    r.x = static_cast<Sint16>(px - _cfg.MINERAL_SIZE_X/2);
-    r.y = static_cast<Sint16>(py - _cfg.MINERAL_SIZE_Y/2);
+    r.x = sx - _cfg.MINERAL_SIZE_X/2;
+    r.y = sy - _cfg.MINERAL_SIZE_Y/2;
     r.w = static_cast<Uint16>(_cfg.MINERAL_SIZE_X);
     r.h = static_cast<Uint16>(_cfg.MINERAL_SIZE_Y);
     SDL_FillRect(_worldSurface, &r, SDL_MapRGB(_worldSurface->format, 0,255,128));
@@ -372,12 +431,25 @@ void RendererSDLDraw::_drawBase(const RendererSDL::ItemEx *ite, const aiwar::cor
     double px = b->xpos();
     double py = b->ypos();
     im.undoOffset(px, py);
-    px -= _viewPort.x;
-    py -= _viewPort.y;
+
+    Sint16 sx, sy;
+    _getPosOnScreen(px, py, sx, sy);
+
+    if (_debug || ite->selected)
+    {
+        // draw vision circle
+        circleRGBA(_worldSurface, sx, sy, static_cast<Sint16>(_cfg.BASE_DETECTION_RADIUS * _zoom), 255,255,0,255);
+
+        // draw mining circle
+        circleRGBA(_worldSurface, sx, sy, static_cast<Sint16>(_cfg.MININGSHIP_MINING_RADIUS * _zoom), 190,192,192,255);
+
+        // draw communication circle
+        circleRGBA(_worldSurface, sx, sy, static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS * _zoom) , 0,192,128,255);
+    }
 
     SDL_Rect r;
-    r.x = static_cast<Sint16>(px - _cfg.BASE_SIZE_X/2);
-    r.y = static_cast<Sint16>(py - _cfg.BASE_SIZE_Y/2);
+    r.x = sx - _cfg.BASE_SIZE_X/2;
+    r.y = sy - _cfg.BASE_SIZE_Y/2;
     r.w = static_cast<Uint16>(_cfg.BASE_SIZE_X);
     r.h = static_cast<Uint16>(_cfg.BASE_SIZE_Y);
 
@@ -399,19 +471,19 @@ void RendererSDLDraw::_drawMiningShip(const RendererSDL::ItemEx *ite, const aiwa
     double px = m->xpos();
     double py = m->ypos();
     im.undoOffset(px, py);
-    px -= _viewPort.x;
-    py -= _viewPort.y;
+    Sint16 sx, sy;
+    _getPosOnScreen(px, py, sx, sy);
 
-    if (_debug)
+    if (_debug || ite->selected)
     {
         // draw vision circle
-        circleRGBA(_worldSurface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.MININGSHIP_DETECTION_RADIUS), 255,255,0,255);
+        circleRGBA(_worldSurface, sx, sy, static_cast<Sint16>(_cfg.MININGSHIP_DETECTION_RADIUS * _zoom), 255,255,0,255);
 
         // draw mining circle
-        circleRGBA(_worldSurface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.MININGSHIP_MINING_RADIUS), 190,192,192,255);
+        circleRGBA(_worldSurface, sx, sy, static_cast<Sint16>(_cfg.MININGSHIP_MINING_RADIUS * _zoom), 190,192,192,255);
 
         // draw communication circle
-        circleRGBA(_worldSurface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS), 0,192,128,255);
+        circleRGBA(_worldSurface, sx, sy, static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS * _zoom) , 0,192,128,255);
     }
 
     SDL_Surface *rs = NULL;
@@ -425,8 +497,8 @@ void RendererSDLDraw::_drawMiningShip(const RendererSDL::ItemEx *ite, const aiwa
         rs = rotozoomSurface(_getSurface(BLUE_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
 
     SDL_Rect r;
-    r.x = static_cast<Sint16>(px) - rs->w/2;
-    r.y = static_cast<Sint16>(py) - rs->h/2;
+    r.x = sx - rs->w/2;
+    r.y = sy - rs->h/2;
     r.w = rs->w;
     r.h = rs->h;
 
@@ -441,8 +513,8 @@ void RendererSDLDraw::_drawMissile(const RendererSDL::ItemEx *ite, const aiwar::
     double px = m->xpos();
     double py = m->ypos();
     im.undoOffset(px, py);
-    px -= _viewPort.x;
-    py -= _viewPort.y;
+    Sint16 sx, sy;
+    _getPosOnScreen(px, py, sx, sy);
 
     SDL_Surface* tmp = SDL_CreateRGBSurface(_worldSurface->flags, static_cast<int>(_cfg.MISSILE_SIZE_X), static_cast<int>(_cfg.MISSILE_SIZE_Y), _worldSurface->format->BitsPerPixel, _worldSurface->format->Rmask, _worldSurface->format->Gmask, _worldSurface->format->Bmask, _worldSurface->format->Amask);
 
@@ -452,8 +524,8 @@ void RendererSDLDraw::_drawMissile(const RendererSDL::ItemEx *ite, const aiwar::
     SDL_Surface *rs = rotozoomSurface(tmp, m->angle(), 1.0, SMOOTHING_OFF);
 
     SDL_Rect r;
-    r.x = static_cast<Sint16>(px) - rs->w/2;
-    r.y = static_cast<Sint16>(py) - rs->h/2;
+    r.x = sx - rs->w/2;
+    r.y = sy - rs->h/2;
     r.w = rs->w;
     r.h = rs->h;
     SDL_BlitSurface(rs, NULL, _worldSurface, &r);
@@ -469,16 +541,16 @@ void RendererSDLDraw::_drawFighter(const RendererSDL::ItemEx *ite, const aiwar::
     double px = f->xpos();
     double py = f->ypos();
     im.undoOffset(px, py);
-    px -= _viewPort.x;
-    py -= _viewPort.y;
+    Sint16 sx, sy;
+    _getPosOnScreen(px, py, sx, sy);
 
-    if(_debug)
+    if(_debug || ite->selected)
     {
         // draw vision circle
-        circleRGBA(_worldSurface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.FIGHTER_DETECTION_RADIUS), 255,255,0,255);
+        circleRGBA(_worldSurface, sx, sy, static_cast<Sint16>(_cfg.FIGHTER_DETECTION_RADIUS * _zoom), 255,255,0,255);
 
         // draw communication circle
-        circleRGBA(_worldSurface, static_cast<Sint16>(px), static_cast<Sint16>(py), static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS), 0,192,128,255);
+        circleRGBA(_worldSurface, sx, sy, static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS * _zoom), 0,192,128,255);
     }
 
     SDL_Surface *rs = NULL;
@@ -492,8 +564,8 @@ void RendererSDLDraw::_drawFighter(const RendererSDL::ItemEx *ite, const aiwar::
         rs = rotozoomSurface(_getSurface(BLUE_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
 
     SDL_Rect r;
-    r.x = static_cast<Sint16>(px) - rs->w/2;
-    r.y = static_cast<Sint16>(py) - rs->h/2;
+    r.x = sx - rs->w/2;
+    r.y = sy - rs->h/2;
     r.w = rs->w;
     r.h = rs->h;
 

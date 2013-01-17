@@ -28,9 +28,6 @@
 struct SDL_Surface;
 struct SDL_Rect;
 
-#define SMALL_FONT_SIZE 10
-#define BIG_FONT_SIZE 20
-
 namespace aiwar {
 
     namespace core {
@@ -50,10 +47,15 @@ namespace aiwar {
         class RendererSDLDraw
         {
         public:
+
+            static const int SMALL_FONT_SIZE = 12;
+            static const int BIG_FONT_SIZE = 28;
+            static const Uint16 STATS_WIDTH = 250;
+
             RendererSDLDraw(SDL_Surface *s);
             ~RendererSDLDraw();
 
-            void preDraw(bool clicked, int xmouse, int ymouse, int dxViewPort, int dyViewPort);
+            void preDraw(bool clicked, int xmouseClick, int ymouseClick, int dxViewPort, int dyViewPort, int dz, int xmousePos, int ymousePos);
             void draw(RendererSDL::ItemEx *itemEx, const aiwar::core::ItemManager &im);
             void drawStats(const aiwar::core::StatManager &sm);
             void postDraw();
@@ -89,6 +91,13 @@ namespace aiwar {
 
             void _drawText(SDL_Surface* surface, const std::string &str, int x, int y, TTF_Font* font, const SDL_Color &fgColor, const SDL_Color &bgColor, bool centered = false);
 
+            // return the position of a point in the screen coords considering the current viewport
+            // return true if the point is in the world Rect
+            bool _getPosOnScreen(const double &px, const double &py, Sint16 &screenPx, Sint16 &screenPy) const;
+            // return the position of the mouse pointer (mouseX, mouseY) in the world coords
+            // return true if the mouse is in the world Rect
+            bool _getMousePos(const int &mouseX, const int &mouseY, double &px, double &py) const;
+
             void _addSurface(ItemType, SDL_Surface* surf);
             SDL_Surface* _getSurface(ItemType) const;
 
@@ -99,7 +108,8 @@ namespace aiwar {
             SDL_Surface *_screen;
             SDL_Rect _worldRect;
             SDL_Surface *_worldSurface;
-            SDL_Rect _viewPort;
+            double _vpX, _vpY; // center of the viewport
+            double _zoom;
             std::map<ItemType, SDL_Surface*> _surfaceMap;
 
             SDL_Rect _statsRect;
@@ -111,7 +121,8 @@ namespace aiwar {
 
             // context
             bool _clicked;
-            int _xmouse, _ymouse;
+            int _xmouseClick, _ymouseClick;
+            int _xmousePos, _ymousePos;
         };
         
     }
