@@ -337,6 +337,12 @@ void RendererSDLDraw::drawStats(const aiwar::core::StatManager &sm)
         statsText << "Cursor: - x -";
     _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, WHITE_COLOR, BG_COLOR);
     y += FONT_HEIGHT;
+
+    // Show help
+    y = _statsRect.h - FONT_HEIGHT - 5;
+    statsText.str("");
+    statsText << "Press F1 for help";
+    _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, WHITE_COLOR, BG_COLOR);
 }
 
 void RendererSDLDraw::postDraw()

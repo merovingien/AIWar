@@ -30,7 +30,7 @@ const int FONT_SIZE = 16;
 // colors
 const SDL_Color BLACK_COLOR = { 0x00, 0x00, 0x00, 0 };
 
-RendererSDLConsole::RendererSDLConsole(SDL_Surface *s) : _screen(s), _consoleSurface(NULL), _show(false), _firstLine(0)
+RendererSDLConsole::RendererSDLConsole(SDL_Surface *s) : _screen(s), _consoleSurface(NULL), _show(false), _firstLine(0), _help(false), _helpFirstLine(0)
 {
     // console surface
     _consoleRect.x = 0;
@@ -43,6 +43,30 @@ RendererSDLConsole::RendererSDLConsole(SDL_Surface *s) : _screen(s), _consoleSur
 
     _consoleFont = TTF_OpenFont("./fonts/Jura-Medium.ttf", FONT_SIZE);
     _FONT_LINE_SKIP = TTF_FontLineSkip(_consoleFont);
+
+    _helpQueue.push_back(" ----- AIWar -----");
+    _helpQueue.push_back(" ");
+    _helpQueue.push_back(" ");
+    _helpQueue.push_back(" * Keyboard shortcuts *");
+    _helpQueue.push_back(" ");
+    _helpQueue.push_back(" F1     - Close this menu");
+    _helpQueue.push_back(" Escape - Quit the game");
+    _helpQueue.push_back(" Space  - Play one round");
+    _helpQueue.push_back(" P      - Pause / Unpause");
+    _helpQueue.push_back(" S      - Play without pause (full speed)");
+    _helpQueue.push_back(" D      - Active/Deactive debug mode");
+    _helpQueue.push_back(" Z      - Reset zoom");
+    _helpQueue.push_back(" R      - Reset postition");
+    _helpQueue.push_back(" C      - Show/Hide console");
+    _helpQueue.push_back(" UP     - Scroll up console or help");
+    _helpQueue.push_back(" DOWN   - Scroll down console or help");
+    _helpQueue.push_back(" ");
+    _helpQueue.push_back(" * Mouse *");
+    _helpQueue.push_back(" ");
+    _helpQueue.push_back(" Click  - Select/Unselect item");
+    _helpQueue.push_back(" Wheel  - Zoom/Dezoom");
+
+    _helpFirstLine = _helpQueue.size() - 1;
 }
 
 RendererSDLConsole::~RendererSDLConsole()
@@ -54,7 +78,7 @@ RendererSDLConsole::~RendererSDLConsole()
 
 void RendererSDLConsole::preDraw()
 {
-    if(_show)
+    if(_show || _help)
     {
         SDL_FillRect(_consoleSurface, NULL, SDL_MapRGB(_screen->format,0xFF,0xFF,0xFF));
     }
@@ -62,7 +86,24 @@ void RendererSDLConsole::preDraw()
 
 void RendererSDLConsole::draw()
 {
-    if(_show)
+    if(_help)
+    {
+        // compute max number of lines to print
+        unsigned int maxNbLine = _consoleRect.h / _FONT_LINE_SKIP;
+        if(_helpQueue.size() < maxNbLine)
+            maxNbLine = _helpQueue.size();
+
+        // compute first line
+        if(_helpFirstLine + maxNbLine > _helpQueue.size())
+            _helpFirstLine = _helpQueue.size() - maxNbLine;
+
+        unsigned int i;
+        for(i = 0 ; i < maxNbLine ; ++i)
+        {
+            _drawText(_helpQueue.at(i + _helpFirstLine), i);
+        }
+    }
+    else if(_show)
     {
         // compute max number of lines to print
         unsigned int maxNbLine = _consoleRect.h / _FONT_LINE_SKIP;
@@ -83,7 +124,7 @@ void RendererSDLConsole::draw()
 
 void RendererSDLConsole::postDraw()
 {
-    if(_show)
+    if(_show || _help)
     {
         SDL_BlitSurface(_consoleSurface, NULL, _screen, &_consoleRect);
     }
@@ -120,28 +161,60 @@ void RendererSDLConsole::show(bool b)
     _show = b;
 }
 
+bool RendererSDLConsole::isHelp() const
+{
+    return _help;
+}
+
+void RendererSDLConsole::help(bool b)
+{
+    _help = b;
+}
+
 void RendererSDLConsole::scroll(SDLKey k)
 {
-    if(_show)
+    if(_show || _help)
     {
         switch(k)
         {
         case SDLK_UP:
-            if(_firstLine > 0)
-                _firstLine--;
+            if(_help)
+            {
+                if(_helpFirstLine > 0)
+                    _helpFirstLine--;
+            }
+            else if(_show)
+            {
+                if(_firstLine > 0)
+                    _firstLine--;
+            }
             break;
 
         case SDLK_DOWN:
-            if(_firstLine < _queue.size() - 1)
-                _firstLine++;
+            if(_help)
+            {
+                if(_helpFirstLine < _helpQueue.size() - 1)
+                    _helpFirstLine++;
+            }
+            else if(_show)
+            {
+                if(_firstLine < _queue.size() - 1)
+                    _firstLine++;
+            }
             break;
 
         case SDLK_HOME:
-            _firstLine = 0;
+            if(_help)
+                _helpFirstLine = 0;
+            else if(_show)
+                _firstLine = 0;
             break;
 
         case SDLK_END:
-            _firstLine = _queue.size() - 1;
+            if(_help)
+                _helpFirstLine = _helpQueue.size() - 1;
+            else if(_show)
+                _firstLine = _queue.size() - 1;
             break;
 
         default:

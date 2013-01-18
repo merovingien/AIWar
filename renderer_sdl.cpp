@@ -197,6 +197,10 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
                         cont = false; // exit
                         break;
 
+                    case SDLK_F1: // help
+                        _console->help(!_console->isHelp());
+                        break;
+
                     case SDLK_SPACE: // force play
                         play = true;
                         break;

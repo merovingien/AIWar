@@ -43,6 +43,9 @@ namespace aiwar {
             bool isShow() const;
             void show(bool b = true);
 
+            bool isHelp() const;
+            void help(bool b = true);
+
             void scroll(SDLKey k);
             
             void appendText(const std::string& txt);
@@ -58,6 +61,10 @@ namespace aiwar {
             bool _show;
             std::vector<std::string> _queue;
             unsigned long _firstLine;
+
+            bool _help;
+            std::vector<std::string> _helpQueue;
+            unsigned long _helpFirstLine;
 
             TTF_Font *_consoleFont;
             unsigned int _FONT_LINE_SKIP;
