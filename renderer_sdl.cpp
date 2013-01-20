@@ -250,10 +250,26 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
                     }
                     break;
 
-                case SDL_MOUSEBUTTONDOWN: // manage clicks. Should be a list of clicks
-                    click = true;
-                    mcx = e.button.x;
-                    mcy = e.button.y;
+                case SDL_MOUSEBUTTONDOWN:
+                    switch(e.button.button)
+                    {
+                    case SDL_BUTTON_LEFT: // manage clicks. Should be a list of clicks
+                        click = true;
+                        mcx = e.button.x;
+                        mcy = e.button.y;
+                        break;
+
+                    case SDL_BUTTON_WHEELUP: // zoom
+                        dz++;
+                        break;
+
+                    case SDL_BUTTON_WHEELDOWN: // dezoom
+                        dz--;
+                        break;
+
+                    default:
+                        break;
+                    }
                     break;
 
                 case SDL_MOUSEMOTION: // screen sliding

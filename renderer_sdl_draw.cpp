@@ -194,9 +194,9 @@ void RendererSDLDraw::preDraw(bool clicked, int xmc, int ymc, int dxViewPort, in
     _vpY -= static_cast<double>(dyViewPort) / _zoom;
 
     if(dz > 0)
-        _zoom *= std::pow(1.25, dz);
+        _zoom *= std::pow(1.15, dz);
     else if(dz < 0)
-        _zoom /= std::pow(1.25, -dz);
+        _zoom /= std::pow(1.15, -dz);
 
     SDL_FillRect(_worldSurface, NULL, SDL_MapRGB(_screen->format,0,0,0));
     SDL_FillRect(_statsSurface, NULL, SDL_MapRGB(_screen->format,0,0,0));
