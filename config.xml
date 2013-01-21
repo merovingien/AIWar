@@ -2,7 +2,7 @@
 <aiwar>
   <options>
     <debug>false</debug>
-    <manual>false</manual>
+    <manual>true</manual>
     <map>maps/map.xml</map>
     <blue>PYTHON_TEAM</blue>
     <red>TEAM_DUMMY</red>

@@ -44,7 +44,7 @@ RendererSDLConsole::RendererSDLConsole(SDL_Surface *s) : _screen(s), _consoleSur
     _consoleFont = TTF_OpenFont("./fonts/Jura-Medium.ttf", FONT_SIZE);
     _FONT_LINE_SKIP = TTF_FontLineSkip(_consoleFont);
 
-    _helpQueue.push_back(" ----- AIWar -----");
+    _helpQueue.push_back(" ---------- AIWar ----------");
     _helpQueue.push_back(" ");
     _helpQueue.push_back(" ");
     _helpQueue.push_back(" * Keyboard shortcuts *");
@@ -54,7 +54,6 @@ RendererSDLConsole::RendererSDLConsole(SDL_Surface *s) : _screen(s), _consoleSur
     _helpQueue.push_back(" Space  - Play one round");
     _helpQueue.push_back(" P      - Pause / Unpause");
     _helpQueue.push_back(" S      - Play without pause (full speed)");
-    _helpQueue.push_back(" D      - Active/Deactive debug mode");
     _helpQueue.push_back(" Z      - Reset zoom");
     _helpQueue.push_back(" R      - Reset postition");
     _helpQueue.push_back(" C      - Show/Hide console");
@@ -64,7 +63,8 @@ RendererSDLConsole::RendererSDLConsole(SDL_Surface *s) : _screen(s), _consoleSur
     _helpQueue.push_back(" * Mouse *");
     _helpQueue.push_back(" ");
     _helpQueue.push_back(" Click  - Select/Unselect item");
-    _helpQueue.push_back(" Wheel  - Zoom/Dezoom");
+    _helpQueue.push_back(" Wheel (play mode)     - Zoom/Dezoom");
+    _helpQueue.push_back(" Wheel (console mode)  - Scroll up/down");
 
     _helpFirstLine = _helpQueue.size() - 1;
 }

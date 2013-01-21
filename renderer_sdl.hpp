@@ -22,6 +22,7 @@
 
 #include "renderer_interface.hpp"
 
+#include <fstream>
 #include <SDL/SDL.h>
 
 namespace aiwar {
@@ -66,6 +67,9 @@ namespace aiwar {
 
             Uint32 _startTimeFrame;
             Uint32 _startTimePlay;
+
+            // log file
+            std::ofstream _logFile;
         };
 
         class RendererSDL::ItemEx

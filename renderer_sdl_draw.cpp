@@ -46,7 +46,7 @@ const SDL_Color RED_COLOR = { 0xFF, 0x00, 0x00, 0 };
 const SDL_Color WHITE_COLOR = { 0xFF, 0xFF, 0xFF, 0 };
 const SDL_Color BG_COLOR = BLACK_COLOR;
 
-RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::instance()), _debug(_cfg.debug), _screen(screen)
+RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::instance()), _screen(screen)
 {
     // playground surface
     _worldRect.x = 0;
@@ -67,7 +67,11 @@ RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::insta
     _statsRect.h = _screen->h;
 
     _statsSurface = SDL_CreateRGBSurface(_screen->flags, _statsRect.w, _statsRect.h, _screen->format->BitsPerPixel, _screen->format->Rmask, _screen->format->Gmask, _screen->format->Bmask, _screen->format->Amask);
-    
+
+    // team names
+    _blueName = _cfg.players.find(_cfg.blue)->second.name;
+    _redName = _cfg.players.find(_cfg.red)->second.name;
+
     // create item surfaces
 
     // ***red miningShip***
@@ -268,6 +272,10 @@ void RendererSDLDraw::drawStats(const aiwar::core::StatManager &sm)
     //BLUE team y pos
     y += FONT_HEIGHT;
 
+    statsText.str(_blueName);
+    _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, BLUE_COLOR, BG_COLOR);
+    y += FONT_HEIGHT;
+
     statsText.str("");
     statsText << "Bases (current/max):  " << sm.baseCurrent(BLUE_TEAM) << " / " << sm.baseMax(BLUE_TEAM);
     _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, BLUE_COLOR, BG_COLOR);
@@ -294,6 +302,10 @@ void RendererSDLDraw::drawStats(const aiwar::core::StatManager &sm)
     y += FONT_HEIGHT;
 
     // RED team
+    y += FONT_HEIGHT;
+
+    statsText.str(_redName);
+    _drawText(_statsSurface, statsText.str(), 10, y, _statsFont, RED_COLOR, BG_COLOR);
     y += FONT_HEIGHT;
 
     statsText.str("");
@@ -387,16 +399,6 @@ void RendererSDLDraw::updateScreen(SDL_Surface *newScreen)
     }
 }
 
-void RendererSDLDraw::debug(bool active)
-{
-    _debug = active;
-}
-
-void RendererSDLDraw::toggleDebug()
-{
-    _debug = !_debug;
-}
-
 void RendererSDLDraw::resetPosition()
 {
     _vpX = _cfg.WORLD_SIZE_X / 2.0;
@@ -441,7 +443,7 @@ void RendererSDLDraw::_drawBase(const RendererSDL::ItemEx *ite, const aiwar::cor
     Sint16 sx, sy;
     _getPosOnScreen(px, py, sx, sy);
 
-    if (_debug || ite->selected)
+    if (ite->selected)
     {
         // draw vision circle
         circleRGBA(_worldSurface, sx, sy, static_cast<Sint16>(_cfg.BASE_DETECTION_RADIUS * _zoom), 255,255,0,255);
@@ -480,7 +482,7 @@ void RendererSDLDraw::_drawMiningShip(const RendererSDL::ItemEx *ite, const aiwa
     Sint16 sx, sy;
     _getPosOnScreen(px, py, sx, sy);
 
-    if (_debug || ite->selected)
+    if (ite->selected)
     {
         // draw vision circle
         circleRGBA(_worldSurface, sx, sy, static_cast<Sint16>(_cfg.MININGSHIP_DETECTION_RADIUS * _zoom), 255,255,0,255);
@@ -550,7 +552,7 @@ void RendererSDLDraw::_drawFighter(const RendererSDL::ItemEx *ite, const aiwar::
     Sint16 sx, sy;
     _getPosOnScreen(px, py, sx, sy);
 
-    if(_debug || ite->selected)
+    if(ite->selected)
     {
         // draw vision circle
         circleRGBA(_worldSurface, sx, sy, static_cast<Sint16>(_cfg.FIGHTER_DETECTION_RADIUS * _zoom), 255,255,0,255);

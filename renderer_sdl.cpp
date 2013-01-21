@@ -57,12 +57,16 @@ std::string RendererSDL::getName() const
 
 std::string RendererSDL::getVersion() const
 {
-    return "0.4.0";
+    return "0.5.0";
 }
 
 bool RendererSDL::initialize(const std::string& params)
 {
     std::cout << "SDL: params (untreated): '" << params << "'\n";
+
+    // log file open
+    if(aiwar::core::Config::instance().debug)
+        _logFile.open("log.txt");
 
     // SDL init
     SDL_Init(SDL_INIT_VIDEO);
@@ -81,7 +85,6 @@ bool RendererSDL::initialize(const std::string& params)
     _console = new RendererSDLConsole(_screen);
 
     _drawer = new RendererSDLDraw(_screen);
-    _drawer->debug(aiwar::core::Config::instance().debug);
 
     _manual = aiwar::core::Config::instance().manual;
 
@@ -104,6 +107,10 @@ bool RendererSDL::finalize()
 
     TTF_Quit();
     SDL_Quit();
+
+    if(_logFile)
+        _logFile.close();
+
     return true;
 }
 
@@ -116,13 +123,18 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
 
     bool play = false; // shall we return to play
 
-    // update itemExMap at each round
-    _updateItemEx(itemManager);
-
     // new round
     std::ostringstream oss;
     oss << "********************* Round #" << statManager.round() << " *********************";
     _console->appendText(oss.str());
+    if(_logFile)
+        _logFile << oss.str() << "\n";
+
+    // update itemExMap at each round
+    _updateItemEx(itemManager);
+
+    if(_logFile)
+        _logFile << statManager.dump();
 
     while(cont && (gameover || !play))
     {
@@ -205,10 +217,6 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
                         play = true;
                         break;
 
-                    case SDLK_d: // toggle debug
-                        _drawer->toggleDebug();
-                        break;
-
                     case SDLK_m: // toggle manual
                     case SDLK_p: // <=> pause
                         _manual = !_manual;
@@ -237,14 +245,6 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
                         _console->scroll(e.key.keysym.sym);
                         break;
 
-                    case SDLK_a: // zoom
-                        dz++;
-                        break;
-
-                    case SDLK_q: // dezoom
-                        dz--;
-                        break;
-
                     default:
                         break;
                     }
@@ -259,12 +259,18 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
                         mcy = e.button.y;
                         break;
 
-                    case SDL_BUTTON_WHEELUP: // zoom
-                        dz++;
+                    case SDL_BUTTON_WHEELUP:
+                        if(_console->isShow() || _console->isHelp())
+                            _console->scroll(SDLK_UP);  // console scroll up
+                        else
+                            dz++;   // zoom
                         break;
 
-                    case SDL_BUTTON_WHEELDOWN: // dezoom
-                        dz--;
+                    case SDL_BUTTON_WHEELDOWN:
+                        if(_console->isShow() || _console->isHelp())
+                            _console->scroll(SDLK_DOWN); // console scroll down
+                        else
+                            dz--;   // dezoom
                         break;
 
                     default:
@@ -305,16 +311,6 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
             {
                 // draw
                 _drawer->draw(&it->second, itemManager);
-
-                // print log if selected
-                if(it->second.selected)
-                {
-//                    std::cout << it->second.logStream.str();
-                    _console->appendText(it->second.logStream.str());
-                }
-
-                // flush logStream
-                it->second.logStream.str("");
             }
 
             _drawer->drawStats(statManager);
@@ -354,7 +350,17 @@ void RendererSDL::_updateItemEx(const aiwar::core::ItemManager& itemManager)
         ite.item = it_src->second;
         const aiwar::core::Playable* p = dynamic_cast<const aiwar::core::Playable*>(it_src->second);
         if(p)
-            ite.logStream << p->getLog();
+        {
+//            ite.logStream << p->getLog();
+
+            // add to console if selected
+            if(ite.selected)
+                _console->appendText(p->getLog());
+
+            // print log if debug
+            if(_logFile)
+                _logFile << p->getLog();
+        }
     }
 
     for(it_loc = _itemExMap.begin() ; it_loc != _itemExMap.end() ; )
@@ -362,6 +368,7 @@ void RendererSDL::_updateItemEx(const aiwar::core::ItemManager& itemManager)
         it_del = it_loc;
         ++it_loc;
 
+        // remove deleted items
         if(!itemManager.exists(it_del->first))
             _itemExMap.erase(it_del);
     }

@@ -61,9 +61,6 @@ namespace aiwar {
             void postDraw();
             void updateScreen(SDL_Surface *newScreen);
             
-            void debug(bool active);
-            void toggleDebug();
-
             void resetPosition();
             void resetZoom();
 
@@ -103,8 +100,6 @@ namespace aiwar {
 
             const aiwar::core::Config& _cfg;
 
-            bool _debug;
-
             SDL_Surface *_screen;
             SDL_Rect _worldRect;
             SDL_Surface *_worldSurface;
@@ -123,6 +118,10 @@ namespace aiwar {
             bool _clicked;
             int _xmouseClick, _ymouseClick;
             int _xmousePos, _ymousePos;
+
+            // teams name
+            std::string _blueName;
+            std::string _redName;
         };
         
     }
