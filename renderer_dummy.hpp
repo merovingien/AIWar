@@ -40,7 +40,7 @@ namespace aiwar {
 
             bool render(const aiwar::core::ItemManager &itemManager,
                         const aiwar::core::StatManager &statManager,
-                        bool gameover);
+                        bool gameover, const aiwar::core::Team& winner);
         };
 
     } // aiwar::renderer

@@ -38,6 +38,7 @@
 using namespace aiwar::renderer;
 using aiwar::core::BLUE_TEAM;
 using aiwar::core::RED_TEAM;
+using aiwar::core::NO_TEAM;
 
 // FONT_COLOR
 const SDL_Color BLACK_COLOR = { 0x00, 0x00, 0x00, 0 };
@@ -46,7 +47,7 @@ const SDL_Color RED_COLOR = { 0xFF, 0x00, 0x00, 0 };
 const SDL_Color WHITE_COLOR = { 0xFF, 0xFF, 0xFF, 0 };
 const SDL_Color BG_COLOR = BLACK_COLOR;
 
-RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::instance()), _screen(screen)
+RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::instance()), _screen(screen), _gameover(false), _winner(NO_TEAM)
 {
     // playground surface
     _worldRect.x = 0;
@@ -185,6 +186,12 @@ bool RendererSDLDraw::_getMousePos(const int &mouseX, const int &mouseY, double 
     return (mouseX > 0 && mouseX < _worldRect.w && mouseY > 0 && mouseY < _worldRect.h);
 }
 
+void RendererSDLDraw::setWinner(const aiwar::core::Team& winner)
+{
+    _gameover = true;
+    _winner = winner;
+}
+
 void RendererSDLDraw::preDraw(bool clicked, int xmc, int ymc, int dxViewPort, int dyViewPort, int dz, int xm, int ym)
 {
     _clicked = clicked;
@@ -243,6 +250,20 @@ void RendererSDLDraw::draw(RendererSDL::ItemEx *itemEx, const aiwar::core::ItemM
         _drawBase(itemEx, im);
     else if((fighter = dynamic_cast<const aiwar::core::Fighter*>(itemEx->item)))
         _drawFighter(itemEx, im);
+
+    if(_gameover)
+    {
+        // draw winner
+        int y = (_worldRect.h - TTF_FontHeight(_aiwarFont)) / 2;
+        std::ostringstream oss;
+        if(_winner == BLUE_TEAM)
+            oss << "Winner  is  " << _blueName;
+        else if(_winner == RED_TEAM)
+            oss << "Winner  is  " << _redName;
+        else
+            oss << "Equality";
+        _drawText(_worldSurface, oss.str(), _worldRect.w / 2, y, _aiwarFont, WHITE_COLOR, BG_COLOR, true);
+    }
 }
 
 void RendererSDLDraw::drawStats(const aiwar::core::StatManager &sm)

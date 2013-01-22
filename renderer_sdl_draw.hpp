@@ -64,6 +64,8 @@ namespace aiwar {
             void resetPosition();
             void resetZoom();
 
+            void setWinner(const aiwar::core::Team& winner);
+
         private:
 
             enum ItemType {
@@ -122,6 +124,9 @@ namespace aiwar {
             // teams name
             std::string _blueName;
             std::string _redName;
+
+            bool _gameover;
+            aiwar::core::Team _winner;
         };
         
     }

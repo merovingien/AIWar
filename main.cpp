@@ -209,7 +209,7 @@ int main(int argc, char* argv[])
     }
 
     // first render
-    done = !renderer->render(gm.getItemManager(), gm.getStatManager(), gameover) || gameover;
+    done = !renderer->render(gm.getItemManager(), gm.getStatManager(), gameover, (gameover ? gm.getWinner() : NO_TEAM)) || gameover;
 
     while(!done)
     {
@@ -240,7 +240,7 @@ int main(int argc, char* argv[])
         }
 
         // render
-        done = !renderer->render(gm.getItemManager(), gm.getStatManager(), gameover) || gameover;
+        done = !renderer->render(gm.getItemManager(), gm.getStatManager(), gameover, (gameover ? gm.getWinner() : NO_TEAM)) || gameover;
     }
 
     renderer->finalize();

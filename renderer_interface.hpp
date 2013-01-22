@@ -60,6 +60,7 @@ namespace aiwar {
              * \param itemManager an object giving information on items
              * \param statManager a statistic object giving global information about the battle
              * \param gameover True if game is over
+             * \param winner the winner, when gameover is true, see game_manager::getWinner()
              * \return True if the game continues, false to stop the game
              *
              * The itemManager and statManager must not be saved accross the
@@ -70,7 +71,7 @@ namespace aiwar {
              */
             virtual bool render(const aiwar::core::ItemManager &itemManager,
                                 const aiwar::core::StatManager &statManager,
-                                bool gameover) = 0;
+                                bool gameover, const aiwar::core::Team& winner) = 0;
         };
 
     } // aiwar::renderer
