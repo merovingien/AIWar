@@ -183,6 +183,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\handler_dummy.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\item.cpp"
 				>
 			</File>
@@ -243,7 +247,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\test_handler.cpp"
+				RelativePath=".\stat_manager.cpp"
 				>
 			</File>
 		</Filter>
@@ -270,6 +274,10 @@
 			</File>
 			<File
 				RelativePath=".\game_manager.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\handler_dummy.hpp"
 				>
 			</File>
 			<File
@@ -337,7 +345,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\test_handler.hpp"
+				RelativePath=".\stat_manager.hpp"
 				>
 			</File>
 		</Filter>

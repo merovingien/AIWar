@@ -31,15 +31,17 @@ Missile::Missile(GameManager& gm, Key k, double px, double py, Living* target)
       Living(gm, k, Config::instance().MISSILE_LIFE, Config::instance().MISSILE_LIFE),
       _target(target->_getKey())
 {
+    // set angle
+    rotateTo(target);
 }
 
 Missile::~Missile()
 {
 }
 
-void Missile::update(unsigned int)
+void Missile::update(unsigned int tick)
 {
-    Movable::preUpdate();
+    Movable::_preUpdate(tick);
 
     // check if the target is still alive
     Living *target = dynamic_cast<Living*>(_im.get(_target));

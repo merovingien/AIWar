@@ -41,7 +41,7 @@ Fighter::~Fighter()
 
 void Fighter::_preUpdate(unsigned int ticks)
 {
-    Movable::preUpdate();
+    Movable::_preUpdate(ticks);
     Playable::_preUpdate(ticks);
 
     _hasLaunch = false;

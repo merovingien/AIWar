@@ -37,8 +37,8 @@ namespace aiwar {
             void move();
 
             double angle() const;
-            double xdest() const;
-            double ydest() const;
+//            double xdest() const;
+//            double ydest() const;
 
             unsigned int fuel() const;
 
@@ -52,7 +52,7 @@ namespace aiwar {
              *
              * Reset _hasMove and destination
              */
-            void preUpdate();
+            void _preUpdate(unsigned int tick);
 
             /**
              * \brief Do some checks and actions before moving.
@@ -64,8 +64,6 @@ namespace aiwar {
              */
             virtual bool doMove();
 
-            double _xdest; ///< horizontal destination of the current move
-            double _ydest; ///< vertical destination of the current move
             double _speed; ///< speed of the item
             double _angle; ///< direction, in degree, use trigonometric system
             unsigned int _fuel; ///< fuel quantity
