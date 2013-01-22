@@ -71,13 +71,16 @@ bool ItemManager::init()
 void ItemManager::update(unsigned int tick)
 {
     ItemMap::iterator it, tmp;
-    Item* i;
+    Item* item;
     // update all items if not to remove
-    for(it = _itemMap.begin() ; it != _itemMap.end() ; ++it)
+    // limit the loop to existing item at the start of the round by counting elements
+    const unsigned long c = _itemMap.size();
+    unsigned int i;
+    for(it = _itemMap.begin(), i = 0 ; it != _itemMap.end() && i < c ; ++it, ++i)
     {
-        i = it->second;
-        if(!i->_toRemove())
-            i->update(tick);
+        item = it->second;
+        if(!item->_toRemove())
+            item->update(tick);
     }
 
     // remove some items
@@ -86,11 +89,11 @@ void ItemManager::update(unsigned int tick)
         // keep trace of the current iterator *before* increment
         tmp = it++;
 
-        i = tmp->second;
-        if(i->_toRemove())
+        item = tmp->second;
+        if(item->_toRemove())
         {
-            _gm.getStatManager().itemDestroyed(i);
-            delete i;
+            _gm.getStatManager().itemDestroyed(item);
+            delete item;
             _itemMap.erase(tmp);  // this unvalidates tmp, but 'it' has been updated before
         }
     }

@@ -31,6 +31,8 @@ Missile::Missile(GameManager& gm, Key k, double px, double py, Living* target)
       Living(gm, k, Config::instance().MISSILE_LIFE, Config::instance().MISSILE_LIFE),
       _target(target->_getKey())
 {
+    // set angle
+    rotateTo(target);
 }
 
 Missile::~Missile()
