@@ -243,6 +243,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\renderer_sdl_console.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\renderer_sdl_draw.cpp"
 				>
 			</File>
@@ -338,6 +342,10 @@
 			</File>
 			<File
 				RelativePath=".\renderer_sdl.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\renderer_sdl_console.hpp"
 				>
 			</File>
 			<File

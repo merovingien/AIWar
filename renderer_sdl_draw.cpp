@@ -446,8 +446,8 @@ void RendererSDLDraw::_drawMineral(const RendererSDL::ItemEx *ite, const aiwar::
     _getPosOnScreen(px, py, sx, sy);
 
     SDL_Rect r;
-    r.x = sx - _cfg.MINERAL_SIZE_X/2;
-    r.y = sy - _cfg.MINERAL_SIZE_Y/2;
+    r.x = sx - static_cast<Sint16>(_cfg.MINERAL_SIZE_X/2.0);
+    r.y = sy - static_cast<Sint16>(_cfg.MINERAL_SIZE_Y/2.0);
     r.w = static_cast<Uint16>(_cfg.MINERAL_SIZE_X);
     r.h = static_cast<Uint16>(_cfg.MINERAL_SIZE_Y);
     SDL_FillRect(_worldSurface, &r, SDL_MapRGB(_worldSurface->format, 0,255,128));
@@ -477,8 +477,8 @@ void RendererSDLDraw::_drawBase(const RendererSDL::ItemEx *ite, const aiwar::cor
     }
 
     SDL_Rect r;
-    r.x = sx - _cfg.BASE_SIZE_X/2;
-    r.y = sy - _cfg.BASE_SIZE_Y/2;
+    r.x = sx - static_cast<Sint16>(_cfg.BASE_SIZE_X/2.0);
+    r.y = sy - static_cast<Sint16>(_cfg.BASE_SIZE_Y/2.0);
     r.w = static_cast<Uint16>(_cfg.BASE_SIZE_X);
     r.h = static_cast<Uint16>(_cfg.BASE_SIZE_Y);
 
