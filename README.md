@@ -4,7 +4,7 @@ AIWar
 Create your Artificial Intelligence to win the war
 
 
-AIWar is a game that let you create artificial intelligences to control space ships. The goal is to assemble a fighter army to destroy the ennemy base. To do that, you must get minerals with miningship and create fighters with your ressources. And you should also defend yourself again the ennemy army. The first team that destroes the ennemy base win the match !
+AIWar is a game that let you create artificial intelligences to control space ships. The goal is to assemble a fighter army to destroy the ennemy base. To do that, you must get minerals with miningship and create fighters with your ressources. And you should also defend yourself again the ennemy army. The first team that destroies the ennemy base wins the match !
 
 
 *COMPILE*
