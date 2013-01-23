@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <aiwar>
   <options>
-    <debug>false</debug>
+    <debug>true</debug>
     <manual>true</manual>
     <map>maps/map.xml</map>
     <blue>PYTHON_TEAM</blue>
