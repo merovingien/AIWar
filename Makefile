@@ -61,7 +61,6 @@ clean:
 distclean: clean
 	$(RM) *~
 	$(RM) $(target)
-	$(RM) *.pyc
 	python setup.py clean
 
 ############################

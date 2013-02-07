@@ -21,6 +21,7 @@
 
 #include <iostream>
 
+#include "stat_manager.hpp"
 #include "config.hpp"
 
 using namespace aiwar::core;
@@ -49,6 +50,7 @@ void Missile::update(unsigned int tick)
     {
         // no more target, auto destruction
         _toRemoveFlag = true;
+        _sm.itemDestroyed(this);
     }
     else
     {
@@ -68,11 +70,13 @@ void Missile::update(unsigned int tick)
         {
             target->_takeLife(Config::instance().MISSILE_DAMAGE, true);
             _toRemoveFlag = true;
+            _sm.itemDestroyed(this);
         }
         // enough fuel to continue ?
         else if(_fuel < Config::instance().MISSILE_MOVE_CONSO)
         {
             _toRemoveFlag = true;
+            _sm.itemDestroyed(this);
         }
     }
 }

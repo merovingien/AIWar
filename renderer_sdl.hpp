@@ -80,6 +80,7 @@ namespace aiwar {
             ~ItemEx();
 
             const aiwar::core::Item *item;
+            bool deleted;
             bool selected;
             std::ostringstream logStream;
         };

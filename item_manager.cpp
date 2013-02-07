@@ -72,27 +72,22 @@ void ItemManager::update(unsigned int tick)
 {
     ItemMap::iterator it, tmp;
     Item* item;
-    // update all items if not to remove
+    // update all items if not to remove, and remove deleted items
     // limit the loop to existing item at the start of the round by counting elements
     const unsigned long c = _itemMap.size();
     unsigned int i;
-    for(it = _itemMap.begin(), i = 0 ; it != _itemMap.end() && i < c ; ++it, ++i)
-    {
-        item = it->second;
-        if(!item->_toRemove())
-            item->update(tick);
-    }
-
-    // remove some items
-    for(it = _itemMap.begin() ; it != _itemMap.end() ; )
+    for(it = _itemMap.begin(), i = 0 ; it != _itemMap.end() && i < c ; ++i)
     {
         // keep trace of the current iterator *before* increment
         tmp = it++;
 
         item = tmp->second;
-        if(item->_toRemove())
+        if(!item->_toRemove()) // item is not deleted, so it can play
         {
-            _gm.getStatManager().itemDestroyed(item);
+            item->update(tick); // play
+        }
+        else // remove item deleted in the last round, so renderer has access to the deleted item one round
+        {
             delete item;
             _itemMap.erase(tmp);  // this unvalidates tmp, but 'it' has been updated before
         }

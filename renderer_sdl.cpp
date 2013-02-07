@@ -313,8 +313,9 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
             ItemExMap::iterator it;
             for(it = _itemExMap.begin() ; it != _itemExMap.end() ; ++it)
             {
-                // draw
-                _drawer->draw(&it->second, itemManager);
+                // draw if not deleted
+                if(!it->second.deleted)
+                    _drawer->draw(&it->second, itemManager);
             }
 
             _drawer->drawStats(statManager);
@@ -337,6 +338,7 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
 /// \todo improve it by reading each map only once: they are sorted !!!
 void RendererSDL::_updateItemEx(const aiwar::core::ItemManager& itemManager)
 {
+    aiwar::core::Item *item;
     aiwar::core::ItemManager::ItemMap::const_iterator it_src;
     ItemExMap::iterator it_loc, it_del;
 /*
@@ -350,9 +352,10 @@ void RendererSDL::_updateItemEx(const aiwar::core::ItemManager& itemManager)
 */
     for(it_src = itemManager.begin() ; it_src != itemManager.end() ; ++it_src)
     {
+        item = it_src->second; // could be deleted ! check it with item->_toRemove()
         ItemEx &ite = _itemExMap[it_src->first];
-        ite.item = it_src->second;
-        const aiwar::core::Playable* p = dynamic_cast<const aiwar::core::Playable*>(it_src->second);
+        ite.item = item;
+        const aiwar::core::Playable* p = dynamic_cast<const aiwar::core::Playable*>(item);
         if(p)
         {
 //            ite.logStream << p->getLog();
@@ -365,8 +368,11 @@ void RendererSDL::_updateItemEx(const aiwar::core::ItemManager& itemManager)
             if(_logFile)
                 _logFile << p->getLog();
         }
+
+        ite.deleted = item->_toRemove();
     }
 
+    // remove ItemEx that are not present anymore in ItemManager
     for(it_loc = _itemExMap.begin() ; it_loc != _itemExMap.end() ; )
     {
         it_del = it_loc;

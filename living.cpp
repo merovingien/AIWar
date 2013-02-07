@@ -19,6 +19,8 @@
 
 #include "living.hpp"
 
+#include "stat_manager.hpp"
+
 #include <iostream>
 
 using namespace aiwar::core;
@@ -44,7 +46,10 @@ unsigned int Living::_takeLife(unsigned int v, bool kill)
     else
         _life = 0;
     if(kill && _life == 0)
+    {
         _toRemoveFlag = true;
+        _sm.itemDestroyed(this);
+    }
     return (tmp - _life);
 }
 
