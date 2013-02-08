@@ -261,7 +261,7 @@ void RendererSDLDraw::draw(RendererSDL::ItemEx *itemEx, const aiwar::core::ItemM
         else if(_winner == RED_TEAM)
             oss << "Winner  is  " << _redName;
         else
-            oss << "Equality";
+            oss << "Draw";
         _drawText(_worldSurface, oss.str(), _worldRect.w / 2, y, _aiwarFont, WHITE_COLOR, BG_COLOR, true);
     }
 }

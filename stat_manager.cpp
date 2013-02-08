@@ -32,7 +32,7 @@
 using namespace aiwar::core;
 
 
-StatManager::StatManager() : _round(0)
+StatManager::StatManager() : _round(0), _progress(false), _inactiveRounds(0)
 {
 }
 
@@ -43,6 +43,7 @@ StatManager::~StatManager()
 void StatManager::nextRound()
 {
     _round++;
+    _progress = false;
 }
  
 unsigned int StatManager::round() const
@@ -175,6 +176,24 @@ void StatManager::itemDestroyed(const Item* item)
         miningShipDestroyed(miningShip);
     else if((base = dynamic_cast<const aiwar::core::Base*>(item)))
         baseDestroyed(base);
+}
+
+void StatManager::reportActivity()
+{
+    _progress = true;
+}
+
+void StatManager::checkActivity()
+{
+    if(_progress)
+        _inactiveRounds = 0;
+    else
+        _inactiveRounds++;
+}
+
+unsigned int StatManager::inactiveRounds() const
+{
+    return _inactiveRounds;
 }
 
 std::string StatManager::dump() const

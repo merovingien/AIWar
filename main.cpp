@@ -41,8 +41,6 @@ using namespace aiwar::core;
 
 int main(int argc, char* argv[])
 {
-    bool done = false, gameover = false;
-    unsigned int tick = 0;
 
 #ifndef _WIN32
     /***** rlimit *****/
@@ -64,7 +62,7 @@ int main(int argc, char* argv[])
     if(!cfg.parseCmdLine(argc, argv))
     {
         std::cerr << "Bad options\n" << cfg.usage();
-        return 1;
+        return -1;
     }
 
     if(cfg.help)
@@ -76,7 +74,7 @@ int main(int argc, char* argv[])
     if(!cfg.loadConfigFile())
     {
         std::cerr << "Bad config file\n";
-        return 1;
+        return -1;
     }
 
 //    std::cout << cfg.dump();
@@ -195,21 +193,24 @@ int main(int argc, char* argv[])
     }
 
     /*** enter the main loop ***/
+    bool done = false, gameover = false;
+    Team winner = NO_TEAM;
+    unsigned int tick = 0;
 
     // game over ?
     if(gm.gameOver())
     {
-        Team winner = gm.getWinner();
+        gameover = true;
+        winner = gm.getWinner();
         std::cout << "********** GameOver *********\n";
         if(winner == NO_TEAM)
-            std::cout << "Egality !\n";
+            std::cout << "Draw !\n";
         else
             std::cout << "Winner is: " << ((winner == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name) << std::endl;
-        gameover = true;
     }
 
     // first render
-    done = !renderer->render(gm.getItemManager(), gm.getStatManager(), gameover, (gameover ? gm.getWinner() : NO_TEAM)) || gameover;
+    done = !renderer->render(gm.getItemManager(), gm.getStatManager(), gameover, winner) || gameover;
 
     while(!done)
     {
@@ -217,30 +218,30 @@ int main(int argc, char* argv[])
         try
         {
             gm.update(tick++);
-//            gm.getStatManager().print();
         }
         catch(const aiwar::core::HandlerError &e)
         {
             std::cout << "********** GameOver *********\n";
             std::string name = (e.team() == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name;
             std::cout << "Team " << name << " has lost because an error occured in his play handler: " << e.what() << std::endl;
+            winner = (e.team() == BLUE_TEAM) ? RED_TEAM : BLUE_TEAM;
             gameover = true;
         }
 
         // game over ?
         if(!gameover && gm.gameOver())
         {
-            Team winner = gm.getWinner();
+            gameover = true;
+            winner = gm.getWinner();
             std::cout << "********** GameOver *********\n";
             if(winner == NO_TEAM)
-                std::cout << "Egality !\n";
+                std::cout << "Draw !\n";
             else
                 std::cout << "Winner is: " << ((winner == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name) << std::endl;
-            gameover = true;
         }
 
         // render
-        done = !renderer->render(gm.getItemManager(), gm.getStatManager(), gameover, (gameover ? gm.getWinner() : NO_TEAM)) || gameover;
+        done = !renderer->render(gm.getItemManager(), gm.getStatManager(), gameover, winner) || gameover;
     }
 
     renderer->finalize();
@@ -256,5 +257,21 @@ int main(int argc, char* argv[])
     std::cout << "Exiting gracefully...\n";
     std::cout << "(seed: " << cfg.seed << ")\n";
 
-    return 0;
+    int rc = 0;
+    switch(winner)
+    {
+    case BLUE_TEAM:
+        rc = 1;
+        break;
+
+    case RED_TEAM:
+        rc = 2;
+        break;
+
+    case NO_TEAM:
+    default:
+        rc = 0;
+    }
+
+    return rc;
 }

@@ -163,7 +163,12 @@ std::string Config::usage() const
         << "\t--blue player_name\tBlue player name\n"
         << "\t--red player_name\tRed player name\n"
         << "\t--renderer name\t\tRenderer name\n"
-        << "\t--seed value\t\tSeed for pseudo-random generator\n";
+        << "\t--seed value\t\tSeed for pseudo-random generator\n"
+        << "RETURN CODE:\n"
+        << "\t 0 -> Draw\n"
+        << "\t 1 -> Blue team won\n"
+        << "\t 2 -> Red team won\n"
+        << "\t-1 -> An error occured\n";
 
     return oss.str();
 }

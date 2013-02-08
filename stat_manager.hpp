@@ -41,6 +41,7 @@ namespace aiwar {
             // slots
             void nextRound();
             unsigned int round() const;
+
             void baseCreated(const Base*);
             void baseDestroyed(const Base*);
             unsigned int baseCurrent(const Team&) const;
@@ -64,6 +65,10 @@ namespace aiwar {
 
             void itemDestroyed(const Item*);
 
+            void reportActivity();
+            void checkActivity();
+            unsigned int inactiveRounds() const;
+
             std::string dump() const;
             void print() const;
 
@@ -74,6 +79,9 @@ namespace aiwar {
 
             unsigned int _round;
             TeamMap _teamMap;
+
+            bool _progress; // set to true if a team has moved, extracted minerals or created a ship
+            unsigned int _inactiveRounds; // count inactive rounds, in number of consecutive round with progress = false
         };
 
 

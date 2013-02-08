@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <aiwar>
   <options>
-    <debug>true</debug>
+    <debug>false</debug>
     <manual>true</manual>
     <map>maps/map.xml</map>
     <blue>PYTHON_TEAM</blue>
@@ -20,14 +20,24 @@
       <params/>
     </player>
     <player>
-      <name>merovingien</name>
+      <name>Merovingien</name>
       <handler>python</handler>
       <params>mero</params>
     </player>
     <player>
-      <name>GuiGui_03</name>
+      <name>GuiGui</name>
       <handler>python</handler>
-      <params>AIWar_GuiGui_03</params>
+      <params>AIWar_GuiGui_05</params>
+    </player>
+    <player>
+      <name>Antoine</name>
+      <handler>python</handler>
+      <params>antoine</params>
+    </player>
+    <player>
+      <name>Clement</name>
+      <handler>python</handler>
+      <params>sdt2_(360edition)_03022013</params>
     </player>
     <player>
       <name>print_config</name>

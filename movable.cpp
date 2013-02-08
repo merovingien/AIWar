@@ -19,6 +19,8 @@
 
 #include "movable.hpp"
 
+#include "stat_manager.hpp"
+
 #include <iostream>
 #include <cmath>
 
@@ -60,6 +62,7 @@ void Movable::move()
         _ypos -= sin(_angle * M_PI / 180.0) * _speed;
 
         _hasMoved = true;
+        _sm.reportActivity();
     }
 }
 

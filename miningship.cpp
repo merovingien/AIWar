@@ -83,7 +83,10 @@ unsigned int MiningShip::extract(Mineral *m)
     }
 
     if(extracted > 0)
+    {
         _hasExtracted = true;
+        _sm.reportActivity();
+    }
 
     return extracted;
 }

@@ -91,6 +91,7 @@ void Base::createMiningShip()
             _im.createMiningShip(this);
             _setMineralStorage(-Config::instance().BASE_MININGSHIP_PRICE);
             _hasCreate = true;
+            _sm.reportActivity();
         }
     }
     else
@@ -199,6 +200,7 @@ void Base::createFighter()
             _im.createFighter(this);
             _setMineralStorage(-Config::instance().BASE_FIGHTER_PRICE);
             _hasCreate = true;
+            _sm.reportActivity();
         }
     }
     else

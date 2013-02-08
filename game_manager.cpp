@@ -83,6 +83,7 @@ void GameManager::update(unsigned int ticks)
 {
     _sm->nextRound();
     _im->update(ticks);
+    _sm->checkActivity();
 }
 
 void GameManager::registerTeam(Team team, PlayFunction& pfBase, PlayFunction& pfMiningShip, PlayFunction& pfFighter)
@@ -117,7 +118,7 @@ bool GameManager::gameOver() const
             nbLivingTeam++;
     }
 
-    return (nbLivingTeam < 2);
+    return (nbLivingTeam < 2) || _sm->inactiveRounds() > 50; // 50 consecutive inactive rounds lead to draw
 }
 
 Team GameManager::getWinner() const
@@ -135,7 +136,7 @@ Team GameManager::getWinner() const
         }
     }
 
-    if(nbLivingTeam > 1) // game not over
+    if(nbLivingTeam != 1) // game not over, or draw !
         return NO_TEAM;
     else
         return winner;
