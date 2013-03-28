@@ -23,10 +23,12 @@
 #include <sstream>
 
 #include "config.hpp" // for Team
+#include "item.hpp"
 
 namespace aiwar {
     namespace core {
 
+        class Movable;
         class Playable;
 
         class PlayFunction
@@ -51,7 +53,7 @@ namespace aiwar {
             void (*_fun_ptr)(Playable*);
         };
 
-        class Playable
+        class Playable : virtual public Item
         {
         public:
             static DefaultPlayFunction playNoOp;
@@ -61,11 +63,20 @@ namespace aiwar {
             Team team() const;
             bool isFriend(const Playable* p) const;
 
+            /**
+             * \brief Query remaining fuel of friend
+             * \param other A Movable friend
+             * \return The remaining fuel of a friend
+             *
+             * To query fuel, the friend must be in the communication radius.
+             */
+            unsigned int fuel(const Movable* other) const;
+
             void log(const std::string &msg);
             std::string getLog() const;
 
         protected:
-            Playable(Team team, PlayFunction& play);
+            Playable(GameManager& gm, Key k, Team team, PlayFunction& play);
 
             void _preUpdate(unsigned long ticks);
 

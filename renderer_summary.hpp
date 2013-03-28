@@ -17,31 +17,33 @@
  * along with AIWar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MISSILE_HPP
-#define MISSILE_HPP
+#ifndef RENDERER_SUMMARY_HPP
+#define RENDERER_SUMMARY_HPP
 
-#include "item.hpp"
-#include "movable.hpp"
-#include "living.hpp"
+#include "renderer_interface.hpp"
 
 namespace aiwar {
-    namespace core {
+    namespace renderer {
 
-        class Missile : virtual public Item, public Movable, public Living
+        class RendererSummary : public RendererInterface
         {
         public:
-            Missile(GameManager& gm, Key k, double px, double py, Living* target);
-            ~Missile();
+            RendererSummary();
+            ~RendererSummary();
 
-            void update(unsigned int tick);
+            std::string getName() const;
+            std::string getVersion() const;
 
-            std::string _dump() const;
+            bool initialize(const std::string& params);
 
-        private:
-            const Key _target;
+            bool finalize();
+
+            bool render(const aiwar::core::ItemManager &itemManager,
+                        const aiwar::core::StatManager &statManager,
+                        bool gameover, const aiwar::core::Team& winner);
         };
 
-    } // namespace aiwar::core
-} // namespace aiwar
+    } // aiwar::renderer
+} // aiwar
 
-#endif /* MISSILE_HPP */
+#endif

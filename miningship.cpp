@@ -33,7 +33,7 @@ MiningShip::MiningShip(GameManager& gm, Key k, double xpos, double ypos, Team te
     : Item(gm, k, xpos, ypos, Config::instance().MININGSHIP_SIZE_X, Config::instance().MININGSHIP_SIZE_Y, Config::instance().MININGSHIP_DETECTION_RADIUS),
       Movable(gm, k, Config::instance().MININGSHIP_SPEED, Config::instance().MININGSHIP_START_FUEL, Config::instance().MININGSHIP_MAX_FUEL, Config::instance().MININGSHIP_MOVE_CONSO),
       Living(gm, k, Config::instance().MININGSHIP_START_LIFE, Config::instance().MININGSHIP_MAX_LIFE),
-      Playable(team, pf),
+      Playable(gm, k, team, pf),
       Memory(gm, k, Config::instance().MININGSHIP_MEMORY_SIZE),
       _mineralStorage(0),
       _hasExtracted(false)
@@ -128,4 +128,11 @@ std::ostream& operator<< (std::ostream& os, const MiningShip& t)
 {
     os << "MiningShip[" << &t << "]";
     return os;
+}
+
+std::string MiningShip::_dump() const
+{
+    std::ostringstream oss;
+    oss << _key << " MiningShip pos=" << xpos() << "x" << ypos() << " angle=" << angle() << " fuel=" << Movable::fuel() << " mineralStorage=" << mineralStorage() << "\n";
+    return oss.str();
 }

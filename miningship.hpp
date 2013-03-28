@@ -49,6 +49,8 @@ namespace aiwar {
             // helper function only called by a base item
             unsigned int _release(unsigned int mineralPoint);
 
+            std::string _dump() const;
+
         private:
             /**
              * \brief Initialize the MiningShip

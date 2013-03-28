@@ -27,7 +27,7 @@ Fighter::Fighter(GameManager &gm, Key k, double px, double py, Team team, PlayFu
     : Item(gm, k, px, py, Config::instance().FIGHTER_SIZE_X, Config::instance().FIGHTER_SIZE_Y, Config::instance().FIGHTER_DETECTION_RADIUS),
       Movable(gm, k, Config::instance().FIGHTER_SPEED, Config::instance().FIGHTER_START_FUEL, Config::instance().FIGHTER_MAX_FUEL, Config::instance().FIGHTER_MOVE_CONSO),
       Living(gm, k, Config::instance().FIGHTER_START_LIFE, Config::instance().FIGHTER_MAX_LIFE),
-      Playable(team, pf),
+      Playable(gm, k, team, pf),
       Memory(gm, k, Config::instance().FIGHTER_MEMORY_SIZE),
       _missiles(Config::instance().FIGHTER_START_MISSILE),
       _hasLaunch(false)
@@ -84,4 +84,11 @@ unsigned int Fighter::_addMissiles(unsigned int nb)
     _missiles += p;
 
     return p;
+}
+
+std::string Fighter::_dump() const
+{
+    std::ostringstream oss;
+    oss << _key << " Fighter pos=" << xpos() << "x" << ypos() << " angle=" << angle() << " fuel=" << Movable::fuel() << " missiles=" << missiles() << "\n";
+    return oss.str();
 }

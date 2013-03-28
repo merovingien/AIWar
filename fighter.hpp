@@ -42,6 +42,8 @@ namespace aiwar {
 
             unsigned int _addMissiles(unsigned int nb);
 
+            std::string _dump() const;
+
         private:
             void _preUpdate(unsigned int tick);
 

@@ -27,12 +27,14 @@ cxxsrc = config.cpp \
 	stat_manager.cpp \
 	game_manager.cpp \
 	handler_dummy.cpp \
+	handler_example.cpp \
 	python_wrapper.cpp \
 	python_handler.cpp \
 	renderer_dummy.cpp \
 	renderer_sdl.cpp \
 	renderer_sdl_draw.cpp \
 	renderer_sdl_console.cpp \
+	renderer_summary.cpp \
 	main.cpp
 
 objects = $(cxxsrc:.cpp=.o)

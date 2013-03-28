@@ -5,7 +5,7 @@
     <manual>true</manual>
     <map>maps/map.xml</map>
     <blue>PYTHON_TEAM</blue>
-    <red>TEAM_DUMMY</red>
+    <red>Example</red>
     <renderer>sdl</renderer>
   </options>
   <players>
@@ -17,6 +17,11 @@
     <player>
       <name>TEAM_DUMMY</name>
       <handler>dummy</handler>
+      <params/>
+    </player>
+    <player>
+      <name>Example</name>
+      <handler>example</handler>
       <params/>
     </player>
     <player>
@@ -52,6 +57,10 @@
     </renderer>
     <renderer>
       <name>sdl</name>
+      <params/>
+    </renderer>
+    <renderer>
+      <name>summary</name>
       <params/>
     </renderer>
   </renderers>

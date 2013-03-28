@@ -20,6 +20,7 @@
 #include "missile.hpp"
 
 #include <iostream>
+#include <sstream>
 
 #include "stat_manager.hpp"
 #include "config.hpp"
@@ -79,4 +80,11 @@ void Missile::update(unsigned int tick)
             _sm.itemDestroyed(this);
         }
     }
+}
+
+std::string Missile::_dump() const
+{
+    std::ostringstream oss;
+    oss << _key << " Missile pos=" << xpos() << "x" << ypos() << " angle=" << angle() << " fuel=" << Movable::fuel() << " target=" << _target << "\n";
+    return oss.str();
 }

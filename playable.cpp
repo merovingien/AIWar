@@ -19,11 +19,18 @@
 
 #include "playable.hpp"
 
+#include "movable.hpp"
+
+#include <iostream>
+
 using namespace aiwar::core;
 
 DefaultPlayFunction Playable::playNoOp(0);
 
-Playable::Playable(Team team, PlayFunction& play) : _team(team), _play(play)
+Playable::Playable(GameManager& gm, Key k, Team team, PlayFunction& play)
+    : Item(gm, k),
+      _team(team),
+      _play(play)
 {
 }
 
@@ -49,6 +56,36 @@ void Playable::log(const std::string &msg)
 std::string Playable::getLog() const
 {
     return _log.str();
+}
+
+unsigned int Playable::fuel(const Movable* other) const
+{
+    unsigned int r = 0;
+    if(this->distanceTo(other) <= Config::instance().COMMUNICATION_RADIUS)
+    {
+        // we return fuel only if other is a Playable and is a friend. Else we always return 0.
+        const Playable* o = dynamic_cast<const Playable*>(other);
+        if(o)
+        {
+            if(this->isFriend(o))
+            {
+                r = other->fuel();
+            }
+            else
+            {
+                std::cerr << "Quering fuel of ennemy is forbidden\n";
+            }
+        }
+        else
+        {
+            std::cerr << "Quering fuel of non Playable item is forbidden\n";
+        }
+    }
+    else
+    {
+        std::cerr << "Item is to far to query fuel\n";
+    }
+    return r;
 }
 
 void Playable::_preUpdate(unsigned long)
