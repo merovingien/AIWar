@@ -24,7 +24,7 @@ Currently AIWar only works on Linux and Windows. Other platforms have not been t
 
 _Linux_
 
-To compile AIWar, just install dev packages of the libraries listed above, and run 'make CPP=g++ LD=g++' (or just 'make' if you have clang compiler installed).
+To compile AIWar, just install dev packages of the libraries listed above, and run 'make CXX=g++ LD=g++' (or just 'make' if you have clang compiler installed).
 
 _Windows_
 
