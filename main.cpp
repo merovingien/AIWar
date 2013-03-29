@@ -220,7 +220,7 @@ int main(int argc, char* argv[])
 
     /*** enter the main loop ***/
     bool done = false, gameover = false;
-    Team winner = NO_TEAM;
+    Team winner = NO_TEAM, loser = NO_TEAM;
     unsigned int tick = 0;
 
     // game over ?
@@ -250,6 +250,7 @@ int main(int argc, char* argv[])
             std::cout << "********** GameOver *********\n";
             std::string name = (e.team() == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name;
             std::cout << "Team " << name << " has lost because an error occured in his play handler: " << e.what() << std::endl;
+            loser = e.team();
             winner = (e.team() == BLUE_TEAM) ? RED_TEAM : BLUE_TEAM;
             gameover = true;
         }
@@ -287,19 +288,39 @@ int main(int argc, char* argv[])
     std::cout << "(seed: " << cfg.seed << ")\n";
 
     int rc = 0;
-    switch(winner)
+
+    if(loser != NO_TEAM)
     {
-    case BLUE_TEAM:
-        rc = 1;
-        break;
+        switch(loser)
+        {
+        case BLUE_TEAM:
+            rc = 11;
+            break;
 
-    case RED_TEAM:
-        rc = 2;
-        break;
+        case RED_TEAM:
+            rc = 12;
+            break;
 
-    case NO_TEAM:
-    default:
-        rc = 0;
+        default:
+            break;
+        }
+    }
+    else
+    {
+        switch(winner)
+        {
+        case BLUE_TEAM:
+            rc = 1;
+            break;
+
+        case RED_TEAM:
+            rc = 2;
+            break;
+
+        case NO_TEAM:
+        default:
+            rc = 0;
+        }
     }
 
     return rc;

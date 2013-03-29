@@ -165,10 +165,12 @@ std::string Config::usage() const
         << "\t--renderer name\t\tRenderer name\n"
         << "\t--seed value\t\tSeed for pseudo-random generator\n"
         << "RETURN CODE:\n"
-        << "\t 0 -> Draw\n"
-        << "\t 1 -> Blue team won\n"
-        << "\t 2 -> Red team won\n"
-        << "\t-1 -> An error occured\n";
+        << "\t 0  -> Draw\n"
+        << "\t 1  -> Blue team won\n"
+        << "\t 2  -> Red team won\n"
+        << "\t 11 -> Blue team lost because of an error in his script\n"
+        << "\t 12 -> Red team lost because of an error in his script\n"
+        << "\t-1  -> A fatal error occured in the game\n";
 
     return oss.str();
 }
