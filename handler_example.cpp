@@ -217,6 +217,7 @@ void HandlerExample::play_miningship(aiwar::core::Playable* miningship)
         if (baseConnue)
         {
             self->log("je rentre a la base");
+            self->state(DARK);
             self->rotateTo(basePos_x, basePos_y);
             self->move();
             // base en vue et assez proche pour donner le minerai ?
@@ -255,11 +256,13 @@ void HandlerExample::play_miningship(aiwar::core::Playable* miningship)
             self->setMemory<float>(2, mpx);
             self->setMemory<float>(3, mpy);
             self->log("je vais au minerais visible");
+            self->state(DEFAULT);
             self->rotateTo(i);
             self->move();
             if (self->distanceTo(i) <= CFG.MININGSHIP_MINING_RADIUS-1)
             {
                 self->log("je mine");
+                self->state(LIGHT);
                 self->extract(i);
             }
             return;
@@ -281,6 +284,7 @@ void HandlerExample::play_miningship(aiwar::core::Playable* miningship)
         else
         {
             self->log("je vais au minerais connus");
+            self->state(DEFAULT);
             self->rotateTo(minPos_x, minPos_y);
             self->move();
             return;
@@ -289,6 +293,7 @@ void HandlerExample::play_miningship(aiwar::core::Playable* miningship)
 
     // deplacement aleatoire
     self->log("je cherche du minerais");
+    self->state(DEFAULT);
     random_move(self);
 }
 

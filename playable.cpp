@@ -30,7 +30,8 @@ DefaultPlayFunction Playable::playNoOp(0);
 Playable::Playable(GameManager& gm, Key k, Team team, PlayFunction& play)
     : Item(gm, k),
       _team(team),
-      _play(play)
+      _play(play),
+      _state(DEFAULT)
 {
 }
 
@@ -56,6 +57,16 @@ void Playable::log(const std::string &msg)
 std::string Playable::getLog() const
 {
     return _log.str();
+}
+
+void Playable::state(State state)
+{
+    _state = state;
+}
+
+State Playable::getState() const
+{
+    return _state;
 }
 
 unsigned int Playable::fuel(const Movable* other) const

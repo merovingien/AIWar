@@ -12,6 +12,10 @@ def play_base(self):
     self.log("Vie: {}".format(self.life()))
     self.log("MineralStorage: {}".format(self.mineralStorage()))
 
+    # change state randomly (kikoolol powa !!!)
+    s = [aiwar.DEFAULT, aiwar.LIGHT, aiwar.DARK]
+    self.state(random.choice(s))
+
     n = self.neighbours()
 
     # refuel friend ships
@@ -79,6 +83,7 @@ def play_miningship(self):
     if self.mineralStorage() == aiwar.MININGSHIP_MAX_MINERAL_STORAGE() or self.fuel() < ( self.distanceTo(basePos) if baseConnue else 170 ):
         if baseConnue:
             self.log("je rentre a la base")
+            self.state(aiwar.DARK)
             self.rotateTo(basePos)
             self.move()
             # base en vue et assez proche pour donner le minerai ?
@@ -102,10 +107,12 @@ def play_miningship(self):
             self.setMemoryFloat(2, mpx)
             self.setMemoryFloat(3, mpy)
             self.log("je vais au minerais visible")
+            self.state(aiwar.DEFAULT)
             self.rotateTo(i)
             self.move()
             if self.distanceTo(i) <= (aiwar.MININGSHIP_MINING_RADIUS()-1):
                 self.log("je mine")
+                self.state(aiwar.LIGHT)
                 self.extract(i)
             return
         
@@ -119,12 +126,14 @@ def play_miningship(self):
             self.setMemoryFloat(3, 0.0)
         else:
             self.log("je vais au minerais connus")
+            self.state(aiwar.DEFAULT)
             self.rotateTo(minPos)
             self.move()
             return
 
     # deplacement aleatoire
     self.log("je cherche du minerais")
+    self.state(aiwar.DEFAULT)
     random_move(self)
 
 

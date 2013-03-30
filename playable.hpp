@@ -31,6 +31,13 @@ namespace aiwar {
         class Movable;
         class Playable;
 
+        enum State
+        {
+            DEFAULT,
+            LIGHT,
+            DARK
+        };
+
         class PlayFunction
         {
         public:
@@ -75,6 +82,9 @@ namespace aiwar {
             void log(const std::string &msg);
             std::string getLog() const;
 
+            void state(State state);
+            State getState() const;
+
         protected:
             Playable(GameManager& gm, Key k, Team team, PlayFunction& play);
 
@@ -83,6 +93,7 @@ namespace aiwar {
             Team _team;
             PlayFunction& _play;
             std::ostringstream _log;
+            State _state;
         };
 
 

@@ -43,9 +43,15 @@ using aiwar::core::NO_TEAM;
 // FONT_COLOR
 const SDL_Color BLACK_COLOR = { 0x00, 0x00, 0x00, 0 };
 const SDL_Color BLUE_COLOR = { 0x00, 0x00, 0xFF, 0 };
+const SDL_Color BLUE_LIGHT_COLOR = { 0x00, 0x99, 0xFF, 0 };
+const SDL_Color BLUE_DARK_COLOR = { 0x00, 0x99, 0x66, 0 };
 const SDL_Color RED_COLOR = { 0xFF, 0x00, 0x00, 0 };
+const SDL_Color RED_LIGHT_COLOR = { 0xFF, 0x66, 0x66, 0 };
+const SDL_Color RED_DARK_COLOR = { 0x99, 0x00, 0x33, 0 };
+const SDL_Color YELLOW_COLOR = { 0xFF, 0xFF, 0x00, 0 };
 const SDL_Color WHITE_COLOR = { 0xFF, 0xFF, 0xFF, 0 };
 const SDL_Color BG_COLOR = BLACK_COLOR;
+const SDL_Color SELECTED_COLOR = YELLOW_COLOR;
 
 RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::instance()), _screen(screen), _gameover(false), _winner(NO_TEAM)
 {
@@ -75,65 +81,47 @@ RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::insta
 
     // create item surfaces
 
-    // ***red miningShip***
-    SDL_Surface* tmp = SDL_CreateRGBSurface(_worldSurface->flags, static_cast<int>(_cfg.MININGSHIP_SIZE_X), static_cast<int>(_cfg.MININGSHIP_SIZE_Y), _worldSurface->format->BitsPerPixel, _worldSurface->format->Rmask, _worldSurface->format->Gmask, _worldSurface->format->Bmask, _worldSurface->format->Amask);
+    // ***default red miningShip***
+    _addSurface(RED_DEFAULT_MININGSHIP, _createMiningShip(RED_COLOR));
 
-    // transparent background
-    SDL_FillRect(tmp, NULL, SDL_MapRGBA(_worldSurface->format, 0,0,0,255));
-    // red triangle
-    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.MININGSHIP_SIZE_Y), static_cast<Sint16>(_cfg.MININGSHIP_SIZE_X),static_cast<Sint16>(_cfg.MININGSHIP_SIZE_Y)/2, 255,0,0,255);
-    _addSurface(RED_MININGSHIP, tmp);
+    // ***light red miningShip***
+    _addSurface(RED_LIGHT_MININGSHIP, _createMiningShip(RED_LIGHT_COLOR));
 
-    // ***blue miningShip***
-    tmp = SDL_CreateRGBSurface(_worldSurface->flags, static_cast<int>(_cfg.MININGSHIP_SIZE_X), static_cast<int>(_cfg.MININGSHIP_SIZE_Y), _worldSurface->format->BitsPerPixel, _worldSurface->format->Rmask, _worldSurface->format->Gmask, _worldSurface->format->Bmask, _worldSurface->format->Amask);
+    // ***dark red miningShip***
+    _addSurface(RED_DARK_MININGSHIP, _createMiningShip(RED_DARK_COLOR));
 
-    // transparent background
-    SDL_FillRect(tmp, NULL, SDL_MapRGBA(_worldSurface->format, 0,0,0,255));
-    // blue triangle
-    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.MININGSHIP_SIZE_Y), static_cast<Sint16>(_cfg.MININGSHIP_SIZE_X),static_cast<Sint16>(_cfg.MININGSHIP_SIZE_Y)/2, 0,0,255,255);
-    _addSurface(BLUE_MININGSHIP, tmp);
+    // ***default blue miningShip***
+    _addSurface(BLUE_DEFAULT_MININGSHIP, _createMiningShip(BLUE_COLOR));
+
+    // ***light blue miningShip***
+    _addSurface(BLUE_LIGHT_MININGSHIP, _createMiningShip(BLUE_LIGHT_COLOR));
+
+    // ***dark blue miningShip***
+    _addSurface(BLUE_DARK_MININGSHIP, _createMiningShip(BLUE_DARK_COLOR));
 
     // ***selected miningShip***
-    tmp = SDL_CreateRGBSurface(_worldSurface->flags, static_cast<int>(_cfg.MININGSHIP_SIZE_X), static_cast<int>(_cfg.MININGSHIP_SIZE_Y), _worldSurface->format->BitsPerPixel, _worldSurface->format->Rmask, _worldSurface->format->Gmask, _worldSurface->format->Bmask, _worldSurface->format->Amask);
+    _addSurface(SELECTED_MININGSHIP, _createMiningShip(SELECTED_COLOR));
 
-    // transparent background
-    SDL_FillRect(tmp, NULL, SDL_MapRGBA(_worldSurface->format, 0,0,0,255));
-    // yellow triangle
-    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.MININGSHIP_SIZE_Y), static_cast<Sint16>(_cfg.MININGSHIP_SIZE_X),static_cast<Sint16>(_cfg.MININGSHIP_SIZE_Y)/2, 255,255,0,255);
-    _addSurface(SELECTED_MININGSHIP, tmp);
+    // ***default red fighter***
+    _addSurface(RED_DEFAULT_FIGHTER, _createFighter(RED_COLOR));
 
-    // ***red fighter***
-    tmp = SDL_CreateRGBSurface(_worldSurface->flags, static_cast<int>(_cfg.FIGHTER_SIZE_X), static_cast<int>(_cfg.FIGHTER_SIZE_Y), _worldSurface->format->BitsPerPixel, _worldSurface->format->Rmask, _worldSurface->format->Gmask, _worldSurface->format->Bmask, _worldSurface->format->Amask);
+    // ***light red fighter***
+    _addSurface(RED_LIGHT_FIGHTER, _createFighter(RED_LIGHT_COLOR));
 
-    // transparent background
-    SDL_FillRect(tmp, NULL, SDL_MapRGBA(_worldSurface->format, 0,0,0,255));
-    // red triangles
-    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/3, static_cast<Sint16>(_cfg.FIGHTER_SIZE_X),0, 255,0,0,255);
-    filledTrigonRGBA(tmp, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/3*2, static_cast<Sint16>(_cfg.FIGHTER_SIZE_X),static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), 255,0,0,255);
-    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), static_cast<Sint16>(_cfg.FIGHTER_SIZE_X)/2,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/2, 255,0,0,255);
-    _addSurface(RED_FIGHTER, tmp);
+    // ***dark red fighter***
+    _addSurface(RED_DARK_FIGHTER, _createFighter(RED_DARK_COLOR));
 
-    // ***blue fighter***
-    tmp = SDL_CreateRGBSurface(_worldSurface->flags, static_cast<int>(_cfg.FIGHTER_SIZE_X), static_cast<int>(_cfg.FIGHTER_SIZE_Y), _worldSurface->format->BitsPerPixel, _worldSurface->format->Rmask, _worldSurface->format->Gmask, _worldSurface->format->Bmask, _worldSurface->format->Amask);
+    // ***default blue fighter***
+    _addSurface(BLUE_DEFAULT_FIGHTER, _createFighter(BLUE_COLOR));
 
-    // transparent background
-    SDL_FillRect(tmp, NULL, SDL_MapRGBA(_worldSurface->format, 0,0,0,255));
-    // blue triangles
-    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/3, static_cast<Sint16>(_cfg.FIGHTER_SIZE_X),0, 0,0,255,255);
-    filledTrigonRGBA(tmp, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/3*2, static_cast<Sint16>(_cfg.FIGHTER_SIZE_X),static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), 0,0,255,255);
-    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), static_cast<Sint16>(_cfg.FIGHTER_SIZE_X)/2,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/2, 0,0,255,255);
-    _addSurface(BLUE_FIGHTER, tmp);
+    // ***light blue fighter***
+    _addSurface(BLUE_LIGHT_FIGHTER, _createFighter(BLUE_LIGHT_COLOR));
+
+    // ***dark blue fighter***
+    _addSurface(BLUE_DARK_FIGHTER, _createFighter(BLUE_DARK_COLOR));
 
     // ***selected fighter***
-    tmp = SDL_CreateRGBSurface(_worldSurface->flags, static_cast<int>(_cfg.FIGHTER_SIZE_X), static_cast<int>(_cfg.FIGHTER_SIZE_Y), _worldSurface->format->BitsPerPixel, _worldSurface->format->Rmask, _worldSurface->format->Gmask, _worldSurface->format->Bmask, _worldSurface->format->Amask);
-
-    // transparent background
-    SDL_FillRect(tmp, NULL, SDL_MapRGBA(_worldSurface->format, 0,0,0,255));
-    // yellow triangles
-    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/3, static_cast<Sint16>(_cfg.FIGHTER_SIZE_X),0, 255,255,0,255);
-    filledTrigonRGBA(tmp, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/3*2, static_cast<Sint16>(_cfg.FIGHTER_SIZE_X),static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), 255,255,0,255);
-    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), static_cast<Sint16>(_cfg.FIGHTER_SIZE_X)/2,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/2, 255,255,0,255);
-    _addSurface(SELECTED_FIGHTER, tmp);
+    _addSurface(SELECTED_FIGHTER, _createFighter(SELECTED_COLOR));
 
 
     /// \todo add test to check OpenFont
@@ -157,8 +145,40 @@ RendererSDLDraw::~RendererSDLDraw()
     SDL_FreeSurface(_statsSurface);
 }
 
+SDL_Surface* RendererSDLDraw::_createBase(const SDL_Color& color) const
+{
+    return NULL;
+}
+
+SDL_Surface* RendererSDLDraw::_createMiningShip(const SDL_Color& color) const
+{
+    SDL_Surface* tmp = SDL_CreateRGBSurface(_worldSurface->flags, static_cast<int>(_cfg.MININGSHIP_SIZE_X), static_cast<int>(_cfg.MININGSHIP_SIZE_Y), _worldSurface->format->BitsPerPixel, _worldSurface->format->Rmask, _worldSurface->format->Gmask, _worldSurface->format->Bmask, _worldSurface->format->Amask);
+
+    // transparent background
+    SDL_FillRect(tmp, NULL, SDL_MapRGBA(_worldSurface->format, 0,0,0,255));
+    // triangle
+    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.MININGSHIP_SIZE_Y), static_cast<Sint16>(_cfg.MININGSHIP_SIZE_X),static_cast<Sint16>(_cfg.MININGSHIP_SIZE_Y)/2, color.r,color.g,color.b,255);
+
+    return tmp;
+}
+
+SDL_Surface* RendererSDLDraw::_createFighter(const SDL_Color& color) const
+{
+    SDL_Surface *tmp = SDL_CreateRGBSurface(_worldSurface->flags, static_cast<int>(_cfg.FIGHTER_SIZE_X), static_cast<int>(_cfg.FIGHTER_SIZE_Y), _worldSurface->format->BitsPerPixel, _worldSurface->format->Rmask, _worldSurface->format->Gmask, _worldSurface->format->Bmask, _worldSurface->format->Amask);
+
+    // transparent background
+    SDL_FillRect(tmp, NULL, SDL_MapRGBA(_worldSurface->format, 0,0,0,255));
+    // triangles
+    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/3, static_cast<Sint16>(_cfg.FIGHTER_SIZE_X),0, color.r,color.g,color.b,255);
+    filledTrigonRGBA(tmp, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/3*2, static_cast<Sint16>(_cfg.FIGHTER_SIZE_X),static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), color.r,color.g,color.b,255);
+    filledTrigonRGBA(tmp, 0,0, 0,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y), static_cast<Sint16>(_cfg.FIGHTER_SIZE_X)/2,static_cast<Sint16>(_cfg.FIGHTER_SIZE_Y)/2, color.r,color.g,color.b,255);
+
+    return tmp;
+}
+
 void RendererSDLDraw::_addSurface(ItemType t, SDL_Surface* s)
 {
+    /// \todo check if the surface is already present to free it before adding new one
     _surfaceMap[t] = s;
 }
 
@@ -486,9 +506,39 @@ void RendererSDLDraw::_drawBase(const RendererSDL::ItemEx *ite, const aiwar::cor
     if(ite->selected)
         color = SDL_MapRGB(_worldSurface->format, 255,255,0);
     else if(b->team() == BLUE_TEAM)
-        color = SDL_MapRGB(_worldSurface->format, 0,0,255);
+    {
+        switch(b->getState())
+        {
+        case core::LIGHT:
+            color = SDL_MapRGB(_worldSurface->format, BLUE_LIGHT_COLOR.r,BLUE_LIGHT_COLOR.g,BLUE_LIGHT_COLOR.b);
+            break;
+
+        case core::DARK:
+            color = SDL_MapRGB(_worldSurface->format, BLUE_DARK_COLOR.r,BLUE_DARK_COLOR.g,BLUE_DARK_COLOR.b);
+            break;
+
+        case core::DEFAULT:
+        default:
+            color = SDL_MapRGB(_worldSurface->format, BLUE_COLOR.r,BLUE_COLOR.g,BLUE_COLOR.b);
+        }
+    }
     else if(b->team() == RED_TEAM)
-        color = SDL_MapRGB(_worldSurface->format, 255,0,0);
+    {
+        switch(b->getState())
+        {
+        case core::LIGHT:
+            color = SDL_MapRGB(_worldSurface->format, RED_LIGHT_COLOR.r,RED_LIGHT_COLOR.g,RED_LIGHT_COLOR.b);
+            break;
+
+        case core::DARK:
+            color = SDL_MapRGB(_worldSurface->format, RED_DARK_COLOR.r,RED_DARK_COLOR.g,RED_DARK_COLOR.b);
+            break;
+
+        case core::DEFAULT:
+        default:
+            color = SDL_MapRGB(_worldSurface->format, RED_COLOR.r,RED_COLOR.g,RED_COLOR.b);
+        }
+    }
 
     SDL_FillRect(_worldSurface, &r, color);
 }
@@ -521,9 +571,39 @@ void RendererSDLDraw::_drawMiningShip(const RendererSDL::ItemEx *ite, const aiwa
     if(ite->selected)
         rs = rotozoomSurface(_getSurface(SELECTED_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
     else if(m->team() == RED_TEAM)
-        rs = rotozoomSurface(_getSurface(RED_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
+    {
+        switch(m->getState())
+        {
+        case core::LIGHT:
+            rs = rotozoomSurface(_getSurface(RED_LIGHT_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
+            break;
+
+        case core::DARK:
+            rs = rotozoomSurface(_getSurface(RED_DARK_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
+            break;
+
+        case core::DEFAULT:
+        default:
+            rs = rotozoomSurface(_getSurface(RED_DEFAULT_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
+        }
+    }
     else if(m->team() == BLUE_TEAM)
-        rs = rotozoomSurface(_getSurface(BLUE_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
+    {
+        switch(m->getState())
+        {
+        case core::LIGHT:
+            rs = rotozoomSurface(_getSurface(BLUE_LIGHT_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
+            break;
+
+        case core::DARK:
+            rs = rotozoomSurface(_getSurface(BLUE_DARK_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
+            break;
+
+        case core::DEFAULT:
+        default:
+            rs = rotozoomSurface(_getSurface(BLUE_DEFAULT_MININGSHIP), m->angle(), 1.0, SMOOTHING_OFF);
+        }
+    }
 
     SDL_Rect r;
     r.x = sx - rs->w/2;
@@ -588,9 +668,39 @@ void RendererSDLDraw::_drawFighter(const RendererSDL::ItemEx *ite, const aiwar::
     if(ite->selected)
         rs = rotozoomSurface(_getSurface(SELECTED_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
     else if(f->team() == RED_TEAM)
-        rs = rotozoomSurface(_getSurface(RED_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+    {
+        switch(f->getState())
+        {
+        case core::LIGHT:
+            rs = rotozoomSurface(_getSurface(RED_LIGHT_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+            break;
+
+        case core::DARK:
+            rs = rotozoomSurface(_getSurface(RED_DARK_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+            break;
+
+        case core::DEFAULT:
+        default:
+            rs = rotozoomSurface(_getSurface(RED_DEFAULT_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+        }
+    }
     else if(f->team() == BLUE_TEAM)
-        rs = rotozoomSurface(_getSurface(BLUE_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+    {
+        switch(f->getState())
+        {
+        case core::LIGHT:
+            rs = rotozoomSurface(_getSurface(BLUE_LIGHT_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+            break;
+
+        case core::DARK:
+            rs = rotozoomSurface(_getSurface(BLUE_DARK_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+            break;
+
+        case core::DEFAULT:
+        default:
+            rs = rotozoomSurface(_getSurface(BLUE_DEFAULT_FIGHTER), f->angle(), 1.0, SMOOTHING_OFF);
+        }
+    }
 
     SDL_Rect r;
     r.x = sx - rs->w/2;

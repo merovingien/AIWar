@@ -69,17 +69,29 @@ namespace aiwar {
         private:
 
             enum ItemType {
-                BLUE_BASE,
-                BLUE_MININGSHIP,
-                BLUE_FIGHTER,
-                RED_BASE,
-                RED_MININGSHIP,
-                RED_FIGHTER,
-                SELECTED_BASE,
+                BLUE_DEFAULT_BASE, // unused
+                BLUE_LIGHT_BASE, // unused
+                BLUE_DARK_BASE, // unused
+                BLUE_DEFAULT_MININGSHIP,
+                BLUE_LIGHT_MININGSHIP,
+                BLUE_DARK_MININGSHIP,
+                BLUE_DEFAULT_FIGHTER,
+                BLUE_LIGHT_FIGHTER,
+                BLUE_DARK_FIGHTER,
+                RED_DEFAULT_BASE,
+                RED_LIGHT_BASE,
+                RED_DARK_BASE,
+                RED_DEFAULT_MININGSHIP,
+                RED_LIGHT_MININGSHIP,
+                RED_DARK_MININGSHIP,
+                RED_DEFAULT_FIGHTER,
+                RED_LIGHT_FIGHTER,
+                RED_DARK_FIGHTER,
+                SELECTED_BASE, // unused
                 SELECTED_MININGSHIP,
                 SELECTED_FIGHTER,
-                MISSILE,
-                MINERAL
+                MISSILE, // unused
+                MINERAL // unused
             };
 
             void _drawMineral(const RendererSDL::ItemEx *m, const aiwar::core::ItemManager &im);
@@ -96,6 +108,10 @@ namespace aiwar {
             // return the position of the mouse pointer (mouseX, mouseY) in the world coords
             // return true if the mouse is in the world Rect
             bool _getMousePos(const int &mouseX, const int &mouseY, double &px, double &py) const;
+
+            SDL_Surface* _createBase(const SDL_Color& color) const;
+            SDL_Surface* _createMiningShip(const SDL_Color& color) const;
+            SDL_Surface* _createFighter(const SDL_Color& color) const;
 
             void _addSurface(ItemType, SDL_Surface* surf);
             SDL_Surface* _getSurface(ItemType) const;
