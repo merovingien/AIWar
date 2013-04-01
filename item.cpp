@@ -45,11 +45,9 @@ double Item::ypos() const
     return _ypos;
 }
 
-Item::ItemSet Item::neighbours() const
+Item::ItemList Item::neighbours() const
 {
-//    std::cout << "getNeighbours, size=" << _itemSet.size() << " this=" << this << std::endl;
-
-    ItemSet res;
+    ItemList res;
     ItemManager::ItemMap::const_iterator cit;
     for(cit = _im.begin() ; cit != _im.end() ; cit++)
     {
@@ -64,7 +62,7 @@ Item::ItemSet Item::neighbours() const
         if(distance > _detection_radius * _detection_radius)
             continue;
 
-        res.insert(i);
+        res.push_back(i);
     }
 
     return res;
@@ -99,4 +97,10 @@ double Item::_xSize() const
 double Item::_ySize() const
 {
     return _ysize;
+}
+
+std::ostream& operator<< (std::ostream& os, const aiwar::core::Item& it)
+{
+    os << it._dump();
+    return os;
 }

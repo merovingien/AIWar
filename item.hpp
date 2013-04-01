@@ -20,7 +20,7 @@
 #ifndef ITEM_HPP
 #define ITEM_HPP
 
-#include <set>
+#include <list>
 
 #include "item_manager.hpp" // for ItemManager::ItemMap
 
@@ -36,7 +36,7 @@ namespace aiwar {
         class Item
         {
         public:
-            typedef std::set<Item*> ItemSet;
+            typedef std::list<Item*> ItemList;
             typedef ItemManager::ItemKey Key;
 
             virtual ~Item();
@@ -53,7 +53,7 @@ namespace aiwar {
             /**
              * \brief return item nearer than _vision from itself, itself excluded
              */
-            ItemSet neighbours() const;
+            ItemList neighbours() const;
 
             /**
              * \brief Get the distance to the other item.
@@ -81,6 +81,12 @@ namespace aiwar {
             double _xSize() const;
             double _ySize() const;
 
+            /**
+             * \brief Dump the object state and memory
+             * \return A string describing the object state
+             */
+            virtual std::string _dump() const = 0;
+
         protected:
             Item(GameManager &gm, Key k, double px = 0.0, double py = 0.0, double sx = 0.0, double sy = 0.0, double detection = 0.0);
 
@@ -106,5 +112,7 @@ namespace aiwar {
 
     } // namespace aiwar::core
 } // namespace aiwar
+
+std::ostream& operator<< (std::ostream& os, const aiwar::core::Item&);
 
 #endif /* ITEM_HPP */

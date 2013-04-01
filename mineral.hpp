@@ -32,6 +32,8 @@ namespace aiwar {
             Mineral(GameManager& gm, Key k, double px, double py);
 
             void update(unsigned int tick);
+
+            std::string _dump() const;
         };
 
     } // namespace aiwar::core

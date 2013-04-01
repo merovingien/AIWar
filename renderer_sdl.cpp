@@ -318,7 +318,7 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
                     _drawer->draw(&it->second, itemManager);
             }
 
-            _drawer->drawStats(statManager);
+            _drawer->drawStats(statManager, itemManager);
 
             _console->draw();
 

@@ -18,6 +18,7 @@
  */
 
 #include <Python.h> // to define some constant before everything else
+#include <cerrno>
 #include <iostream>
 #include <cstdlib>
 
@@ -29,6 +30,7 @@
 
 #include "handler_interface.hpp"
 #include "handler_dummy.hpp"
+#include "handler_example.hpp"
 #include "python_handler.hpp"
 
 #include "config.hpp"
@@ -36,6 +38,7 @@
 #include "renderer_interface.hpp"
 #include "renderer_dummy.hpp"
 #include "renderer_sdl.hpp"
+#include "renderer_summary.hpp"
 
 using namespace aiwar::core;
 
@@ -93,10 +96,19 @@ int main(int argc, char* argv[])
         return -1;
     }
 
+    HandlerExample eh;
+    if(!eh.initialize())
+    {
+        std::cerr << "Fail to initialize example handler\n";
+        th.finalize();
+        return -1;
+    }
+
     PythonHandler ph;
     if(!ph.initialize())
     {
         std::cerr << "Fail to initialize python handler\n";
+        eh.finalize();
         th.finalize();
         return -1;
     }
@@ -108,12 +120,15 @@ int main(int argc, char* argv[])
     HandlerInterface *hblue = NULL;
     if(pblue.handler == "dummy")
         hblue = &th;
+    else if(pblue.handler == "example")
+        hblue = &eh;
     else if(pblue.handler == "python")
         hblue = &ph;
     else
     {
         std::cerr << "Unknown handler name for blue player: " << pblue.handler << std::endl;
         th.finalize();
+        eh.finalize();
         ph.finalize();
         return -1;
     }
@@ -122,6 +137,7 @@ int main(int argc, char* argv[])
     {
         std::cerr << "Fail to load blue handler\n";
         th.finalize();
+        eh.finalize();
         ph.finalize();
         return -1;
     }
@@ -131,12 +147,15 @@ int main(int argc, char* argv[])
     HandlerInterface *hred = NULL;
     if(pred.handler == "dummy")
         hred = &th;
+    else if(pred.handler == "example")
+        hred = &eh;
     else if(pred.handler == "python")
         hred = &ph;
     else
     {
         std::cerr << "Unknown handler name for red team: " << pred.handler << std::endl;
         th.finalize();
+        eh.finalize();
         ph.finalize();
         return -1;
     }
@@ -145,6 +164,7 @@ int main(int argc, char* argv[])
     {
         std::cerr << "Fail to load red handler\n";
         th.finalize();
+        eh.finalize();
         ph.finalize();
         return -1;
     }
@@ -155,15 +175,19 @@ int main(int argc, char* argv[])
     // load the dummy renderer
     aiwar::renderer::RendererDummy dummyRenderer;
     aiwar::renderer::RendererSDL sdlRenderer;
+    aiwar::renderer::RendererSummary summaryRenderer;
 
     if(cfg.renderers[cfg.renderer].name == "dummy")
         renderer = &dummyRenderer;
     else if(cfg.renderers[cfg.renderer].name == "sdl")
         renderer = &sdlRenderer;
+    else if(cfg.renderers[cfg.renderer].name == "summary")
+        renderer = &summaryRenderer;
     else
     {
         std::cerr << "Cannot find renderer '" << cfg.renderers[cfg.renderer].name << "'\n";
         th.finalize();
+        eh.finalize();
         ph.finalize();
         return -1;
     }
@@ -172,6 +196,7 @@ int main(int argc, char* argv[])
     {
         std::cerr << "Fail to initialize renderer\n";
         th.finalize();
+        eh.finalize();
         ph.finalize();
         return -1;
     }
@@ -187,6 +212,7 @@ int main(int argc, char* argv[])
     {
         std::cerr << "Error while initializing GameManager\n";
         th.finalize();
+        eh.finalize();
         ph.finalize();
         renderer->finalize();
         return -1;
@@ -194,7 +220,7 @@ int main(int argc, char* argv[])
 
     /*** enter the main loop ***/
     bool done = false, gameover = false;
-    Team winner = NO_TEAM;
+    Team winner = NO_TEAM, loser = NO_TEAM;
     unsigned int tick = 0;
 
     // game over ?
@@ -224,6 +250,7 @@ int main(int argc, char* argv[])
             std::cout << "********** GameOver *********\n";
             std::string name = (e.team() == BLUE_TEAM) ? cfg.players[cfg.blue].name : cfg.players[cfg.red].name;
             std::cout << "Team " << name << " has lost because an error occured in his play handler: " << e.what() << std::endl;
+            loser = e.team();
             winner = (e.team() == BLUE_TEAM) ? RED_TEAM : BLUE_TEAM;
             gameover = true;
         }
@@ -244,6 +271,8 @@ int main(int argc, char* argv[])
         done = !renderer->render(gm.getItemManager(), gm.getStatManager(), gameover, winner) || gameover;
     }
 
+    std::cout << "Number of rounds: " << gm.getStatManager().round() << "\n";
+
     renderer->finalize();
 
     // unload teams
@@ -252,25 +281,46 @@ int main(int argc, char* argv[])
 
     // finalize handlers
     th.finalize();
+    eh.finalize();
     ph.finalize();
 
     std::cout << "Exiting gracefully...\n";
     std::cout << "(seed: " << cfg.seed << ")\n";
 
     int rc = 0;
-    switch(winner)
+
+    if(loser != NO_TEAM)
     {
-    case BLUE_TEAM:
-        rc = 1;
-        break;
+        switch(loser)
+        {
+        case BLUE_TEAM:
+            rc = 11;
+            break;
 
-    case RED_TEAM:
-        rc = 2;
-        break;
+        case RED_TEAM:
+            rc = 12;
+            break;
 
-    case NO_TEAM:
-    default:
-        rc = 0;
+        default:
+            break;
+        }
+    }
+    else
+    {
+        switch(winner)
+        {
+        case BLUE_TEAM:
+            rc = 1;
+            break;
+
+        case RED_TEAM:
+            rc = 2;
+            break;
+
+        case NO_TEAM:
+        default:
+            rc = 0;
+        }
     }
 
     return rc;

@@ -20,6 +20,7 @@
 #include "mineral.hpp"
 
 #include <iostream>
+#include <sstream>
 
 #include "config.hpp"
 
@@ -33,4 +34,11 @@ Mineral::Mineral(GameManager& gm, Key k, double px, double py)
 
 void Mineral::update(unsigned int)
 {
+}
+
+std::string Mineral::_dump() const
+{
+    std::ostringstream oss;
+    oss << _key << " Mineral pos=" << xpos() << "x" << ypos() << " life=" << life() << "\n";
+    return oss.str();
 }

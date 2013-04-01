@@ -97,6 +97,8 @@ namespace aiwar {
 
             unsigned int giveMissiles(unsigned int nb, Fighter* fighter);
 
+            std::string _dump() const;
+
         private:
             void _preUpdate(unsigned int tick);
             void _setMineralStorage(int n);
@@ -108,7 +110,5 @@ namespace aiwar {
 
     } // namespace aiwar::core
 } // namespace aiwar
-
-std::ostream& operator<< (std::ostream& os, const aiwar::core::Base& b);
 
 #endif /* BASE_HPP */

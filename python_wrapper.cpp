@@ -56,12 +56,13 @@ static PyObject * Item_distanceTo(Item* self, PyObject *args); // Item
 static PyObject * Item_rotateOf(Item* self, PyObject *args); // Movable
 static PyObject * Item_rotateTo(Item* self, PyObject *args); // Movable
 static PyObject * Item_angle(Item* self); // Movable
-static PyObject * Item_fuel(Item* self); // Movable
+static PyObject * Item_fuel(Item* self, PyObject *args); // Movable
 static PyObject * Item_move(Item* self); // Movable
 static PyObject * Item_life(Item* self); // Living
 static PyObject * Item_team(Item* self); // Playable
 static PyObject * Item_isFriend(Item* self, PyObject *args); // Playable
 static PyObject * Item_log(Item* self, PyObject *args); // Playable
+static PyObject * Item_state(Item* self, PyObject *args); // Playable
 static PyObject * Item_memorySize(Item* self); // Memory
 static PyObject * Item_getMemoryInt(Item* self, PyObject *args); // Memory
 static PyObject * Item_getMemoryUInt(Item* self, PyObject *args); // Memory
@@ -96,12 +97,13 @@ static PyMethodDef MiningShip_methods[] = {
     {"rotateOf", (PyCFunction)Item_rotateOf, METH_VARARGS, "Rotate the movable item of the given angle"},
     {"rotateTo", (PyCFunction)Item_rotateTo, METH_VARARGS, "Rotate the movable item in the direction of the other item"},
     {"angle", (PyCFunction)Item_angle, METH_NOARGS, "Return the current angle of the ship"},
-    {"fuel", (PyCFunction)Item_fuel, METH_NOARGS, "Return the current fuel of the ship"},
+    {"fuel", (PyCFunction)Item_fuel, METH_VARARGS, "Return the current fuel of the ship"},
     {"move", (PyCFunction)Item_move, METH_NOARGS, "Move the movable item in the direction given by its angle"},
     {"life", (PyCFunction)Item_life, METH_NOARGS, "Return the remaining life of the item"},
     {"team", (PyCFunction)Item_team, METH_NOARGS, "Return the team of the item"},
     {"isFriend", (PyCFunction)Item_isFriend, METH_VARARGS, "Return true if the given item belong to the same team"},
     {"log", (PyCFunction)Item_log, METH_VARARGS, "Log the message"},
+    {"state", (PyCFunction)Item_state, METH_VARARGS, "Set item state"},
     {"memorySize", (PyCFunction)Item_memorySize, METH_NOARGS, "Return the number of memory slots allocated to the item"},
     {"getMemoryInt", (PyCFunction)Item_getMemoryInt, METH_VARARGS, "Return the memory contained at position 'index' as an int value"},
     {"getMemoryUInt", (PyCFunction)Item_getMemoryUInt, METH_VARARGS, "Return the memory contained at position 'index' as an unsigned int value"},
@@ -423,7 +425,9 @@ static PyMethodDef Base_methods[] = {
     {"life", (PyCFunction)Item_life, METH_NOARGS, "Return the remaining life of the item"},
     {"team", (PyCFunction)Item_team, METH_NOARGS, "Return the team of the item"},
     {"isFriend", (PyCFunction)Item_isFriend, METH_VARARGS, "Return true if the given item belong to the same team"},
+    {"fuel", (PyCFunction)Item_fuel, METH_VARARGS, "Return the current fuel of the given ship"},
     {"log", (PyCFunction)Item_log, METH_VARARGS, "Log the message"},
+    {"state", (PyCFunction)Item_state, METH_VARARGS, "Set item state"},
     {"memorySize", (PyCFunction)Item_memorySize, METH_NOARGS, "Return the number of memory slots allocated to the item"},
     {"getMemoryInt", (PyCFunction)Item_getMemoryInt, METH_VARARGS, "Return the memory contained at position 'index' as an int value"},
     {"getMemoryUInt", (PyCFunction)Item_getMemoryUInt, METH_VARARGS, "Return the memory contained at position 'index' as an unsigned int value"},
@@ -595,12 +599,13 @@ static PyMethodDef Fighter_methods[] = {
     {"rotateOf", (PyCFunction)Item_rotateOf, METH_VARARGS, "Rotate the movable item of the given angle"},
     {"rotateTo", (PyCFunction)Item_rotateTo, METH_VARARGS, "Rotate the movable item in the direction of the other item"},
     {"angle", (PyCFunction)Item_angle, METH_NOARGS, "Return the current angle of the ship"},
-    {"fuel", (PyCFunction)Item_fuel, METH_NOARGS, "Return the current fuel of the ship"},
+    {"fuel", (PyCFunction)Item_fuel, METH_VARARGS, "Return the current fuel of the ship"},
     {"move", (PyCFunction)Item_move, METH_NOARGS, "Move the movable item in the direction given by its angle"},
     {"life", (PyCFunction)Item_life, METH_NOARGS, "Return the remaining life of the item"},
     {"team", (PyCFunction)Item_team, METH_NOARGS, "Return the team of the item"},
     {"isFriend", (PyCFunction)Item_isFriend, METH_VARARGS, "Return true if the given item belong to the same team"},
     {"log", (PyCFunction)Item_log, METH_VARARGS, "Log the message"},
+    {"state", (PyCFunction)Item_state, METH_VARARGS, "Set item state"},
     {"memorySize", (PyCFunction)Item_memorySize, METH_NOARGS, "Return the number of memory slots allocated to the item"},
     {"getMemoryInt", (PyCFunction)Item_getMemoryInt, METH_VARARGS, "Return the memory contained at position 'index' as an int value"},
     {"getMemoryUInt", (PyCFunction)Item_getMemoryUInt, METH_VARARGS, "Return the memory contained at position 'index' as an unsigned int value"},
@@ -766,12 +771,12 @@ Item_pos(Item* self)
 
 static PyObject * Item_neighbours(Item* self)
 {
-    PyObject* pSet = PyFrozenSet_New(NULL);
-    if(!pSet)
+    PyObject* pList = PyList_New(0);
+    if(!pList)
         return NULL;
 
-    aiwar::core::Item::ItemSet n = self->item->neighbours();
-    aiwar::core::Item::ItemSet::iterator it;
+    aiwar::core::Item::ItemList n = self->item->neighbours();
+    aiwar::core::Item::ItemList::iterator it;
     aiwar::core::Item *item;
     aiwar::core::Mineral *mineral;
     aiwar::core::Missile *missile;
@@ -798,13 +803,13 @@ static PyObject * Item_neighbours(Item* self)
 
         if(pItem)
         {
-            int r = PySet_Add(pSet, pItem);
+            int r = PyList_Append(pList, pItem);
             Py_DECREF(pItem);
             if(r != 0) // failure
             {
                 std::cerr << "Error while filling neighbours Set" << std::endl;
                 PyErr_Print();
-                Py_DECREF(pSet);
+                Py_DECREF(pList);
                 return NULL;
             }
         }
@@ -812,7 +817,7 @@ static PyObject * Item_neighbours(Item* self)
             std::cerr << "Item type not yet implemented" << std::endl;
     }
 
-    return pSet;
+    return pList;
 }
 
 static PyObject *
@@ -884,9 +889,35 @@ Item_angle(Item* self)
 }
 
 static PyObject *
-Item_fuel(Item* self)
+Item_fuel(Item* self, PyObject *args)
 {
-    return Py_BuildValue("I", dynamic_cast<aiwar::core::Movable*>(self->item)->fuel());
+    PyObject *o = NULL;
+    if(!PyArg_ParseTuple(args, "|O", &o))
+    {
+        return NULL;
+    }
+
+    if(!o)
+    {
+        return Py_BuildValue("I", dynamic_cast<aiwar::core::Movable*>(self->item)->fuel());
+    }
+    else
+    {
+        if(!PyObject_IsInstance(o, pItemBasedTuple))
+        {
+            PyErr_SetString(PyExc_TypeError, "argmument is not an item");
+            return NULL;
+        }
+
+        aiwar::core::Movable *ml = dynamic_cast<aiwar::core::Movable*>(((Item*)o)->item);
+        if(!ml)
+        {
+            PyErr_SetString(PyExc_TypeError, "argmument is not a Movable item");
+            return NULL;
+        }
+
+        return Py_BuildValue("I", dynamic_cast<aiwar::core::Playable*>(self->item)->fuel(ml));
+    }
 }
 
 static PyObject *
@@ -943,6 +974,16 @@ Item_log(Item* self, PyObject *args)
     if(!PyArg_ParseTuple(args, "s", &msg))
         return NULL;
     dynamic_cast<aiwar::core::Playable*>(self->item)->log(msg);
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+Item_state(Item* self, PyObject *args)
+{
+    unsigned int state;
+    if(!PyArg_ParseTuple(args, "I", &state))
+        return NULL;
+    dynamic_cast<aiwar::core::Playable*>(self->item)->state(static_cast<aiwar::core::State>(state));
     Py_RETURN_NONE;
 }
 
@@ -1567,8 +1608,7 @@ bool initAiwarModule()
     if(PyType_Ready(&FighterConstType) < 0)
         return false;
 
-    m = Py_InitModule3("aiwar", module_methods,
-                       "Example module that creates an extension type.");
+    m = Py_InitModule3("aiwar", module_methods, "aiwar module that provides item types and constant values");
 
     if (m == NULL)
       return false;
@@ -1607,6 +1647,11 @@ bool initAiwarModule()
     /* add FighterConst */
     Py_INCREF(&FighterConstType);
     PyModule_AddObject(m, "Fighter", (PyObject*)&FighterConstType);
+
+    /* add State values */
+    PyModule_AddIntConstant(m, "DEFAULT", aiwar::core::DEFAULT);
+    PyModule_AddIntConstant(m, "LIGHT", aiwar::core::LIGHT);
+    PyModule_AddIntConstant(m, "DARK", aiwar::core::DARK);
 
     return true;
 }

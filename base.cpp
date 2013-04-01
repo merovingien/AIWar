@@ -33,7 +33,7 @@ using namespace aiwar::core;
 Base::Base(GameManager &gm, Key k, double xpos, double ypos, Team team, PlayFunction& pf)
     : Item(gm, k, xpos, ypos, Config::instance().BASE_SIZE_X, Config::instance().BASE_SIZE_Y, Config::instance().BASE_DETECTION_RADIUS),
       Living(gm, k, Config::instance().BASE_START_LIFE, Config::instance().BASE_MAX_LIFE),
-      Playable(team, pf),
+      Playable(gm, k, team, pf),
       Memory(gm, k, Config::instance().BASE_MEMORY_SIZE),
       _mineralStorage(Config::instance().BASE_START_MINERAL_STORAGE),
       _hasLaunch(false), _hasCreate(false)
@@ -244,8 +244,9 @@ void Base::_setMineralStorage(int n)
         _sm.mineralSpent(_team, -n);
 }
 
-std::ostream& operator<< (std::ostream& os, const Base& b)
+std::string Base::_dump() const
 {
-    os << "Base[" << &b << "]";
-    return os;
+    std::ostringstream oss;
+    oss << _key << " Base pos=" << xpos() << "x" << ypos() << " mineralStorage=" << mineralStorage() << "\n";
+    return oss.str();
 }

@@ -20,7 +20,7 @@
 #ifndef RENDERER_SDL_DRAW_HPP
 #define RENDERER_SDL_DRAW_HPP
 
-#include <map>
+#include <vector>
 #include <SDL/SDL_ttf.h>
 
 #include "renderer_sdl.hpp" // for RendererSDL::ItemEx
@@ -57,7 +57,7 @@ namespace aiwar {
 
             void preDraw(bool clicked, int xmouseClick, int ymouseClick, int dxViewPort, int dyViewPort, int dz, int xmousePos, int ymousePos);
             void draw(RendererSDL::ItemEx *itemEx, const aiwar::core::ItemManager &im);
-            void drawStats(const aiwar::core::StatManager &sm);
+            void drawStats(const aiwar::core::StatManager &sm, const aiwar::core::ItemManager &im);
             void postDraw();
             void updateScreen(SDL_Surface *newScreen);
             
@@ -69,12 +69,24 @@ namespace aiwar {
         private:
 
             enum ItemType {
-                BLUE_BASE,
-                BLUE_MININGSHIP,
-                BLUE_FIGHTER,
-                RED_BASE,
-                RED_MININGSHIP,
-                RED_FIGHTER,
+                BLUE_DEFAULT_BASE,
+                BLUE_LIGHT_BASE,
+                BLUE_DARK_BASE,
+                BLUE_DEFAULT_MININGSHIP,
+                BLUE_LIGHT_MININGSHIP,
+                BLUE_DARK_MININGSHIP,
+                BLUE_DEFAULT_FIGHTER,
+                BLUE_LIGHT_FIGHTER,
+                BLUE_DARK_FIGHTER,
+                RED_DEFAULT_BASE,
+                RED_LIGHT_BASE,
+                RED_DARK_BASE,
+                RED_DEFAULT_MININGSHIP,
+                RED_LIGHT_MININGSHIP,
+                RED_DARK_MININGSHIP,
+                RED_DEFAULT_FIGHTER,
+                RED_LIGHT_FIGHTER,
+                RED_DARK_FIGHTER,
                 SELECTED_BASE,
                 SELECTED_MININGSHIP,
                 SELECTED_FIGHTER,
@@ -97,6 +109,12 @@ namespace aiwar {
             // return true if the mouse is in the world Rect
             bool _getMousePos(const int &mouseX, const int &mouseY, double &px, double &py) const;
 
+            SDL_Surface* _createBase(const SDL_Color& color) const;
+            SDL_Surface* _createMiningShip(const SDL_Color& color) const;
+            SDL_Surface* _createFighter(const SDL_Color& color) const;
+            SDL_Surface* _createMissile() const;
+            SDL_Surface* _createMineral() const;
+
             void _addSurface(ItemType, SDL_Surface* surf);
             SDL_Surface* _getSurface(ItemType) const;
 
@@ -107,7 +125,7 @@ namespace aiwar {
             SDL_Surface *_worldSurface;
             double _vpX, _vpY; // center of the viewport
             double _zoom;
-            std::map<ItemType, SDL_Surface*> _surfaceMap;
+            std::vector<SDL_Surface*> _surfaceArray;
 
             SDL_Rect _statsRect;
             SDL_Surface *_statsSurface;
