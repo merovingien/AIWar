@@ -4,12 +4,16 @@ if [ $# = "0" ];then
     echo ""
     echo "NAME : loopColors.sh - launch 'loopMaps.sh' twice and switch colors of players."
     echo ""
-    echo "SYNOPSIS : loopColors.sh Player1 Player2 roundToPlay"
+    echo "SYNOPSIS : loopColors.sh Player1 Player2 roundToPlay [noversion]"
     echo ""
     echo "DESCRIPTION : "
     echo "   Player1     : Name of the player 1"
     echo "   Player2     : Name of the player 2"
     echo "   roundToPlay : Number of rounds to play with each colors and each maps"
+    echo "   noversion   : Customize the trace on terminal."
+    echo "                 This is used when loopColors.sh is called from a parent bash script."
+    echo "                 If missing, version is written to the terminal."
+    echo "                 If \"noversion\", version is not written to the terminal"
     echo ""
 else
     export blueScoreTotal
@@ -37,6 +41,10 @@ else
         echo " *** VAINQUEUR === $1 *** (par $scorePlayer1 a $scorePlayer2)"
     else
         echo " *** VAINQUEUR === $2 ***  (par $scorePlayer2 a $scorePlayer1)"
+    fi
+    if [ "$#" -lt "4" ] || [ "$4" != "noversion" ];then
+        echo ""
+        echo "   Ver.AIWar = \"`git show | head -n 1`\""
     fi
     echo
 fi

@@ -14,7 +14,9 @@ else
     for player in `grep -A 1 "<player>" config.xml | grep "<name>" | cut -f 2 -d ">" | cut -f 1 -d "<"`;
     do
         if [ "$1" != "$player" ];then
-            . ./loopColors.sh $1 $player $2
+            . ./loopColors.sh $1 $player $2 noversion
         fi
     done
+    echo ""
+    echo "   Ver.AIWar = \"`git show | head -n 1`\""
 fi

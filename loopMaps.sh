@@ -20,6 +20,8 @@ if [ $# = "0" ];then
 else
     export blueScore
     export redScore
+    export blueError
+    export redError
     export draw
     export error
 
@@ -41,7 +43,7 @@ else
         #resultat[$indice]=${match[*]}
 
         if [ "$#" -lt "4" ] || [ "$4" != "nolog" ];then
-            echo "   [Bleu]$1=$blueScore""  [Rouge]$2=$redScore""  Egalite=$draw""  Erreur=$error""  [Map]$map"
+            echo "   [Bleu]$1=$blueScore  [Rouge]$2=$redScore  Egalite=$draw  Bug(Bleu/Rouge/Script)=$blueError/$redError/$error  [Map]$map"
         fi
 
         let "indice += 1"
@@ -56,5 +58,7 @@ else
         else
             echo " *** VAINQUEUR === $2 ***  (par $redScoreTotal a $blueScoreTotal)"
         fi
+        echo ""
+        echo "   Ver.AIWar = \"`git show | head -n 1`\""
     fi
 fi
