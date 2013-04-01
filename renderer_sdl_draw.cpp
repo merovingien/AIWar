@@ -28,6 +28,7 @@
 
 #include "config.hpp"
 
+#include <stdexcept>
 #include <sstream>
 #include <cmath>
 
@@ -81,6 +82,27 @@ RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::insta
 
     // create item surfaces
 
+    // ***default red base***
+    _addSurface(RED_DEFAULT_BASE, _createBase(RED_COLOR));
+
+    // ***light red base***
+    _addSurface(RED_LIGHT_BASE, _createBase(RED_LIGHT_COLOR));
+
+    // ***dark red base***
+    _addSurface(RED_DARK_BASE, _createBase(RED_DARK_COLOR));
+
+    // ***default blue base***
+    _addSurface(BLUE_DEFAULT_BASE, _createBase(BLUE_COLOR));
+
+    // ***light blue base***
+    _addSurface(BLUE_LIGHT_BASE, _createBase(BLUE_LIGHT_COLOR));
+
+    // ***dark blue base***
+    _addSurface(BLUE_DARK_BASE, _createBase(BLUE_DARK_COLOR));
+
+    // ***selected base***
+    _addSurface(SELECTED_BASE, _createBase(SELECTED_COLOR));
+
     // ***default red miningShip***
     _addSurface(RED_DEFAULT_MININGSHIP, _createMiningShip(RED_COLOR));
 
@@ -123,6 +145,11 @@ RendererSDLDraw::RendererSDLDraw(SDL_Surface *screen) : _cfg(core::Config::insta
     // ***selected fighter***
     _addSurface(SELECTED_FIGHTER, _createFighter(SELECTED_COLOR));
 
+    // ***missile***
+    _addSurface(MISSILE, _createMissile());
+
+    // ***mineral***
+    _addSurface(MINERAL, _createMineral());
 
     /// \todo add test to check OpenFont
     _statsFont = TTF_OpenFont("./fonts/Jura-Medium.ttf", SMALL_FONT_SIZE);
@@ -136,9 +163,9 @@ RendererSDLDraw::~RendererSDLDraw()
     TTF_CloseFont(_statsFont);
 
     // item surfaces
-    std::map<ItemType, SDL_Surface*>::iterator it;
-    for(it = _surfaceMap.begin() ; it != _surfaceMap.end() ; ++it)
-        SDL_FreeSurface(it->second);
+    std::vector<SDL_Surface*>::iterator it;
+    for(it = _surfaceArray.begin() ; it != _surfaceArray.end() ; ++it)
+        SDL_FreeSurface(*it);
 
     SDL_FreeSurface(_worldSurface);
 
@@ -147,7 +174,12 @@ RendererSDLDraw::~RendererSDLDraw()
 
 SDL_Surface* RendererSDLDraw::_createBase(const SDL_Color& color) const
 {
-    return NULL;
+    SDL_Surface* tmp = SDL_CreateRGBSurface(_worldSurface->flags, static_cast<int>(_cfg.BASE_SIZE_X), static_cast<int>(_cfg.BASE_SIZE_Y), _worldSurface->format->BitsPerPixel, _worldSurface->format->Rmask, _worldSurface->format->Gmask, _worldSurface->format->Bmask, _worldSurface->format->Amask);
+
+    Uint32 c  = SDL_MapRGB(_worldSurface->format, color.r,color.g,color.b);
+    SDL_FillRect(tmp, NULL, c);
+
+    return tmp;
 }
 
 SDL_Surface* RendererSDLDraw::_createMiningShip(const SDL_Color& color) const
@@ -176,18 +208,46 @@ SDL_Surface* RendererSDLDraw::_createFighter(const SDL_Color& color) const
     return tmp;
 }
 
+SDL_Surface* RendererSDLDraw::_createMissile() const
+{
+    SDL_Surface* tmp = SDL_CreateRGBSurface(_worldSurface->flags, static_cast<int>(_cfg.MISSILE_SIZE_X), static_cast<int>(_cfg.MISSILE_SIZE_Y), _worldSurface->format->BitsPerPixel, _worldSurface->format->Rmask, _worldSurface->format->Gmask, _worldSurface->format->Bmask, _worldSurface->format->Amask);
+
+    SDL_FillRect(tmp, NULL, SDL_MapRGB(_worldSurface->format, 255,0,255));
+
+    return tmp;
+}
+
+SDL_Surface* RendererSDLDraw::_createMineral() const
+{
+    SDL_Surface* tmp = SDL_CreateRGBSurface(_worldSurface->flags, static_cast<int>(_cfg.MINERAL_SIZE_X), static_cast<int>(_cfg.MINERAL_SIZE_Y), _worldSurface->format->BitsPerPixel, _worldSurface->format->Rmask, _worldSurface->format->Gmask, _worldSurface->format->Bmask, _worldSurface->format->Amask);
+
+    SDL_FillRect(tmp, NULL, SDL_MapRGB(_worldSurface->format, 0,255,128));
+
+    return tmp;
+}
+
 void RendererSDLDraw::_addSurface(ItemType t, SDL_Surface* s)
 {
-    /// \todo check if the surface is already present to free it before adding new one
-    _surfaceMap[t] = s;
+    try
+    {
+        SDL_Surface* &elem = _surfaceArray.at(t);
+
+        if(elem)
+            SDL_FreeSurface(elem);
+
+        elem = s;
+    }
+    catch(const std::out_of_range&)
+    {
+        _surfaceArray.resize(t+1);
+        _surfaceArray.at(t) = s;
+    }
 }
 
 SDL_Surface* RendererSDLDraw::_getSurface(ItemType t) const
 {
-    std::map<ItemType, SDL_Surface*>::const_iterator cit = _surfaceMap.find(t);
-    if(cit != _surfaceMap.end())
-        return cit->second;
-    return NULL;
+    // to maximize performance, do not perform bound checking
+    return _surfaceArray[t];
 }
 
 bool RendererSDLDraw::_getPosOnScreen(const double &itemPx, const double &itemPy, Sint16 &screenPx, Sint16 &screenPy) const
@@ -286,7 +346,7 @@ void RendererSDLDraw::draw(RendererSDL::ItemEx *itemEx, const aiwar::core::ItemM
     }
 }
 
-void RendererSDLDraw::drawStats(const aiwar::core::StatManager &sm)
+void RendererSDLDraw::drawStats(const aiwar::core::StatManager &sm, const aiwar::core::ItemManager &im)
 {
     std::ostringstream statsText;
     const int FONT_HEIGHT = TTF_FontLineSkip(_statsFont);
@@ -294,6 +354,8 @@ void RendererSDLDraw::drawStats(const aiwar::core::StatManager &sm)
     // compute cursor position
     double mx, my;
     bool printMouse = _getMousePos(_xmousePos, _ymousePos, mx, my);
+    im.applyOffset(mx, my);
+
     int y = 0;
 
     // draw
@@ -465,12 +527,15 @@ void RendererSDLDraw::_drawMineral(const RendererSDL::ItemEx *ite, const aiwar::
     Sint16 sx, sy;
     _getPosOnScreen(px, py, sx, sy);
 
+    SDL_Surface *rs = _getSurface(MINERAL);
+
     SDL_Rect r;
-    r.x = sx - static_cast<Sint16>(_cfg.MINERAL_SIZE_X/2.0);
-    r.y = sy - static_cast<Sint16>(_cfg.MINERAL_SIZE_Y/2.0);
-    r.w = static_cast<Uint16>(_cfg.MINERAL_SIZE_X);
-    r.h = static_cast<Uint16>(_cfg.MINERAL_SIZE_Y);
-    SDL_FillRect(_worldSurface, &r, SDL_MapRGB(_worldSurface->format, 0,255,128));
+    r.x = sx - rs->w/2;
+    r.y = sy - rs->h/2;
+    r.w = rs->w;
+    r.h = rs->h;
+
+    SDL_BlitSurface(rs, NULL, _worldSurface, &r);
 }
 
 void RendererSDLDraw::_drawBase(const RendererSDL::ItemEx *ite, const aiwar::core::ItemManager &im)
@@ -496,30 +561,25 @@ void RendererSDLDraw::_drawBase(const RendererSDL::ItemEx *ite, const aiwar::cor
         circleRGBA(_worldSurface, sx, sy, static_cast<Sint16>(_cfg.COMMUNICATION_RADIUS * _zoom) , 0,192,128,255);
     }
 
-    SDL_Rect r;
-    r.x = sx - static_cast<Sint16>(_cfg.BASE_SIZE_X/2.0);
-    r.y = sy - static_cast<Sint16>(_cfg.BASE_SIZE_Y/2.0);
-    r.w = static_cast<Uint16>(_cfg.BASE_SIZE_X);
-    r.h = static_cast<Uint16>(_cfg.BASE_SIZE_Y);
+    SDL_Surface *rs = NULL;
 
-    Uint32 color = SDL_MapRGB(_worldSurface->format, 0,255,0);
     if(ite->selected)
-        color = SDL_MapRGB(_worldSurface->format, 255,255,0);
+        rs = _getSurface(SELECTED_BASE);
     else if(b->team() == BLUE_TEAM)
     {
         switch(b->getState())
         {
         case core::LIGHT:
-            color = SDL_MapRGB(_worldSurface->format, BLUE_LIGHT_COLOR.r,BLUE_LIGHT_COLOR.g,BLUE_LIGHT_COLOR.b);
+            rs = _getSurface(BLUE_LIGHT_BASE);
             break;
 
         case core::DARK:
-            color = SDL_MapRGB(_worldSurface->format, BLUE_DARK_COLOR.r,BLUE_DARK_COLOR.g,BLUE_DARK_COLOR.b);
+            rs = _getSurface(BLUE_DARK_BASE);
             break;
 
         case core::DEFAULT:
         default:
-            color = SDL_MapRGB(_worldSurface->format, BLUE_COLOR.r,BLUE_COLOR.g,BLUE_COLOR.b);
+            rs = _getSurface(BLUE_DEFAULT_BASE);
         }
     }
     else if(b->team() == RED_TEAM)
@@ -527,20 +587,26 @@ void RendererSDLDraw::_drawBase(const RendererSDL::ItemEx *ite, const aiwar::cor
         switch(b->getState())
         {
         case core::LIGHT:
-            color = SDL_MapRGB(_worldSurface->format, RED_LIGHT_COLOR.r,RED_LIGHT_COLOR.g,RED_LIGHT_COLOR.b);
+            rs = _getSurface(RED_LIGHT_BASE);
             break;
 
         case core::DARK:
-            color = SDL_MapRGB(_worldSurface->format, RED_DARK_COLOR.r,RED_DARK_COLOR.g,RED_DARK_COLOR.b);
+            rs = _getSurface(RED_DARK_BASE);
             break;
 
         case core::DEFAULT:
         default:
-            color = SDL_MapRGB(_worldSurface->format, RED_COLOR.r,RED_COLOR.g,RED_COLOR.b);
+            rs = _getSurface(RED_DEFAULT_BASE);
         }
     }
 
-    SDL_FillRect(_worldSurface, &r, color);
+    SDL_Rect r;
+    r.x = sx - rs->w/2;
+    r.y = sy - rs->h/2;
+    r.w = rs->w;
+    r.h = rs->h;
+
+    SDL_BlitSurface(rs, NULL, _worldSurface, &r);
 }
 
 void RendererSDLDraw::_drawMiningShip(const RendererSDL::ItemEx *ite, const aiwar::core::ItemManager &im)
@@ -625,22 +691,17 @@ void RendererSDLDraw::_drawMissile(const RendererSDL::ItemEx *ite, const aiwar::
     Sint16 sx, sy;
     _getPosOnScreen(px, py, sx, sy);
 
-    SDL_Surface* tmp = SDL_CreateRGBSurface(_worldSurface->flags, static_cast<int>(_cfg.MISSILE_SIZE_X), static_cast<int>(_cfg.MISSILE_SIZE_Y), _worldSurface->format->BitsPerPixel, _worldSurface->format->Rmask, _worldSurface->format->Gmask, _worldSurface->format->Bmask, _worldSurface->format->Amask);
-
-    SDL_FillRect(tmp, NULL, SDL_MapRGB(_worldSurface->format, 255,0,255));
-
     // rotate the missile
-    SDL_Surface *rs = rotozoomSurface(tmp, m->angle(), 1.0, SMOOTHING_OFF);
+    SDL_Surface *rs = rotozoomSurface(_getSurface(MISSILE), m->angle(), 1.0, SMOOTHING_OFF);
 
     SDL_Rect r;
     r.x = sx - rs->w/2;
     r.y = sy - rs->h/2;
     r.w = rs->w;
     r.h = rs->h;
-    SDL_BlitSurface(rs, NULL, _worldSurface, &r);
 
+    SDL_BlitSurface(rs, NULL, _worldSurface, &r);
     SDL_FreeSurface(rs);
-    SDL_FreeSurface(tmp);
 }
 
 void RendererSDLDraw::_drawFighter(const RendererSDL::ItemEx *ite, const aiwar::core::ItemManager &im)

@@ -20,7 +20,7 @@
 #ifndef RENDERER_SDL_DRAW_HPP
 #define RENDERER_SDL_DRAW_HPP
 
-#include <map>
+#include <vector>
 #include <SDL/SDL_ttf.h>
 
 #include "renderer_sdl.hpp" // for RendererSDL::ItemEx
@@ -57,7 +57,7 @@ namespace aiwar {
 
             void preDraw(bool clicked, int xmouseClick, int ymouseClick, int dxViewPort, int dyViewPort, int dz, int xmousePos, int ymousePos);
             void draw(RendererSDL::ItemEx *itemEx, const aiwar::core::ItemManager &im);
-            void drawStats(const aiwar::core::StatManager &sm);
+            void drawStats(const aiwar::core::StatManager &sm, const aiwar::core::ItemManager &im);
             void postDraw();
             void updateScreen(SDL_Surface *newScreen);
             
@@ -69,9 +69,9 @@ namespace aiwar {
         private:
 
             enum ItemType {
-                BLUE_DEFAULT_BASE, // unused
-                BLUE_LIGHT_BASE, // unused
-                BLUE_DARK_BASE, // unused
+                BLUE_DEFAULT_BASE,
+                BLUE_LIGHT_BASE,
+                BLUE_DARK_BASE,
                 BLUE_DEFAULT_MININGSHIP,
                 BLUE_LIGHT_MININGSHIP,
                 BLUE_DARK_MININGSHIP,
@@ -87,11 +87,11 @@ namespace aiwar {
                 RED_DEFAULT_FIGHTER,
                 RED_LIGHT_FIGHTER,
                 RED_DARK_FIGHTER,
-                SELECTED_BASE, // unused
+                SELECTED_BASE,
                 SELECTED_MININGSHIP,
                 SELECTED_FIGHTER,
-                MISSILE, // unused
-                MINERAL // unused
+                MISSILE,
+                MINERAL
             };
 
             void _drawMineral(const RendererSDL::ItemEx *m, const aiwar::core::ItemManager &im);
@@ -112,6 +112,8 @@ namespace aiwar {
             SDL_Surface* _createBase(const SDL_Color& color) const;
             SDL_Surface* _createMiningShip(const SDL_Color& color) const;
             SDL_Surface* _createFighter(const SDL_Color& color) const;
+            SDL_Surface* _createMissile() const;
+            SDL_Surface* _createMineral() const;
 
             void _addSurface(ItemType, SDL_Surface* surf);
             SDL_Surface* _getSurface(ItemType) const;
@@ -123,7 +125,7 @@ namespace aiwar {
             SDL_Surface *_worldSurface;
             double _vpX, _vpY; // center of the viewport
             double _zoom;
-            std::map<ItemType, SDL_Surface*> _surfaceMap;
+            std::vector<SDL_Surface*> _surfaceArray;
 
             SDL_Rect _statsRect;
             SDL_Surface *_statsSurface;
