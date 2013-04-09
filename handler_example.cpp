@@ -93,7 +93,7 @@ void HandlerExample::play_base(aiwar::core::Playable* base)
     for (it = n.begin() ; it != n.end() ; ++it)
     {
         MiningShip* i = dynamic_cast<MiningShip*>(*it);
-        if (i && self->isFriend(i) and self->distanceTo(i) <= CFG.BASE_REFUEL_RADIUS)
+        if (i && self->isFriend(i) && self->distanceTo(i) <= CFG.BASE_REFUEL_RADIUS)
         {
             oss << "mon ami a encore " << self->fuel(i) << " fuel";
             self->log(oss.str()); oss.str("");
@@ -113,7 +113,7 @@ void HandlerExample::play_base(aiwar::core::Playable* base)
     for (it = n.begin() ; it != n.end() ; ++it)
     {
         MiningShip* i = dynamic_cast<MiningShip*>(*it);
-        if (i && self->isFriend(i) and self->distanceTo(i) <= CFG.COMMUNICATION_RADIUS)
+        if (i && self->isFriend(i) && self->distanceTo(i) <= CFG.COMMUNICATION_RADIUS)
         {
             // si on connait la position du mineral
             float posMineralSelf_x = self->getMemory<float>(2);
