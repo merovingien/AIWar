@@ -191,6 +191,7 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
         if(process)
         {
             bool click = false;
+            bool deselect = false;
             int mcx, mcy;
             int dx = 0, dy = 0;
             int dz = 0;
@@ -228,6 +229,10 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
 
                     case SDLK_s: // toggle full speed play
                         _playDelay = PLAY_DELAY - _playDelay;
+                        break;
+
+                    case SDLK_d: // deselect all items
+                        deselect = true;
                         break;
 
                     case SDLK_c: // togle console display
@@ -315,7 +320,12 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
             {
                 // draw if not deleted
                 if(!it->second.deleted)
+                {
+                    if(deselect) // deselect all items ?
+                        it->second.selected = false;
+
                     _drawer->draw(&it->second, itemManager);
+                }
             }
 
             _drawer->drawStats(statManager, itemManager);

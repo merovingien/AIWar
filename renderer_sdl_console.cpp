@@ -54,6 +54,7 @@ RendererSDLConsole::RendererSDLConsole(SDL_Surface *s) : _screen(s), _consoleSur
     _helpQueue.push_back(" Space  - Play one round");
     _helpQueue.push_back(" P      - Pause / Unpause");
     _helpQueue.push_back(" S      - Play without pause (full speed)");
+    _helpQueue.push_back(" D      - Deselect all items");
     _helpQueue.push_back(" Z      - Reset zoom");
     _helpQueue.push_back(" R      - Reset postition");
     _helpQueue.push_back(" C      - Show/Hide console");
