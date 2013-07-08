@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <script src="../lib/RGraph/libraries/RGraph.common.core.js" ></script>
+    <script src="../lib/RGraph/libraries/RGraph.common.dynamic.js" ></script>
+    <script src="../lib/RGraph/libraries/RGraph.common.tooltips.js" ></script>
+    <script src="../lib/RGraph/libraries/RGraph.common.key.js" ></script>
+    <script src="../lib/RGraph/libraries/RGraph.hbar.js" ></script>
+    <script src="../lib/RGraph/libraries/RGraph.common.effects.js" ></script>
+    <script src="../lib/RGraph/libraries/RGraph.pie.js" ></script>
+    <!--[if lt IE 9]><script src="../lib/RGraph/excanvas/excanvas.js"></script><![endif]-->
+     
+    <link rel="stylesheet" type="text/css" href="../lib/css/RGraph_loop.css">
+    <title>AIWar : ##Player1## Vs The world</title>
+    
+    <meta name="description" content="AIWar : ##BluePlayer## Vs ##RedPlayer##">
+</head>
+<body>
+
+    <h1>AIWar : ##Player1## Vs The world</h1>
+    <h2>Summary</h2>
+    <ul>
+        <li><b>Player 1 :</b> ##Player1##</li>
+        <li><b>The world :</b> ##PlayersList##</li>
+        <li><b>Maps     :</b> ##MapsList1##</li>
+        <li><b>Rounds   :</b> ##Rounds##</li>
+    </ul>
+    
+    <canvas id="id_match_summary" width="600" height="250" !style="border:1px solid #ccc">[No canvas support]</canvas>
+    
+    ##BODY_ITERATION1##
+
+   <script>
+       window.onload = function ()
+       {
+           var joueurs_summary = ['##Player1##','The world','Draw'];
+           var datas_summary = [##Player1ScoreTotal##,##Player2ScoreTotal##,##DrawScoreTotal##];
+           var maps = [##MapsList2##];
+           
+           var pie = new RGraph.Pie('id_match_summary', datas_summary);
+           pie.Set('chart.labels', [joueurs_summary[0]+' : '+datas_summary[0],joueurs_summary[1]+' : '+datas_summary[1],joueurs_summary[2]+' : '+datas_summary[2]]);
+           pie.Set('chart.strokestyle', 'white');
+           pie.Set('chart.colors', ['#ffff00','#cccc00','#dddddd']);
+           pie.Set('chart.linewidth', 3);
+           pie.Set('chart.exploded', [15,7,0]);
+           pie.Set('chart.shadow', true);
+           pie.Set('chart.shadow.offsetx', 0);
+           pie.Set('chart.shadow.offsety', 0);
+           pie.Set('chart.shadow.blur', 20);
+           pie.Set('chart.labels.sticks', [true,true,true]);
+           pie.Set('chart.labels.sticks.length', 10);
+           RGraph.Effects.Pie.RoundRobin(pie);
+           //pie.Draw();
+           
+           ##BODY_ITERATION2##
+           
+       }
+   </script>
+   <br/><br/><br/>
+   <center><a href="http://www.rgraph.net/"><img src="../lib/img/RGraph_title.png"/></a></center>
+</body></html>

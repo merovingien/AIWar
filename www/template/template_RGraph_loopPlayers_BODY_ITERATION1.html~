@@ -1,0 +1,32 @@
+
+   <!-- *** DEBUT *** -->
+   <!-- Iteration pour le match de ##Player1## contre ##Player2## -->
+    <h2>AIWar : ##Player1## Vs ##Player2##</h2>
+    <h3>Summary</h3>
+    <ul>
+        <li><b>Player 1 :</b> ##Player1##</li>
+        <li><b>Player 2 :</b> ##Player2##</li>
+    </ul>
+
+   <canvas id="id_match_summary_##Player2##" width="600" height="250" !style="border:1px solid #ccc">[No canvas support]</canvas>
+
+    <h3>##Player1## blue</h3>
+    <ul>
+        <li><b>BLUE player :</b> ##Player1##</li>
+        <li><b>RED player  :</b> ##Player2##</li>
+    </ul>
+
+   <canvas id="id_match1_##Player2##" width="600" height="250" !style="border:1px solid #ccc">[No canvas support]</canvas>
+   <canvas id="id_match2_##Player2##" width="600" height="##heightHBAR##">[No canvas support]</canvas>
+
+    <h3>##Player1## red</h3>
+    <ul>
+        <li><b>BLUE player :</b> ##Player2##</li>
+        <li><b>RED player  :</b> ##Player1##</li>
+    </ul>
+
+   <canvas id="id_match3_##Player2##" width="600" height="250" !style="border:1px solid #ccc">[No canvas support]</canvas>
+   <canvas id="id_match4_##Player2##" width="600" height="##heightHBAR##">[No canvas support]</canvas>
+   <!-- Iteration pour le match de ##Player1## contre ##Player2## -->
+   <!-- *** FIN *** -->
+

@@ -1,0 +1,25 @@
+
+   </div>
+   <script>
+       window.onload = function ()
+       {
+           var joueurs_summary = ['##Player1##','The world','Draw'];
+           var datas_summary = [##Player1ScoreTotal##,##Player2ScoreTotal##,##DrawScoreTotal##];
+           var maps = [##MapsList2##];
+           
+           var pie = new RGraph.Pie('id_match_summary', datas_summary);
+           pie.Set('chart.labels', [joueurs_summary[0]+' : '+datas_summary[0],joueurs_summary[1]+' : '+datas_summary[1],joueurs_summary[2]+' : '+datas_summary[2]]);
+           pie.Set('chart.strokestyle', 'white');
+           pie.Set('chart.colors', ['#ffff00','#cccc00','#dddddd']);
+           pie.Set('chart.linewidth', 3);
+           pie.Set('chart.exploded', [15,7,0]);
+           pie.Set('chart.shadow', true);
+           pie.Set('chart.shadow.offsetx', 0);
+           pie.Set('chart.shadow.offsety', 0);
+           pie.Set('chart.shadow.blur', 20);
+           pie.Set('chart.labels.sticks', [true,true,true]);
+           pie.Set('chart.labels.sticks.length', 10);
+           RGraph.Effects.Pie.RoundRobin(pie);
+           //pie.Draw();
+           
+           

@@ -1,0 +1,99 @@
+
+           // *** DEBUT ***
+           // Iteration pour le match de ##Player1## contre ##Player2##
+           var joueurs_##Player2## = ['##Player1##','##Player2##','Draw'];
+           
+           var datas_playerSummary_##Player2## =  [##Player1ScoreTotal##,##Player2ScoreTotal##,##DrawScoreTotal##];
+           var datas1_##Player2## = [##Player1BlueScore##,##Player2RedScore##,##DrawScore1##];
+           var datas3_##Player2## = [##Player2BlueScore##,##Player1RedScore##,##DrawScore2##];
+           var pie = new RGraph.Pie('id_match_summary_##Player2##', datas_playerSummary_##Player2##);
+           pie.Set('chart.labels', [joueurs_##Player2##[0]+' : '+datas_playerSummary_##Player2##[0],joueurs_##Player2##[1]+' : '+datas_playerSummary_##Player2##[1],joueurs_##Player2##[2]+' : '+datas_playerSummary_##Player2##[2]]);
+           pie.Set('chart.strokestyle', 'white');
+           pie.Set('chart.colors', ['#00ff00','#00cc00','#dddddd']);
+           pie.Set('chart.linewidth', 3);
+           pie.Set('chart.exploded', [15,7,0]);
+           pie.Set('chart.shadow', true);
+           pie.Set('chart.shadow.offsetx', 0);
+           pie.Set('chart.shadow.offsety', 0);
+           pie.Set('chart.shadow.blur', 20);
+           pie.Set('chart.labels.sticks', [true,true,true]);
+           pie.Set('chart.labels.sticks.length', 10);
+           RGraph.Effects.Pie.RoundRobin(pie);
+           //pie.Draw();
+           
+           var pie = new RGraph.Pie('id_match1_##Player2##', datas1_##Player2##);
+           pie.Set('chart.labels', [joueurs_##Player2##[0]+' : '+datas1_##Player2##[0],joueurs_##Player2##[1]+' : '+datas1_##Player2##[1],joueurs_##Player2##[2]+' : '+datas1_##Player2##[2]]);
+           pie.Set('chart.strokestyle', 'white');
+           pie.Set('chart.colors', ['#0000ff','#ff0000','#dddddd']);
+           pie.Set('chart.linewidth', 3);
+           pie.Set('chart.exploded', [15,7,0]);
+           pie.Set('chart.shadow', true);
+           pie.Set('chart.shadow.offsetx', 0);
+           pie.Set('chart.shadow.offsety', 0);
+           pie.Set('chart.shadow.blur', 20);
+           pie.Set('chart.labels.sticks', [true,true,true]);
+           pie.Set('chart.labels.sticks.length', 10);
+           RGraph.Effects.Pie.RoundRobin(pie);
+           //pie.Draw();
+           
+           var pie = new RGraph.Pie('id_match3_##Player2##', datas3_##Player2##);
+           pie.Set('chart.labels', [joueurs_##Player2##[1]+' : '+datas3_##Player2##[0],joueurs_##Player2##[0]+' : '+datas3_##Player2##[1],joueurs_##Player2##[2]+' : '+datas3_##Player2##[2]]);
+           pie.Set('chart.strokestyle', 'white');
+           pie.Set('chart.colors', ['#0000ff','#ff0000','#dddddd']);
+           pie.Set('chart.linewidth', 3);
+           pie.Set('chart.exploded', [15,7,0]);
+           pie.Set('chart.shadow', true);
+           pie.Set('chart.shadow.offsetx', 0);
+           pie.Set('chart.shadow.offsety', 0);
+           pie.Set('chart.shadow.blur', 20);
+           pie.Set('chart.labels.sticks', [true,true,true]);
+           pie.Set('chart.labels.sticks.length', 10);
+           RGraph.Effects.Pie.RoundRobin(pie);
+           //pie.Draw();
+           
+           //var maps = ['maps/map_BackToBack.xml','maps/map_FollowTheWhiteRabbit.xml','maps/map_NoRulZ.xml','maps/map_test.xml','maps/map_ToInfinityAndBeyond.xml','maps/map.xml'];
+           
+           //var datas2 = [[1,2,3],[3,2,1],[1,2,3]];
+           var datas2_##Player2## = [##MapsScoreList1##];
+           var datas4_##Player2## = [##MapsScoreList2##];
+           
+           var hbar = new RGraph.HBar('id_match2_##Player2##', datas2_##Player2##);
+           hbar.Set('chart.labels', maps);
+           hbar.Set('chart.key', [joueurs_##Player2##[0],joueurs_##Player2##[1],joueurs_##Player2##[2]]);
+           hbar.Set('chart.grouping', 'grouped');
+           //hbar.Set('chart.strokestyle', 'black');
+           hbar.Set('chart.vmargin', 10);
+           //hbar.Set('chart.yaxispos', 'center');
+           //hbar.Set('chart.vmargin.grouped', 0);
+           hbar.Set('chart.gutter.left', 150);
+           hbar.Set('chart.labels.above', true);
+           hbar.Set('chart.key.position', 'gutter');
+           hbar.Set('chart.key.position.gutter.boxed', false);
+           hbar.Set('chart.key.colors', ['#0000ff','#ff0000','#bbbbbb']);
+           hbar.Set('chart.colors', ['Gradient(#000080:#0000ff:#0000ff)',
+                                     'Gradient(#800000:#ff0000:#ff0000)',
+                                     'Gradient(#888888:#bbbbbb:#bbbbbb)'
+                                     ]);
+           hbar.Draw();
+           
+           var hbar = new RGraph.HBar('id_match4_##Player2##', datas4_##Player2##);
+           hbar.Set('chart.labels', maps);
+           hbar.Set('chart.key', [joueurs_##Player2##[1],joueurs_##Player2##[0],joueurs_##Player2##[2]]);
+           hbar.Set('chart.grouping', 'grouped');
+           //hbar.Set('chart.strokestyle', 'black');
+           hbar.Set('chart.vmargin', 10);
+           //hbar.Set('chart.yaxispos', 'center');
+           //hbar.Set('chart.vmargin.grouped', 0);
+           hbar.Set('chart.gutter.left', 150);
+           hbar.Set('chart.labels.above', true);
+           hbar.Set('chart.key.position', 'gutter');
+           hbar.Set('chart.key.position.gutter.boxed', false);
+           hbar.Set('chart.key.colors', ['#0000ff','#ff0000','#bbbbbb']);
+           hbar.Set('chart.colors', ['Gradient(#000080:#0000ff:#0000ff)',
+                                     'Gradient(#800000:#ff0000:#ff0000)',
+                                     'Gradient(#888888:#bbbbbb:#bbbbbb)'
+                                     ]);
+           hbar.Draw();
+           // Iteration pour le match de ##Player1## contre ##Player2##
+           // *** FIN ***
+

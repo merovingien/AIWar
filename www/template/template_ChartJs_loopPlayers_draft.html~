@@ -1,0 +1,219 @@
+<!doctype html>
+<html>
+	<head>
+		<script src="../lib/Chart.js/Chart.js"></script>
+		<meta name = "viewport" content = "initial-scale = 1, user-scalable = no">
+		
+        <link rel="stylesheet" type="text/css" href="../lib/css/ChartJs_loop.css">
+		<title>AIWar : ##BluePlayer## Vs The world<</title>
+        <meta name="description" content="AIWar : ##BluePlayer## Vs The world">
+	</head>
+	<body>
+        <h1>AIWar : ##Player1## Vs The world</h1>
+        <div class="introduction">
+            <div class="description">
+                <h2>Description</h2>
+                <ul>
+                    <li><b>Date :</b> ##Date##</li>
+                    <li><b>Type :</b> ##Type##</li>
+                </ul>
+            </div>
+           <div class="summary">
+                <h2>Summary</h2>
+                <ul>
+                    <li style="color:#ffff00"><b>Player 1 :</b> ##Player1##</li>
+                    <li style="color:#cccc00"><b>The world :</b> ##PlayersList##</li>
+                    <li><b>Maps     :</b> ##MapsList1##</li>
+                    <li><b>Rounds   :</b> ##Rounds##</li>
+                </ul>
+                
+                <canvas id="id_match_summary1" width="400" height="250">[No canvas support]</canvas>
+            </div>
+        </div>
+        
+        <div class="match">
+            <h2>AIWar : ##Player1## Vs ##Player2##</h2>
+            <div class="summary">
+                <h3>Summary</h3>
+                <ul>
+                    <li style="color:#00ff00"><b>Player 1 :</b> ##Player1## (4)</li>
+                    <li style="color:#00cc00"><b>Player 2 :</b> ##Player2## (6)</li>
+                </ul>
+
+               <canvas id="id_match_summary2" width="400" height="250">[No canvas support]</canvas>
+            </div>
+
+            <div class="blue">
+                <h3>##Player1## blue</h3>
+                <ul>
+                    <li style="color:#0000ff"><b>BLUE player :</b> ##Player1## (1)</li>
+                    <li style="color:#ff0000"><b>RED player  :</b> ##Player2## (2)</li>
+                </ul>
+
+               <canvas id="id_match1" width="400" height="250">[No canvas support]</canvas>
+               <canvas id="id_match2" width="600" height="400">[No canvas support]</canvas>
+            </div>
+
+            <div class="red">
+                <h3>##Player1## red</h3>
+                <ul>
+                    <li style="color:#0000ff"><b>BLUE player :</b> ##Player2## (3)</li>
+                    <li style="color:#ff0000"><b>RED player  :</b> ##Player1## (4)</li>
+                </ul>
+
+                <canvas id="id_match3" width="400" height="250">[No canvas support]</canvas>
+                <canvas id="id_match4" width="600" height="400">[No canvas support]</canvas>
+            </div>
+        </div>
+
+	    <script>
+
+            var radar_options = {
+	            //String - Colour of the scale line	
+	            scaleLineColor : "rgba(255,255,255,.7)",
+	
+	            //String - Point label font declaration
+	            pointLabelFontFamily : "'Arial'",
+	
+	            //String - Point label font weight
+	            pointLabelFontStyle : "normal",
+	
+	            //Number - Point label font size in pixels	
+	            pointLabelFontSize : 12,
+	
+	            //String - Point label font colour	
+	            pointLabelFontColor : "rgba(255,255,255,.7)",
+            };
+
+            
+		    var pieData_match_summary1 = [
+				    {
+					    value: 96,
+					    color:"#ffff00"
+				    },
+				    {
+					    value : 236,
+					    color : "#cccc00"
+				    },
+				    {
+					    value : 30,
+					    color : "#dddddd"
+				    }
+			
+			    ];
+	        new Chart(document.getElementById("id_match_summary1").getContext("2d")).Pie(pieData_match_summary1);
+	        
+		    var pieData_match_summary2 = [
+				    {
+					    value: 50,
+					    color:"#00ff00"
+				    },
+				    {
+					    value : 132,
+					    color : "#00cc00"
+				    },
+				    {
+					    value : 30,
+					    color : "#dddddd"
+				    }
+			
+			    ];
+	        new Chart(document.getElementById("id_match_summary2").getContext("2d")).Pie(pieData_match_summary2);
+	        
+		    var pieData_match1 = [
+				    {
+					    value: 40,
+					    color:"#0000ff"
+				    },
+				    {
+					    value : 66,
+					    color : "#ff0000"
+				    },
+				    {
+					    value : 10,
+					    color : "#dddddd"
+				    }
+			
+			    ];
+	        new Chart(document.getElementById("id_match1").getContext("2d")).Pie(pieData_match1);
+	        
+		    var radarChartData_match2 = {
+			    labels : ["map1","map2","map3"],
+			    datasets : [
+				    {
+					    fillColor : "rgba(0,0,255,0.5)",
+					    strokeColor : "rgba(0,0,255,1)",
+					    pointColor : "rgba(0,0,255,1)",
+					    pointStrokeColor : "#0000ff",
+					    data : [1,3,7]
+				    },
+				    {
+					    fillColor : "rgba(255,0,0,0.5)",
+					    strokeColor : "rgba(255,0,0,1)",
+					    pointColor : "rgba(255,0,05,1)",
+					    pointStrokeColor : "#ff0000",
+					    data : [4,4,3]
+				    },
+				    {
+					    fillColor : "rgba(221,221,221,0.5)",
+					    strokeColor : "rgba(221,221,221,1)",
+					    pointColor : "rgba(221,221,221,1)",
+					    pointStrokeColor : "#dddddd",
+					    data : [5,3,0]
+				    }
+			    ]
+			
+		    };
+	        new Chart(document.getElementById("id_match2").getContext("2d")).Radar(radarChartData_match2, radar_options);
+
+		    var pieData_match3 = [
+				    {
+					    value: 66,
+					    color:"#0000ff"
+				    },
+				    {
+					    value : 10,
+					    color : "#ff0000"
+				    },
+				    {
+					    value : 20,
+					    color : "#dddddd"
+				    }
+			
+			    ];
+	        new Chart(document.getElementById("id_match3").getContext("2d")).Pie(pieData_match3);
+	        
+		    var radarChartData_match4 = {
+			    labels : ["map1","map2","map3"],
+			    datasets : [
+				    {
+					    fillColor : "rgba(0,0,255,0.5)",
+					    strokeColor : "rgba(0,0,255,1)",
+					    pointColor : "rgba(0,0,255,1)",
+					    pointStrokeColor : "#0000ff",
+					    data : [1,5,7]
+				    },
+				    {
+					    fillColor : "rgba(255,0,0,0.5)",
+					    strokeColor : "rgba(255,0,0,1)",
+					    pointColor : "rgba(255,0,05,1)",
+					    pointStrokeColor : "#ff0000",
+					    data : [7,2,0]
+				    },
+				    {
+					    fillColor : "rgba(221,221,221,0.5)",
+					    strokeColor : "rgba(221,221,221,1)",
+					    pointColor : "rgba(221,221,221,1)",
+					    pointStrokeColor : "#dddddd",
+					    data : [2,3,3]
+				    }
+			    ]
+			
+		    };
+	        new Chart(document.getElementById("id_match4").getContext("2d")).Radar(radarChartData_match4, radar_options);
+	    </script>
+	    
+       <br/><br/><br/>
+       <center><a href="http://www.chartjs.org/"><img src="../lib/img/ChartJs_title.png" height="100" /></a></center>
+	</body>
+</html>

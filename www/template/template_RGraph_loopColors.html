@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+    <script src="../lib/RGraph/libraries/RGraph.common.core.js" ></script>
+    <script src="../lib/RGraph/libraries/RGraph.common.dynamic.js" ></script>
+    <script src="../lib/RGraph/libraries/RGraph.common.tooltips.js" ></script>
+    <script src="../lib/RGraph/libraries/RGraph.common.key.js" ></script>
+    <script src="../lib/RGraph/libraries/RGraph.hbar.js" ></script>
+    <script src="../lib/RGraph/libraries/RGraph.common.effects.js" ></script>
+    <script src="../lib/RGraph/libraries/RGraph.pie.js" ></script>
+    <!--[if lt IE 9]><script src="../lib/RGraph/excanvas/excanvas.js"></script><![endif]-->
+     
+    <link rel="stylesheet" type="text/css" href="../lib/css/RGraph_loop.css">
+    <title>AIWar : ##Player1## Vs ##Player2##</title>
+    
+    <meta name="description" content="AIWar : ##Player1## Vs ##Player2##">
+</head>
+<body>
+
+    <h1>AIWar : ##Player1## Vs ##Player2##</h1>
+    <div class="introduction">
+        <div class="description">
+            <h2>Description :</h2>
+            <ul>
+                <li><b>Date :</b> ##DescriptionDate## ##DescriptionHour##</li>
+                <li><b>Type :</b> ##DescriptionType##</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="match">
+        <div class="summary">
+            <h2>Summary</h2>
+            <ul>
+                <li><b>Player 1 :</b> ##Player1## (##DescriptionVersionPlayer1##)</li>
+                <li><b>Player 2 :</b> ##Player2## (##DescriptionVersionPlayer2##)</li>
+                <li><b>Maps     :</b> ##MapsList1##</li>
+                <li><b>Rounds   :</b> ##Rounds##</li>
+            </ul>
+
+           <canvas id="id_match_summary" width="600" height="250" !style="border:1px solid #ccc">[No canvas support]</canvas>
+        </div>
+
+        <div class="blue">
+            <h2>##Player1## blue</h2>
+            <ul>
+                <li><b>BLUE player :</b> ##Player1##</li>
+                <li><b>RED player  :</b> ##Player2##</li>
+            </ul>
+
+           <canvas id="id_match1" width="600" height="250" !style="border:1px solid #ccc">[No canvas support]</canvas>
+           <canvas id="id_match2" width="600" height="##heightHBAR##">[No canvas support]</canvas>
+        </div>
+
+        <div class="red">
+            <h2>##Player1## red</h2>
+            <ul>
+                <li><b>BLUE player :</b> ##Player2##</li>
+                <li><b>RED player  :</b> ##Player1##</li>
+            </ul>
+
+           <canvas id="id_match3" width="600" height="250" !style="border:1px solid #ccc">[No canvas support]</canvas>
+           <canvas id="id_match4" width="600" height="##heightHBAR##">[No canvas support]</canvas>
+        </div>
+    </div>
+
+   <script>
+       window.onload = function ()
+       {
+           var joueurs = ['##Player1##','##Player2##','Draw'];
+           
+           var datas_summary = [##Player1ScoreTotal##,##Player2ScoreTotal##,##DrawScoreTotal##];
+           var datas1 = [##Player1BlueScore##,##Player2RedScore##,##DrawScore1##];
+           var datas3 = [##Player2BlueScore##,##Player1RedScore##,##DrawScore2##];
+           
+           var pie = new RGraph.Pie('id_match1', datas1);
+           pie.Set('chart.labels', [joueurs[0]+' : '+datas1[0],joueurs[1]+' : '+datas1[1],joueurs[2]+' : '+datas1[2]]);
+           pie.Set('chart.strokestyle', 'white');
+           pie.Set('chart.colors', ['#0000ff','#ff0000','#dddddd']);
+           pie.Set('chart.linewidth', 3);
+           pie.Set('chart.exploded', [15,7,0]);
+           pie.Set('chart.shadow', true);
+           pie.Set('chart.shadow.offsetx', 0);
+           pie.Set('chart.shadow.offsety', 0);
+           pie.Set('chart.shadow.blur', 20);
+           pie.Set('chart.labels.sticks', [true,true,true]);
+           pie.Set('chart.labels.sticks.length', 10);
+           RGraph.Effects.Pie.RoundRobin(pie);
+           //pie.Draw();
+           
+           var pie = new RGraph.Pie('id_match3', datas3);
+           pie.Set('chart.labels', [joueurs[1]+' : '+datas3[0],joueurs[0]+' : '+datas3[1],joueurs[2]+' : '+datas3[2]]);
+           pie.Set('chart.strokestyle', 'white');
+           pie.Set('chart.colors', ['#0000ff','#ff0000','#dddddd']);
+           pie.Set('chart.linewidth', 3);
+           pie.Set('chart.exploded', [15,7,0]);
+           pie.Set('chart.shadow', true);
+           pie.Set('chart.shadow.offsetx', 0);
+           pie.Set('chart.shadow.offsety', 0);
+           pie.Set('chart.shadow.blur', 20);
+           pie.Set('chart.labels.sticks', [true,true,true]);
+           pie.Set('chart.labels.sticks.length', 10);
+           RGraph.Effects.Pie.RoundRobin(pie);
+           //pie.Draw();
+           
+           var pie = new RGraph.Pie('id_match_summary', datas_summary);
+           pie.Set('chart.labels', [joueurs[0]+' : '+datas_summary[0],joueurs[1]+' : '+datas_summary[1],joueurs[2]+' : '+datas_summary[2]]);
+           pie.Set('chart.strokestyle', 'white');
+           pie.Set('chart.colors', ['#00ff00','#00cc00','#dddddd']);
+           pie.Set('chart.linewidth', 3);
+           pie.Set('chart.exploded', [15,7,0]);
+           pie.Set('chart.shadow', true);
+           pie.Set('chart.shadow.offsetx', 0);
+           pie.Set('chart.shadow.offsety', 0);
+           pie.Set('chart.shadow.blur', 20);
+           pie.Set('chart.labels.sticks', [true,true,true]);
+           pie.Set('chart.labels.sticks.length', 10);
+           RGraph.Effects.Pie.RoundRobin(pie);
+           //pie.Draw();
+           
+           //var maps = ['map_BackToBack.xml', 'map_FollowTheWhiteRabbit.xml', 'map_NoRulZ.xml','map_test.xml', 'map_ToInfinityAndBeyond.xml', 'map.xml'];
+           var maps = [##MapsList2##];
+
+           //var datas2 = [[1,2,3],[3,2,1],[1,2,3]];
+           var datas2 = [##MapsScoreList1##];
+           var datas4 = [##MapsScoreList2##];
+           
+           var hbar = new RGraph.HBar('id_match2', datas2);
+           hbar.Set('chart.labels', maps);
+           hbar.Set('chart.key', [joueurs[0],joueurs[1],joueurs[2]]);
+           hbar.Set('chart.grouping', 'grouped');
+           //hbar.Set('chart.strokestyle', 'black');
+           hbar.Set('chart.vmargin', 10);
+           //hbar.Set('chart.yaxispos', 'center');
+           //hbar.Set('chart.vmargin.grouped', 0);
+           hbar.Set('chart.gutter.left', 150);
+           hbar.Set('chart.labels.above', true);
+           hbar.Set('chart.key.position', 'gutter');
+           hbar.Set('chart.key.position.gutter.boxed', false);
+           hbar.Set('chart.key.colors', ['#0000ff','#ff0000','#bbbbbb']);
+           hbar.Set('chart.colors', ['Gradient(#000080:#0000ff:#0000ff)',
+                                     'Gradient(#800000:#ff0000:#ff0000)',
+                                     'Gradient(#888888:#bbbbbb:#bbbbbb)'
+                                     ]);
+           hbar.Draw();
+           
+           var hbar = new RGraph.HBar('id_match4', datas4);
+           hbar.Set('chart.labels', maps);
+           hbar.Set('chart.key', [joueurs[1],joueurs[0],joueurs[2]]);
+           hbar.Set('chart.grouping', 'grouped');
+           //hbar.Set('chart.strokestyle', 'black');
+           hbar.Set('chart.vmargin', 10);
+           //hbar.Set('chart.yaxispos', 'center');
+           //hbar.Set('chart.vmargin.grouped', 0);
+           hbar.Set('chart.gutter.left', 150);
+           hbar.Set('chart.labels.above', true);
+           hbar.Set('chart.key.position', 'gutter');
+           hbar.Set('chart.key.position.gutter.boxed', false);
+           hbar.Set('chart.key.colors', ['#0000ff','#ff0000','#bbbbbb']);
+           hbar.Set('chart.colors', ['Gradient(#000080:#0000ff:#0000ff)',
+                                     'Gradient(#800000:#ff0000:#ff0000)',
+                                     'Gradient(#888888:#bbbbbb:#bbbbbb)'
+                                     ]);
+           hbar.Draw();
+           
+       }
+   </script>
+   <br/><br/><br/>
+   <center><a href="http://www.rgraph.net/"><img src="../lib/img/RGraph_title.png"/></a></center>
+</body></html>

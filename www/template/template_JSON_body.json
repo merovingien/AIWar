@@ -1,0 +1,2 @@
+            { "bluePlayer": "##Player1##", "bluePlayerVersion": "##DescriptionVersionPlayer1##", "redPlayer": "##Player2##", "bluePlayerVersion": "##DescriptionVersionPlayer2##", "rounds": "##Rounds##", "scoreBluePlayer": "##BlueScore##", "scoreRedPlayer": "##RedScore##", "scoreDraw": "##DrawScore##", "scoreBluePlayerError": "##BlueError##", "scoreRedPlayerError": "##RedError##", "scoreConfigError": "##ConfigError##", "map": "##Maps##" }
+

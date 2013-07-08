@@ -1,0 +1,32 @@
+/* Style for RGraph templates */
+
+body { background-color:#DDDDDD; color:#000000; }
+h1 { background-color:#FFFFAA; color:#000000; border-width:thick; border-color:#000000; border-style:solid; padding:5px;}
+h2 { background-color:#EEEEEE; color:#000000; border-width:medium; border-color:#666666; border-style:outset; padding:2px;}
+h3 { background-color:#DDDDDD; color:#000000; border-width:thin; border-color:#000000; border-style:solid; padding:2px;}
+li { color:#FFFFFF; }
+
+canvas {vertical-align: top;}
+
+.introduction {margin-bottom:35px; padding:5px; background-color:#939376; border-width:medium; border-color:#000000; border-style:solid}
+.introduction h2 {background-color:#FFFFE4; border-color:#FFFFE4; color:#000000;}
+
+
+.match {margin-bottom:35px; padding:5px; background-color:#BBBBBB; border-width:medium; border-color:#000000; border-style:solid}
+.match h2 { background-color:#FFFFAA; border-color:#FFFFAA; }
+.match .description {background-color:#779473; border-color:#000000; border-width:thin; border-style:solid;}
+.match .description h3 {margin:5px; background-color:#E8FFE4; color:#1EC700;}
+.match .description h2 {margin:5px; background-color:#E8FFE4; color:#1EC700; border-width:thin; border-color:#000000; border-style:solid;}
+.match .summary {background-color:#779473; border-color:#000000; border-width:thin; border-style:solid;}
+.match .summary h3 {margin:5px; background-color:#E8FFE4; color:#1EC700;}
+
+
+.blue {background-color:#758390; border-color:#000000; border-width:thin; border-style:solid;}
+.blue h2 {margin:5px; background-color:#DAE5FF; color:#0000FF; border-width:thin; border-color:#000000; border-style:solid;}
+.blue h3 {margin:5px; background-color:#DAE5FF; color:#0000FF;}
+
+
+.red {background-color:#907474; border-color:#000000; border-width:thin; border-style:solid;}
+.red h2 {margin:5px; background-color:#FFDADA; color:#FF0000; border-width:thin; border-color:#000000; border-style:solid;}
+.red h3 {margin:5px; background-color:#FFDADA; color:#FF0000;}
+

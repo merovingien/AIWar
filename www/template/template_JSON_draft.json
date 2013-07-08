@@ -1,0 +1,11 @@
+{
+    "description": {
+        "date"          : "####",
+        "heure"         : "####",
+        "type"          : "####",
+        "AIWarVersion"  : "####"
+    },
+    "matchs": [
+            { "bluePlayer": "####", "bluePlayerVersion": "####", "redPlayer": "####", "bluePlayerVersion": "####", "map": "####", "rounds": "####", "scoreBluePlayer": "####", "scoreRedPlayer": "####", "scoreDraw": "####", "scoreBluePlayerError": "####", "scoreRedPlayerError": "####", "scoreConfigError": "####" }
+    ]
+}

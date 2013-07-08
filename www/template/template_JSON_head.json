@@ -1,0 +1,9 @@
+{
+    "description": {
+        "date"          : "##DescriptionDate##",
+        "hour"          : "##DescriptionHour##",
+        "type"          : "##DescriptionType##",
+        "AIWarVersion"  : "##DescriptionAIWarVersion##"
+    },
+    "results": [
+
