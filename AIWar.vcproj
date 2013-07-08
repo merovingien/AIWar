@@ -187,6 +187,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\handler_example.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\item.cpp"
 				>
 			</File>
@@ -251,6 +255,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\renderer_summary.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stat_manager.cpp"
 				>
 			</File>
@@ -282,6 +290,10 @@
 			</File>
 			<File
 				RelativePath=".\handler_dummy.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\handler_example.hpp"
 				>
 			</File>
 			<File
@@ -350,6 +362,10 @@
 			</File>
 			<File
 				RelativePath=".\renderer_sdl_draw.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\renderer_summary.hpp"
 				>
 			</File>
 			<File

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Paul Grégoire
+ * Copyright (C) 2012, 2013 Paul Grégoire
  *
  * This file is part of AIWar.
  *
