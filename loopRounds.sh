@@ -163,6 +163,11 @@ else
 
     #echo "blueScore=$blueScore - redScore=$redScore - draw=$draw - error/blue/red=$error/$redScore/$error"
     
+    # Creation du repertoire "results"
+    if [ ! -d "${filePath_Rounds}" ]; then
+        mkdir -p ${filePath_Rounds}
+    fi
+    
     # Creation du fichier resultat HTML **RGraph**
     if [ "$#" -lt "5" ] || [ "$5" != "nolog" ];then
         map_nopath=`echo "$map_Rounds" | cut -f 2 -d "/"`
