@@ -36,7 +36,7 @@
 // ms between each event treatment and draw (20 ms -> 50 FPS)
 #define FRAME_DELAY 20
 
-// ms between each play round
+// ms between each play round (default value)
 #define PLAY_DELAY 500
 
 using namespace aiwar::renderer;
@@ -90,6 +90,7 @@ bool RendererSDL::initialize(const std::string& params)
 
     _frameDelay = FRAME_DELAY;
     _playDelay = PLAY_DELAY;
+    _fullSpeed = false;
 
     _startTimeFrame = SDL_GetTicks() - _frameDelay; // to force process and draw at the first call of render()
     _startTimePlay = SDL_GetTicks();
@@ -154,7 +155,10 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
         if(!_manual)
         {
             ellapsedTimePlay = currentTime - _startTimePlay; // ellapsed time since the last play
-            remainingTimePlay = _playDelay - ellapsedTimePlay;  // remaining time for the next play
+            if (_fullSpeed)
+                remainingTimePlay = - ellapsedTimePlay;  // remaining time for the next play (always < 0 in full speed mode)
+            else
+                remainingTimePlay = _playDelay - ellapsedTimePlay;  // remaining time for the next play
         }
         else
         {
@@ -227,8 +231,18 @@ bool RendererSDL::render(const aiwar::core::ItemManager &itemManager, const aiwa
                         _manual = !_manual;
                         break;
 
+                    case SDLK_PLUS:
+                    case SDLK_KP_PLUS:
+                        _playDelay -= 20; // - 20ms for play delay
+                        break;
+
+                    case SDLK_MINUS:
+                    case SDLK_KP_MINUS:
+                        _playDelay += 20; // + 20ms for play delay
+                        break;
+
                     case SDLK_s: // toggle full speed play
-                        _playDelay = PLAY_DELAY - _playDelay;
+                        _fullSpeed = !_fullSpeed;
                         break;
 
                     case SDLK_d: // deselect all items

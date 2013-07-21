@@ -60,6 +60,8 @@ RendererSDLConsole::RendererSDLConsole(SDL_Surface *s) : _screen(s), _consoleSur
     _helpQueue.push_back(" C      - Show/Hide console");
     _helpQueue.push_back(" UP     - Scroll up console or help");
     _helpQueue.push_back(" DOWN   - Scroll down console or help");
+    _helpQueue.push_back(" +      - Increase play speed of 20 ms");
+    _helpQueue.push_back(" -      - Decrease play speed of 20 ms");
     _helpQueue.push_back(" ");
     _helpQueue.push_back(" * Mouse *");
     _helpQueue.push_back(" ");

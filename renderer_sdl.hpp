@@ -64,6 +64,7 @@ namespace aiwar {
 
             Uint32 _frameDelay;
             Uint32 _playDelay;
+            bool _fullSpeed;
 
             Uint32 _startTimeFrame;
             Uint32 _startTimePlay;
