@@ -1,5 +1,9 @@
 from __future__ import print_function
-import subprocess, time, logging
+import os           # listdir(), path.join()
+import subprocess   # Popen()
+import time         # time(), sleep()
+#import subprocess, time, logging
+import logging
 import xml.etree.ElementTree as ET
 
 from multiprocessing import cpu_count as get_nb_core
@@ -14,22 +18,53 @@ def readConfig( config ):
     blue = root.find("options/blue").text
     red = root.find("options/red").text
     mapName = root.find("options/map").text
+    players = [p.text for p in root.findall('players/player/name')]
     logging.info(
         'Reading config file "{config}" : players(blue/red): "{blue}"/"{red}" on map "{mapName}".'.format(
         config=config, blue=blue, red=red, mapName=mapName ) )
-    return (blue, red, mapName)
+    logging.info(
+        'Reading config file "{config}" : list of players "{players}".'.format(
+        config=config, players=players ) )
+    return (blue, red, mapName, players)
 
 def newJob( blue, red, mapName ):
     "Create 1 new job to add to the job list. Returns dictionnary for job without 'number'"
     # Construct args
-    args = ("AIWar", "--blue", blue, "--red", red, "--map", mapName, "--renderer", "dummy")
+    args = ("AIWar", "--blue", blue, "--red", red, "--map", os.path.join(mapDirectory, mapName), "--renderer", "dummy")
     return {'number': None,
             'blue': blue, 'red':red, 'mapName': mapName, 'args': args,
             'popen': None, 'state': None, 'ret': None, 'time': 0}
 
-def newRound( blue, red, mapName, repeat ):
+def newRounds( blue, red, mapName, repeat = 1 ):
     "Create N rounds to add to the job list. Returns list of dictionnary for job without 'number'"
-    return [newJob( blue, red, mapName ) for i in range(repeat)]
+    return [newJob( blue, red, mapName ) for r in range(repeat)]
+
+def newMaps( blue, red, repeat = 1):
+    "Create N rounds by map to add to the job list. Returns list of dictionnary for job without 'number'"
+    r = []
+    for m in os.listdir(mapDirectory):
+        if m[-4:].lower() == '.xml':
+            r += newRounds( blue, red, m, repeat )
+    return r
+
+def newColors( blue, red, repeat = 1):
+    "Create N rounds by map and color to add to the job list. Returns list of dictionnary for job without 'number'"
+    return newMaps( blue, red, repeat ) + newMaps( red, blue, repeat )
+
+def newPlayers( player, repeat = 1 ):
+    "Create N rounds for 1 player against the world by map and color to add to the job list. Returns list of dictionnary for job without 'number'"
+    r = []
+    for p in readConfig('config.xml')[3]:
+        if p != player:
+            r += newColors( player, p, repeat )
+    return r
+
+def newComplete( repeat = 1 ):
+    "Create N rounds for all players by map and color to add to the job list. Returns list of dictionnary for job without 'number'"
+    r = []
+    for p in readConfig('config.xml')[3]:
+        r += newPlayers( p, repeat )
+    return r
 
 def createResultName( blue, red ):
     "Create a result_name list by customisation of 'result_txt' list with players names. return dict."
@@ -48,6 +83,7 @@ def createResultName( blue, red ):
 
 #############
 # Init
+mapDirectory = './maps'
 nbRound = 0
 #get_nb_core()
 #logging.basicConfig(level=logging.DEBUG)
@@ -64,7 +100,7 @@ result_int = {value: key for (key, value) in result_txt.iteritems()}
 logging.debug( 'result_txt={}'.format(result_txt) )
 logging.debug( 'result_int={}'.format(result_int) )
 
-bluePlayer, redPlayer, mapName = readConfig('config.xml')
+bluePlayer, redPlayer, mapName, _ = readConfig('config.xml')
 
 
 # Reading of arguments
@@ -75,19 +111,29 @@ bluePlayer, redPlayer, mapName = readConfig('config.xml')
 #############
 # Build list of jobs
 
-jobs = newRound('GuiGui', 'Shuriken', 'maps/map.xml', 1 )
-jobs += newRound('Merovingien', 'Clement', 'maps/map_FollowTheWhiteRabbit.xml', 3 )
+#jobs = newRounds('GuiGui', 'Shuriken', 'map.xml', 1 )
+#jobs += newRounds('Merovingien', 'Clement', 'map_FollowTheWhiteRabbit.xml', 2 )
+
+#jobs = newMaps( 'GuiGui', 'Shuriken' )
+#jobs += newMaps('Merovingien', 'Clement', 2 )
+
+#jobs = newColors( 'GuiGui', 'Shuriken' )
+#jobs += newColors('Merovingien', 'Clement', 2 )
+
+#jobs = newPlayers( 'GuiGui' )
+#jobs += newPlayers( 'Clement', 2 )
+
+jobs = newComplete()
+jobs = newComplete(2)
 
 # Adds 'number' in jobs
 for enum, i in enumerate(jobs):
     i['number'] = enum
 
-logging.debug( 'jobs={}'.format(jobs) )
+#logging.debug( 'jobs={}'.format(jobs) )
 
-#import pprint
-#pp = pprint.PrettyPrinter(indent=4)
-#pp.pprint(jobs)
-#exit()
+#import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(jobs)
+exit()
 
 
 
