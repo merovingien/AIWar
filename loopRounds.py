@@ -25,6 +25,8 @@ def readConfig( config ):
         red = root.find("options/red").text
         mapName = root.find("options/map").text
         players = tuple(p.text for p in root.findall('players/player/name'))
+        playersParams = tuple(p.text for p in root.findall('players/player/params'))
+        renderers = tuple(p.text for p in root.findall('renderers/renderer/name'))
         logging.info(
             'Reading config file "{config}" : players(blue/red): "{blue}"/"{red}" on map "{mapName}".'.format(
             config=config, blue=blue, red=red, mapName=mapName ) )
@@ -33,7 +35,7 @@ def readConfig( config ):
             config=config, players=players ) )
         readConfig_static = dict()
         readConfig_static['ref'] = config
-        readConfig_static['data'] = (blue, red, mapName, players)
+        readConfig_static['data'] = (blue, red, mapName, players, playersParams, renderers)
     return readConfig_static['data']
 
 # Use global var 'readMaps_static' to prevent multiple os.listdir()
@@ -52,6 +54,26 @@ def readMaps( mapDirectory ):
                 index=i, mapName=m ) )
     return readMaps_static['data']
 
+def verifyArgs( args ):
+    "Verify arguments to launch a job. Raise exception if error."
+    # Verify players exist
+    if not args[2] in readConfig(configFile)[3]:
+        logging.critical( 'Unknown player : {}'.format(args[2]) )
+        raise AIwarError('Unknown player', args[2])
+    if not args[4] in readConfig(configFile)[3]:
+        logging.critical( 'Unknown player : {}'.format(args[4]) )
+        raise AIwarError('Unknown player', args[4])
+    
+    # Verify map exists
+    if not os.path.basename(args[6]) in readMaps(configMapDirectory):
+        logging.critical( 'Unknown map : {}'.format(os.path.basename(args[6])) )
+        raise AIwarError('Unknown map', os.path.basename(args[6]))
+    
+    # Verify renderer exists
+    if not args[8] in readConfig(configFile)[5]:
+        logging.critical( 'Unknown renderer : {}'.format(i['args'][8]) )
+        raise AIwarError('Unknown renderer', i['args'][8])
+
 def newJob( blue, red, mapName ):
     "Create 1 new job to add to the job list. Returns dictionnary for job without 'number'"
     # Verify players exist
@@ -63,7 +85,7 @@ def newJob( blue, red, mapName ):
         raise AIwarError('Unknown player', red)
     
     # Verify map exists
-    if not mapName in readMaps(mapDirectory):
+    if not mapName in readMaps(configMapDirectory):
         logging.critical( 'Unknown map : {}'.format(mapName) )
         raise AIwarError('Unknown map', mapName)
     
@@ -77,7 +99,7 @@ def newRounds( blue, red, mapName, repeat = 1 ):
 def newMaps( blue, red, repeat = 1):
     "Create N rounds by map to add to the job list. Returns list of dictionnary for job without 'number'"
     r = []
-    for m in readMaps(mapDirectory):
+    for m in readMaps(configMapDirectory):
         r += newRounds( blue, red, m, repeat )
     return r
 
@@ -118,13 +140,13 @@ def createResultName( blue, red ):
 #############
 # Init
 configFile = 'config.xml'
-mapDirectory = './maps'
+configMapDirectory = './maps'
 prefixFileName = os.path.splitext(os.path.basename(sys.argv[0]))[0]+'_'
 nbRound = 0
 #get_nb_core()
 #logging.basicConfig(level=logging.DEBUG)
 #logging.basicConfig(level=logging.INFO)
-logging.basicConfig(filename=prefixFileName+'logs.log', level=logging.DEBUG)
+logging.basicConfig(filename=prefixFileName+'logs.log', level=logging.ERROR)
 
 #msg='test'
 #logging.info(msg)
@@ -141,7 +163,7 @@ result_int = {value: key for (key, value) in result_txt.iteritems()}
 logging.debug( 'result_txt={}'.format(result_txt) )
 logging.debug( 'result_int={}'.format(result_int) )
 
-bluePlayer, redPlayer, mapName, _ = readConfig(configFile)
+bluePlayer, redPlayer, mapName, _, _, _ = readConfig(configFile)
 
 
 # Reading of arguments
@@ -152,20 +174,26 @@ bluePlayer, redPlayer, mapName, _ = readConfig(configFile)
 #############
 # Build list of jobs
 
-jobs = newRounds('GuiGui', 'Shuriken', 'map.xml', 1 )
-jobs += newRounds('Merovingien', 'Clement', 'map_FollowTheWhiteRabbit.xml', 2 )
+try:
+    jobs = newRounds('GuiGui', 'Shuriken', 'map.xml', 1 )
+    jobs += newRounds('Merovingien', 'Clement', 'map_FollowTheWhiteRabbit.xml', 2 )
 
-#jobs = newMaps( 'GuiGui', 'Shuriken' )
-#jobs += newMaps('Merovingien', 'Clement', 2 )
+    #jobs = newMaps( 'GuiGui', 'Shuriken' )
+    #jobs += newMaps('Merovingien', 'Clement', 2 )
 
-#jobs = newColors( 'GuiGui', 'Shuriken' )
-#jobs += newColors('Merovingien', 'Clement', 2 )
+    #jobs = newColors( 'GuiGui', 'Shuriken' )
+    #jobs += newColors('Merovingien', 'Clement', 2 )
 
-#jobs = newPlayers( 'GuiGui' )
-#jobs += newPlayers( 'Clement', 2 )
+    #jobs = newPlayers( 'GuiGui' )
+    #jobs += newPlayers( 'Clement', 2 )
 
-#jobs = newComplete(1)
-#jobs += newComplete(3)
+    #jobs = newComplete(1)
+    #jobs += newComplete(3)
+except AIwarError as e:
+    txt = 'Error when create new jobs. Stopping work.' + str(e)
+    logging.exception( txt )
+    print( txt )
+    exit()
 
 # Save to file the job's list
 with open(prefixFileName+'job-list.json', 'w') as outfile:
@@ -182,14 +210,14 @@ for enum, i in enumerate(jobs):
     i['args']   = ("AIWar",
                    "--blue", i['blue'],
                    "--red", i['red'],
-                   "--map", os.path.join(mapDirectory, i['mapName']),
+                   "--map", os.path.join(configMapDirectory, i['mapName']),
                    "--renderer", "dummy")
 
 
 #logging.debug( 'jobs={}'.format(jobs) )
 
 #import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(jobs)
-exit()
+#exit()
 
 
 
@@ -201,6 +229,15 @@ while [ j for j in jobs if j['popen'] is None or j['state'] ]:
         if i['popen'] is None:
             # Launch job
             logging.debug( 'i={}'.format(i) )
+            try:
+                verifyArgs(i['args'])
+            except AIwarError as e:
+                txt = 'job {number} : Error when launching job "{args}". Ignoring and go to next one.'.format( number=i['number'], args=" ".join( i['args'] ) )
+                logging.exception( txt )
+                print( txt )
+                i['popen'] = 0
+                i['state'] = False
+                continue
             i['popen'] = subprocess.Popen(i['args'])
             i['state'] = True
             i['time'] = time.time()
