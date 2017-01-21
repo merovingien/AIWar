@@ -1,39 +1,74 @@
 from __future__ import print_function
+import sys          # argv
 import os           # listdir(), path.join()
 import subprocess   # Popen()
 import time         # time(), sleep()
-#import subprocess, time, logging
 import logging
 import xml.etree.ElementTree as ET
+import json         # dump(), load()
 
 from multiprocessing import cpu_count as get_nb_core
 
-
+class AIwarError(Exception):
+    pass
 
 # Reading 'config.xml' to extract blue/red players and map name.
+# Use global var 'readConfig_static' to prevent multiple XML parsing
+readConfig_static = None
 def readConfig( config ):
     "Read the config file to return players and map name as a tuple."
+    global readConfig_static
     tree = ET.parse(config)
     root = tree.getroot()
-    blue = root.find("options/blue").text
-    red = root.find("options/red").text
-    mapName = root.find("options/map").text
-    players = [p.text for p in root.findall('players/player/name')]
-    logging.info(
-        'Reading config file "{config}" : players(blue/red): "{blue}"/"{red}" on map "{mapName}".'.format(
-        config=config, blue=blue, red=red, mapName=mapName ) )
-    logging.info(
-        'Reading config file "{config}" : list of players "{players}".'.format(
-        config=config, players=players ) )
-    return (blue, red, mapName, players)
+    if(readConfig_static == None or readConfig_static['ref'] != config):
+        blue = root.find("options/blue").text
+        red = root.find("options/red").text
+        mapName = root.find("options/map").text
+        players = tuple(p.text for p in root.findall('players/player/name'))
+        logging.info(
+            'Reading config file "{config}" : players(blue/red): "{blue}"/"{red}" on map "{mapName}".'.format(
+            config=config, blue=blue, red=red, mapName=mapName ) )
+        logging.info(
+            'Reading config file "{config}" : list of players "{players}".'.format(
+            config=config, players=players ) )
+        readConfig_static = dict()
+        readConfig_static['ref'] = config
+        readConfig_static['data'] = (blue, red, mapName, players)
+    return readConfig_static['data']
+
+# Use global var 'readMaps_static' to prevent multiple os.listdir()
+readMaps_static = None
+def readMaps( mapDirectory ):
+    "Read the list of map and return as a tuple."
+    global readMaps_static
+    if(readMaps_static == None or readMaps_static['ref'] != mapDirectory):
+        readMaps_static = dict()
+        readMaps_static['ref'] = mapDirectory
+        readMaps_static['data'] = tuple(m for m in os.listdir(mapDirectory) if m[-4:].lower() == '.xml')
+        logging.info( 'Reading list of maps' )
+        for i, m in enumerate(readMaps_static['data']):
+            logging.info( 
+                'Map {index} : {mapName}.'.format(
+                index=i, mapName=m ) )
+    return readMaps_static['data']
 
 def newJob( blue, red, mapName ):
     "Create 1 new job to add to the job list. Returns dictionnary for job without 'number'"
-    # Construct args
-    args = ("AIWar", "--blue", blue, "--red", red, "--map", os.path.join(mapDirectory, mapName), "--renderer", "dummy")
-    return {'number': None,
-            'blue': blue, 'red':red, 'mapName': mapName, 'args': args,
-            'popen': None, 'state': None, 'ret': None, 'time': 0}
+    # Verify players exist
+    if not blue in readConfig(configFile)[3]:
+        logging.critical( 'Unknown player : {}'.format(blue) )
+        raise AIwarError('Unknown player', blue)
+    if not red in readConfig(configFile)[3]:
+        logging.critical( 'Unknown player : {}'.format(red) )
+        raise AIwarError('Unknown player', red)
+    
+    # Verify map exists
+    if not mapName in readMaps(mapDirectory):
+        logging.critical( 'Unknown map : {}'.format(mapName) )
+        raise AIwarError('Unknown map', mapName)
+    
+    return {'blue': blue, 'red':red, 'mapName': mapName}
+
 
 def newRounds( blue, red, mapName, repeat = 1 ):
     "Create N rounds to add to the job list. Returns list of dictionnary for job without 'number'"
@@ -42,9 +77,8 @@ def newRounds( blue, red, mapName, repeat = 1 ):
 def newMaps( blue, red, repeat = 1):
     "Create N rounds by map to add to the job list. Returns list of dictionnary for job without 'number'"
     r = []
-    for m in os.listdir(mapDirectory):
-        if m[-4:].lower() == '.xml':
-            r += newRounds( blue, red, m, repeat )
+    for m in readMaps(mapDirectory):
+        r += newRounds( blue, red, m, repeat )
     return r
 
 def newColors( blue, red, repeat = 1):
@@ -54,7 +88,7 @@ def newColors( blue, red, repeat = 1):
 def newPlayers( player, repeat = 1 ):
     "Create N rounds for 1 player against the world by map and color to add to the job list. Returns list of dictionnary for job without 'number'"
     r = []
-    for p in readConfig('config.xml')[3]:
+    for p in readConfig(configFile)[3]:
         if p != player:
             r += newColors( player, p, repeat )
     return r
@@ -62,7 +96,7 @@ def newPlayers( player, repeat = 1 ):
 def newComplete( repeat = 1 ):
     "Create N rounds for all players by map and color to add to the job list. Returns list of dictionnary for job without 'number'"
     r = []
-    for p in readConfig('config.xml')[3]:
+    for p in readConfig(configFile)[3]:
         r += newPlayers( p, repeat )
     return r
 
@@ -83,16 +117,23 @@ def createResultName( blue, red ):
 
 #############
 # Init
+configFile = 'config.xml'
 mapDirectory = './maps'
+prefixFileName = os.path.splitext(os.path.basename(sys.argv[0]))[0]+'_'
 nbRound = 0
 #get_nb_core()
 #logging.basicConfig(level=logging.DEBUG)
-logging.basicConfig(level=logging.INFO)
-#logging.basicConfig(filename='loopRounds.log', level=logging.DEBUG)
+#logging.basicConfig(level=logging.INFO)
+logging.basicConfig(filename=prefixFileName+'logs.log', level=logging.DEBUG)
 
-#args = ("AIWar", "--blue", bluePlayer, "--red", redPlayer, "--map", map, "--renderer", "dummy")
-#args = ("AIWar", "--file", "config.xml", "--renderer", "dummy")
-#args = ("AIWar", "--file", "config.xml")
+#msg='test'
+#logging.info(msg)
+#logging.warning(msg)
+#logging.error(msg)
+#logging.critical(msg)
+#logging.exception(msg)
+#logging.log(level, msg)
+
 
 result_txt = {0: "draw", 1: "blue wins", 2: "red wins",
               11: "blue error", 12: "red error", 255: "error"}
@@ -100,7 +141,7 @@ result_int = {value: key for (key, value) in result_txt.iteritems()}
 logging.debug( 'result_txt={}'.format(result_txt) )
 logging.debug( 'result_int={}'.format(result_int) )
 
-bluePlayer, redPlayer, mapName, _ = readConfig('config.xml')
+bluePlayer, redPlayer, mapName, _ = readConfig(configFile)
 
 
 # Reading of arguments
@@ -111,8 +152,8 @@ bluePlayer, redPlayer, mapName, _ = readConfig('config.xml')
 #############
 # Build list of jobs
 
-#jobs = newRounds('GuiGui', 'Shuriken', 'map.xml', 1 )
-#jobs += newRounds('Merovingien', 'Clement', 'map_FollowTheWhiteRabbit.xml', 2 )
+jobs = newRounds('GuiGui', 'Shuriken', 'map.xml', 1 )
+jobs += newRounds('Merovingien', 'Clement', 'map_FollowTheWhiteRabbit.xml', 2 )
 
 #jobs = newMaps( 'GuiGui', 'Shuriken' )
 #jobs += newMaps('Merovingien', 'Clement', 2 )
@@ -123,12 +164,27 @@ bluePlayer, redPlayer, mapName, _ = readConfig('config.xml')
 #jobs = newPlayers( 'GuiGui' )
 #jobs += newPlayers( 'Clement', 2 )
 
-jobs = newComplete()
-jobs = newComplete(2)
+#jobs = newComplete(1)
+#jobs += newComplete(3)
 
-# Adds 'number' in jobs
+# Save to file the job's list
+with open(prefixFileName+'job-list.json', 'w') as outfile:
+    json.dump(jobs, outfile)
+
+
+# Add data used for manage job processing
 for enum, i in enumerate(jobs):
     i['number'] = enum
+    i['popen']  = None
+    i['state']  = None
+    i['ret']    = None
+    i['time']   = 0
+    i['args']   = ("AIWar",
+                   "--blue", i['blue'],
+                   "--red", i['red'],
+                   "--map", os.path.join(mapDirectory, i['mapName']),
+                   "--renderer", "dummy")
+
 
 #logging.debug( 'jobs={}'.format(jobs) )
 
@@ -155,7 +211,7 @@ while [ j for j in jobs if j['popen'] is None or j['state'] ]:
             time.sleep(1)
             
         if i['state']:
-            logging.debug( 'i={}'.format(i) )
+            logging.debug( 'i={} ### i["popen"].poll()={}'.format(i, i['popen'].poll()) )
             if i['popen'].poll() is None:
                 # Job not over.
                 if int(time.time()-i['time']) % 10 == 0:
