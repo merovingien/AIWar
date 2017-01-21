@@ -6,6 +6,7 @@ import time         # time(), sleep()
 import logging
 import xml.etree.ElementTree as ET
 import json         # dump(), load()
+import datetime     # date.today().isoformat()
 
 from multiprocessing import cpu_count as get_nb_core
 
@@ -142,11 +143,13 @@ def createResultName( blue, red ):
 configFile = 'config.xml'
 configMapDirectory = './maps'
 prefixFileName = os.path.splitext(os.path.basename(sys.argv[0]))[0]+'_'
+resumeFilename = prefixFileName+'job-list.json'
+logsFilename = prefixFileName+'logs-'+datetime.date.today().isoformat()+'.log'
 nbRound = 0
 #get_nb_core()
 #logging.basicConfig(level=logging.DEBUG)
 #logging.basicConfig(level=logging.INFO)
-logging.basicConfig(filename=prefixFileName+'logs.log', level=logging.ERROR)
+logging.basicConfig(filename=logsFilename, level=logging.ERROR)
 
 #msg='test'
 #logging.info(msg)
@@ -160,11 +163,12 @@ logging.basicConfig(filename=prefixFileName+'logs.log', level=logging.ERROR)
 result_txt = {0: "draw", 1: "blue wins", 2: "red wins",
               11: "blue error", 12: "red error", 255: "error"}
 result_int = {value: key for (key, value) in result_txt.iteritems()}
+result_int = {value: key for (key, value) in result_txt.iteritems()}
 logging.debug( 'result_txt={}'.format(result_txt) )
 logging.debug( 'result_int={}'.format(result_int) )
 
-bluePlayer, redPlayer, mapName, _, _, _ = readConfig(configFile)
-
+bluePlayer, redPlayer, mapName, players, playersParams, _ = readConfig(configFile)
+playerName_params = {name: params for name, params in zip(players, playersParams)}
 
 # Reading of arguments
 #
@@ -176,15 +180,16 @@ bluePlayer, redPlayer, mapName, _, _, _ = readConfig(configFile)
 
 jobs_resume = list()
 
-# Save to file the job's list
-if os.path.isfile(prefixFileName+'job-list.json'):
-    with open(prefixFileName+'job-list.json', 'r') as jobListFile:
+# Resume undone jobs from file
+if os.path.isfile(resumeFilename):
+    with open(resumeFilename, 'r') as jobListFile:
         jobs_resume = json.load(jobListFile)
-        txt = 'Resume file "{name}" : '.format( name=prefixFileName+'job-list.json' )
+        txt = 'Resume file "{name}" : {jobs} job{plural}.'.format( name=resumeFilename, jobs=len(jobs_resume), plural='s' if len(jobs_resume) else '' )
         logging.info( txt )
-        import pprint; pp = pprint.PrettyPrinter(indent=4); print(txt); pp.pprint(jobs_resume)
+        print(txt)
+        #import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(jobs_resume)
 else:
-    txt = 'Resume file "{name}" : empty.'.format( name=prefixFileName+'job-list.json' )
+    txt = 'Resume file "{name}" : empty.'.format( name=resumeFilename )
     logging.info( txt )
     print( txt )
     
@@ -211,7 +216,7 @@ except AIwarError as e:
     exit()
 
 # Save to file the job's list
-with open(prefixFileName+'job-list.json', 'w') as jobListFile:
+with open(resumeFilename, 'w') as jobListFile:
     json.dump(jobs_resume, jobListFile)
 
 
@@ -223,9 +228,10 @@ for enum, i in enumerate(jobs_resume):
             'number': enum,
             'resume': i,
             'popen': None,
-            'state': None,
+            'launching': None,
             'ret': None,
-            'time' : 0,
+            'start' : 0,
+            'end' : 0,
             'args': ( "AIWar",
                       "--blue", i['blue'],
                       "--red", i['red'],
@@ -237,9 +243,10 @@ for enum, i in enumerate(jobs_resume):
 #logging.debug( 'jobs_resume={}'.format(jobs_resume) )
 #logging.debug( 'jobs_launcher={}'.format(jobs_launcher) )
 
-txt = 'Resume file "{name}" completed : '.format( name=prefixFileName+'job-list.json' )
-import pprint; pp = pprint.PrettyPrinter(indent=4); print(txt); pp.pprint(jobs_resume)
-import pprint; pp = pprint.PrettyPrinter(indent=4); print('jobs_launcher = '); pp.pprint(jobs_launcher)
+txt = 'Resume file "{name}" completed : {jobs} job{plural}.'.format( name=resumeFilename, jobs=len(jobs_resume), plural='s' if len(jobs_resume) else '' )
+print(txt)
+#import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(jobs_resume)
+#import pprint; pp = pprint.PrettyPrinter(indent=4); print('jobs_launcher = '); pp.pprint(jobs_launcher)
 #exit()
 
 
@@ -247,7 +254,7 @@ import pprint; pp = pprint.PrettyPrinter(indent=4); print('jobs_launcher = '); p
 #############
 # Unstack a job to each core
 
-while [ j for j in jobs_launcher if j['popen'] is None or j['state'] ]:
+while [ j for j in jobs_launcher if j['popen'] is None or j['launching'] ]:
     for i in jobs_launcher:
         if i['popen'] is None:
             # Launch job
@@ -259,35 +266,88 @@ while [ j for j in jobs_launcher if j['popen'] is None or j['state'] ]:
                 logging.exception( txt )
                 print( txt )
                 i['popen'] = 0
-                i['state'] = False
+                i['launching'] = False
                 # TODO : Delete from jobs_launcher list
                 continue
             i['popen'] = subprocess.Popen(i['args'])
-            i['state'] = True
-            i['time'] = time.time()
+            i['launching'] = True
+            i['start'] = time.time()
             logging.info( 'job {number} : Starting...'.format( number=i['number'] ) )
             print('job {number} : Starting "{blue}" Vs "{red}" on map "{mapName}".'.format(
                 number=i['number'], blue=i['resume']['blue'], red=i['resume']['red'], mapName=i['resume']['mapName'] ))
             # Sleep to randomize each game
             time.sleep(1)
             
-        if i['state']:
+        if i['launching']:
             logging.debug( 'i={} ### i["popen"].poll()={}'.format(i, i['popen'].poll()) )
             if i['popen'].poll() is None:
                 # Job not over.
-                if int(time.time()-i['time']) % 10 == 0:
+                if int(time.time()-i['start']) % 10 == 0:
                     logging.debug( "i['popen'].poll()={} ; i['popen'].returncode={}".format( i['popen'].poll(), i['popen'].returncode) )
-                    logging.info( 'job {number} : T={time} sec. : still fighting...'.format( number=i['number'], time=int(time.time()-i['time']) ) )
+                    logging.info( 'job {number} : T={time} sec. : still fighting...'.format( number=i['number'], time=int(time.time()-i['start']) ) )
             else:
-                i['state'] = False
+                i['launching'] = False
                 i['ret'] = i['popen'].returncode
+                i['end'] = time.time()
                 result_name = createResultName(blue=i['resume']['blue'], red=i['resume']['red'])
                 logging.debug( "i['popen'].returncode={}".format( i['popen'].poll(), i['popen'].returncode) )
-                logging.info( 'job {number} : T={time} sec. : {result}'.format( number=i['number'], result=result_name[ i['ret'] ], time=int(time.time()-i['time']) ) )
-                print('job {number} : T={time} sec. : {result}'.format( number=i['number'], result=result_name[ i['ret'] ], time=int(time.time()-i['time']) ) )
+                logging.info( 'job {number} : T={time} sec. : {result}'.format( number=i['number'], result=result_name[ i['ret'] ], time=int(i['end']-i['start']) ) )
+                print('job {number} : T={time} sec. : {result}'.format( number=i['number'], result=result_name[ i['ret'] ], time=int(i['end']-i['start']) ) )
                 # TODO : Delete from "Resume file"
                 # TODO : Add to "Results file"
+    # Sleep each loop FOR
     time.sleep(1)
+
+
+#############
+# Save result to file
+# Saved in filename (global) : Date
+# Saved in file : blue player name + params, red player name + params, map, result, match duration
+
+# Create results list to save
+jobs_results = list()
+resultsFilename = prefixFileName+'results-list-'+datetime.date.today().isoformat()+'.json'
+
+# Read results already saved from file
+if os.path.isfile(resultsFilename):
+    with open(resultsFilename, 'r') as resultsFileIO:
+        jobs_results = json.load(resultsFileIO)
+        txt = 'Result file "{name}" completed : {jobs} job{plural}.'.format( name=resultsFilename, jobs=len(jobs_results), plural='s' if len(jobs_results) else '' )
+        logging.info( txt )
+        print(txt)
+        #import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(jobs_resume)
+else:
+    txt = 'Result file "{name}" : empty.'.format( name=resultsFilename )
+    logging.info( txt )
+    print( txt )
+    
+for i in jobs_launcher:
+    # Filter jobs undone
+    if not i['popen'] is None and not i['launching'] and not i['ret'] is None :
+        jobs_results.append(
+            {
+                'blue': {'name': i['resume']['blue'], 'params': playerName_params[ i['resume']['blue'] ]},
+                'red': {'name': i['resume']['red'], 'params': playerName_params[ i['resume']['red'] ]},
+                'map': i['resume']['mapName'],
+                'result': result_txt[ i['ret'] ],
+                'start' : i['start'],
+                'end' : i['end'],
+            })
+        jobs_resume.remove(i['resume'])
+
+# Save to file results list
+with open(resultsFilename, 'w') as resultsFileIO:
+    json.dump(jobs_results, resultsFileIO)
+    txt = 'Result file "{name}" completed : {jobs} job{plural}.'.format( name=resultsFilename, jobs=len(jobs_results), plural='s' if len(jobs_results) else '' )
+    logging.info( txt )
+    print(txt)
+
+# Update to file the job's list
+with open(resumeFilename, 'w') as jobListFile:
+    json.dump(jobs_resume, jobListFile)
+    txt = 'Resume file "{name}" completed : {jobs} job{plural}.'.format( name=resumeFilename, jobs=len(jobs_resume), plural='s' if len(jobs_resume) else '' )
+    logging.info( txt )
+    print(txt)
 
 
 #############
