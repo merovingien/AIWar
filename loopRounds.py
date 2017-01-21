@@ -174,21 +174,36 @@ bluePlayer, redPlayer, mapName, _, _, _ = readConfig(configFile)
 #############
 # Build list of jobs
 
+jobs_resume = list()
+
+# Save to file the job's list
+if os.path.isfile(prefixFileName+'job-list.json'):
+    with open(prefixFileName+'job-list.json', 'r') as jobListFile:
+        jobs_resume = json.load(jobListFile)
+        txt = 'Resume file "{name}" : '.format( name=prefixFileName+'job-list.json' )
+        logging.info( txt )
+        import pprint; pp = pprint.PrettyPrinter(indent=4); print(txt); pp.pprint(jobs_resume)
+else:
+    txt = 'Resume file "{name}" : empty.'.format( name=prefixFileName+'job-list.json' )
+    logging.info( txt )
+    print( txt )
+    
+
 try:
-    jobs = newRounds('GuiGui', 'Shuriken', 'map.xml', 1 )
-    jobs += newRounds('Merovingien', 'Clement', 'map_FollowTheWhiteRabbit.xml', 2 )
+    jobs_resume += newRounds('GuiGui', 'Shuriken', 'map.xml', 1 )
+    jobs_resume += newRounds('Merovingien', 'Clement', 'map_FollowTheWhiteRabbit.xml', 2 )
 
-    #jobs = newMaps( 'GuiGui', 'Shuriken' )
-    #jobs += newMaps('Merovingien', 'Clement', 2 )
+    #jobs_resume += newMaps( 'GuiGui', 'Shuriken' )
+    #jobs_resume += newMaps('Merovingien', 'Clement', 2 )
 
-    #jobs = newColors( 'GuiGui', 'Shuriken' )
-    #jobs += newColors('Merovingien', 'Clement', 2 )
+    #jobs_resume += newColors( 'GuiGui', 'Shuriken' )
+    #jobs_resume += newColors('Merovingien', 'Clement', 2 )
 
-    #jobs = newPlayers( 'GuiGui' )
-    #jobs += newPlayers( 'Clement', 2 )
+    #jobs_resume += newPlayers( 'GuiGui' )
+    #jobs_resume += newPlayers( 'Clement', 2 )
 
-    #jobs = newComplete(1)
-    #jobs += newComplete(3)
+    #jobs_resume += newComplete(1)
+    #jobs_resume += newComplete(3)
 except AIwarError as e:
     txt = 'Error when create new jobs. Stopping work.' + str(e)
     logging.exception( txt )
@@ -196,27 +211,35 @@ except AIwarError as e:
     exit()
 
 # Save to file the job's list
-with open(prefixFileName+'job-list.json', 'w') as outfile:
-    json.dump(jobs, outfile)
+with open(prefixFileName+'job-list.json', 'w') as jobListFile:
+    json.dump(jobs_resume, jobListFile)
 
 
 # Add data used for manage job processing
-for enum, i in enumerate(jobs):
-    i['number'] = enum
-    i['popen']  = None
-    i['state']  = None
-    i['ret']    = None
-    i['time']   = 0
-    i['args']   = ("AIWar",
-                   "--blue", i['blue'],
-                   "--red", i['red'],
-                   "--map", os.path.join(configMapDirectory, i['mapName']),
-                   "--renderer", "dummy")
+jobs_launcher = list()
+for enum, i in enumerate(jobs_resume):
+    jobs_launcher.append(
+        {
+            'number': enum,
+            'resume': i,
+            'popen': None,
+            'state': None,
+            'ret': None,
+            'time' : 0,
+            'args': ( "AIWar",
+                      "--blue", i['blue'],
+                      "--red", i['red'],
+                      "--map", os.path.join(configMapDirectory, i['mapName']),
+                      "--renderer", "dummy" )
+        })
 
 
-#logging.debug( 'jobs={}'.format(jobs) )
+#logging.debug( 'jobs_resume={}'.format(jobs_resume) )
+#logging.debug( 'jobs_launcher={}'.format(jobs_launcher) )
 
-#import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(jobs)
+txt = 'Resume file "{name}" completed : '.format( name=prefixFileName+'job-list.json' )
+import pprint; pp = pprint.PrettyPrinter(indent=4); print(txt); pp.pprint(jobs_resume)
+import pprint; pp = pprint.PrettyPrinter(indent=4); print('jobs_launcher = '); pp.pprint(jobs_launcher)
 #exit()
 
 
@@ -224,8 +247,8 @@ for enum, i in enumerate(jobs):
 #############
 # Unstack a job to each core
 
-while [ j for j in jobs if j['popen'] is None or j['state'] ]:
-    for i in jobs:
+while [ j for j in jobs_launcher if j['popen'] is None or j['state'] ]:
+    for i in jobs_launcher:
         if i['popen'] is None:
             # Launch job
             logging.debug( 'i={}'.format(i) )
@@ -237,13 +260,14 @@ while [ j for j in jobs if j['popen'] is None or j['state'] ]:
                 print( txt )
                 i['popen'] = 0
                 i['state'] = False
+                # TODO : Delete from jobs_launcher list
                 continue
             i['popen'] = subprocess.Popen(i['args'])
             i['state'] = True
             i['time'] = time.time()
             logging.info( 'job {number} : Starting...'.format( number=i['number'] ) )
             print('job {number} : Starting "{blue}" Vs "{red}" on map "{mapName}".'.format(
-                number=i['number'], blue=i['blue'], red=i['red'], mapName=i['mapName'] ))
+                number=i['number'], blue=i['resume']['blue'], red=i['resume']['red'], mapName=i['resume']['mapName'] ))
             # Sleep to randomize each game
             time.sleep(1)
             
@@ -257,10 +281,12 @@ while [ j for j in jobs if j['popen'] is None or j['state'] ]:
             else:
                 i['state'] = False
                 i['ret'] = i['popen'].returncode
-                result_name = createResultName(blue=i['blue'], red=i['red'])
+                result_name = createResultName(blue=i['resume']['blue'], red=i['resume']['red'])
                 logging.debug( "i['popen'].returncode={}".format( i['popen'].poll(), i['popen'].returncode) )
                 logging.info( 'job {number} : T={time} sec. : {result}'.format( number=i['number'], result=result_name[ i['ret'] ], time=int(time.time()-i['time']) ) )
                 print('job {number} : T={time} sec. : {result}'.format( number=i['number'], result=result_name[ i['ret'] ], time=int(time.time()-i['time']) ) )
+                # TODO : Delete from "Resume file"
+                # TODO : Add to "Results file"
     time.sleep(1)
 
 
