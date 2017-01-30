@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 import json         # dump(), load()
 import datetime     # date.today().isoformat()
 
-from multiprocessing import cpu_count as get_nb_core
+import multiprocessing  # cpu_count()
 
 class AIwarError(Exception):
     pass
@@ -48,7 +48,8 @@ def readMaps( mapDirectory ):
         readMaps_static = dict()
         readMaps_static['ref'] = mapDirectory
         readMaps_static['data'] = tuple(m for m in os.listdir(mapDirectory) if m[-4:].lower() == '.xml')
-        logging.info( 'Reading list of maps' )
+        logging.info( 'Reading list of maps : {}'.format(mapDirectory) )
+        logging.info( 'Map directory : {}'.format(readMaps_static['ref']) )
         for i, m in enumerate(readMaps_static['data']):
             logging.info( 
                 'Map {index} : {mapName}.'.format(
@@ -91,6 +92,15 @@ def newJob( blue, red, mapName ):
         raise AIwarError('Unknown map', mapName)
     
     return {'blue': blue, 'red':red, 'mapName': mapName}
+
+def createArgs( blue, red, mapName ):
+    "Create list of args to launch 'AIWar' subprocess"
+    args = ( "AIWar",
+             "--blue", blue,
+             "--red", red,
+             "--map", os.path.join(configMapDirectory, mapName),
+             "--renderer", "dummy" )
+    return args
 
 
 def newRounds( blue, red, mapName, repeat = 1 ):
@@ -139,220 +149,273 @@ def createResultName( blue, red ):
 
 
 #############
+# Multiprocessing function
+def processJob( keywords ):
+    "Launch a job, wait the end and update the Result-file. Return nothing"
+        
+    # Init
+    #logging = keywords['logging']
+    args    = createArgs( keywords['blue'], keywords['red'], keywords['mapName'] )
+    try:
+        verifyArgs(args)
+    except AIwarError as e:
+        txt = 'job {number} : Error when launching job "{args}". Ignoring and go to next one.'.format( number=keywords['number'], args=" ".join( args ) )
+        logging.exception( txt )
+        # End of job !
+        return
+
+    # Sleep to randomize each game
+    time.sleep(keywords['number']%10)
+    # Launch
+    popen = subprocess.Popen(args)
+    start = time.time()
+    end = None
+    txt = 'job {number} : Starting "{blue}" Vs "{red}" on map "{mapName}".'.format(
+        number=keywords['number'], blue=keywords['blue'], red=keywords['red'], mapName=keywords['mapName'] )
+    logging.info( txt )
+    print( txt )
+
+    # Wait end of fight
+    while(not end):
+        logging.debug( 'keywords={} ### args = {} ### i["popen"].poll()={}'.format(keywords, args, popen.poll()) )
+        if popen.poll() is None:
+            # Job not over.
+            if int(time.time()-start) % 10 == 0:
+                logging.debug( "popen.poll()={} ; popen.returncode={}".format( popen.poll(), popen.returncode) )
+                txt = 'job {number} : T={time} sec. : still fighting...'.format( number=keywords['number'], time=int(time.time()-start) )
+                logging.info( txt )
+                print( txt )
+        else:
+            returncode = popen.returncode
+            end = time.time()
+            result_name = createResultName(blue=keywords['blue'], red=keywords['red'])
+            logging.debug( "popen.returncode={}".format( returncode ) )
+            txt = 'job {number} : T={time} sec. : {result}'.format( number=keywords['number'], result=result_name[ returncode ], time=int(end-start) )
+            logging.info( txt )
+            print( txt )
+        # Sleep each loop WHILE
+        time.sleep(1)
+
+    try:
+        # Delete job from "Resume file"
+        keywords['mutexResumeFile'].acquire()
+        removeJobFromResumeFile( keywords['blue'], keywords['red'], keywords['mapName'] )
+        keywords['mutexResumeFile'].release()
+
+        # Add job to "Results file"
+        keywords['mutexResultFile'].acquire()
+        addJobToResultFile( keywords['blue'], keywords['red'], keywords['mapName'], returncode, start, end )
+        keywords['mutexResultFile'].release()
+    except ValueError as e:
+        txt = 'job {number} : Error when removing job "{args}" from Resume-File. Ignoring and do not add result to Result-File.'.format(
+           number=keywords['number'], args=" ".join( args ) )
+        logging.exception( txt )
+
+    # Return number
+    return keywords['number']
+
+def removeJobFromResumeFile( blue, red, mapName ):
+    "Remove a job of Resume-file. Return nothing"
+    jobs_resume = list()
+    # Initialize jobs_resume with file
+    if os.path.isfile(resumeFilename):
+        with open(resumeFilename, 'r') as jobListFile:
+            jobs_resume = json.load(jobListFile)
+            txt = 'Resume file "{name}" : {jobs} job{plural}.'.format( name=resumeFilename, jobs=len(jobs_resume), plural='s' if len(jobs_resume) else '' )
+            logging.info( txt )
+            print(txt)
+    # Update jobs_resume
+    jobs_resume.remove( {'blue': blue, 'red': red, 'mapName': mapName} )
+    # Write jobs_resume in file
+    with open(resumeFilename, 'w') as jobListFile:
+        json.dump(jobs_resume, jobListFile)
+        txt = 'Resume file "{name}" completed : {jobs} job{plural}.'.format( name=resumeFilename, jobs=len(jobs_resume), plural='s' if len(jobs_resume) else '' )
+        logging.info( txt )
+        print(txt)
+
+def addJobToResultFile( blue, red, mapName, returncode, start, end ):
+    "Add a job to Result-file. Return nothing"
+    jobs_results = list()
+    resultsFilename = prefixFileName+'results-list-'+datetime.date.today().isoformat()+'.json'
+    # Read results already saved from file
+    if os.path.isfile(resultsFilename):
+        with open(resultsFilename, 'r') as resultsFileIO:
+            jobs_results = json.load(resultsFileIO)
+            txt = 'Result file "{name}" completed : {jobs} job{plural}.'.format( name=resultsFilename, jobs=len(jobs_results), plural='s' if len(jobs_results) else '' )
+            logging.info( txt )
+            print(txt)
+            #import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(jobs_resume)
+    # Update jobs_results
+    jobs_results.append(
+        {
+            'blue': {'name': blue, 'params': playerName_params[ blue ]},
+            'red': {'name': red, 'params': playerName_params[ red ]},
+            'map': mapName,
+            'result': result_txt[ returncode ],
+            'start' : start,
+            'end' : end,
+        })
+    # Save to file results list
+    with open(resultsFilename, 'w') as resultsFileIO:
+        json.dump(jobs_results, resultsFileIO)
+        txt = 'Result file "{name}" completed : {jobs} job{plural}.'.format( name=resultsFilename, jobs=len(jobs_results), plural='s' if len(jobs_results) else '' )
+        logging.info( txt )
+        print(txt)
+# Multiprocessing function
+#############
+
+
+
+#############
 # Init
 configFile = 'config.xml'
 configMapDirectory = './maps'
 prefixFileName = os.path.splitext(os.path.basename(sys.argv[0]))[0]+'_'
 resumeFilename = prefixFileName+'job-list.json'
 logsFilename = prefixFileName+'logs-'+datetime.date.today().isoformat()+'.log'
-nbRound = 0
-#get_nb_core()
 #logging.basicConfig(level=logging.DEBUG)
 #logging.basicConfig(level=logging.INFO)
-logging.basicConfig(filename=logsFilename, level=logging.ERROR)
-
-#msg='test'
-#logging.info(msg)
-#logging.warning(msg)
-#logging.error(msg)
-#logging.critical(msg)
-#logging.exception(msg)
-#logging.log(level, msg)
+logging.basicConfig(filename=logsFilename, level=logging.INFO)
+#logging.basicConfig(filename=logsFilename, level=logging.ERROR)
 
 
 result_txt = {0: "draw", 1: "blue wins", 2: "red wins",
               11: "blue error", 12: "red error", 255: "error"}
 result_int = {value: key for (key, value) in result_txt.iteritems()}
 result_int = {value: key for (key, value) in result_txt.iteritems()}
-logging.debug( 'result_txt={}'.format(result_txt) )
-logging.debug( 'result_int={}'.format(result_int) )
 
 bluePlayer, redPlayer, mapName, players, playersParams, _ = readConfig(configFile)
 playerName_params = {name: params for name, params in zip(players, playersParams)}
 
-# Reading of arguments
-#
-# TROUVER MODULE DEDIE ET IMPLEMENTER
-#
+if __name__ == '__main__':
+    nbProcesses = multiprocessing.cpu_count()/2
 
-#############
-# Build list of jobs
-
-jobs_resume = list()
-
-# Resume undone jobs from file
-if os.path.isfile(resumeFilename):
-    with open(resumeFilename, 'r') as jobListFile:
-        jobs_resume = json.load(jobListFile)
-        txt = 'Resume file "{name}" : {jobs} job{plural}.'.format( name=resumeFilename, jobs=len(jobs_resume), plural='s' if len(jobs_resume) else '' )
-        logging.info( txt )
-        print(txt)
-        #import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(jobs_resume)
-else:
-    txt = 'Resume file "{name}" : empty.'.format( name=resumeFilename )
-    logging.info( txt )
-    print( txt )
     
+    #msg='test'
+    #logging.info(msg)
+    #logging.warning(msg)
+    #logging.error(msg)
+    #logging.critical(msg)
+    #logging.exception(msg)
+    #logging.log(level, msg)
 
-try:
-    jobs_resume += newRounds('GuiGui', 'Shuriken', 'map.xml', 1 )
-    jobs_resume += newRounds('Merovingien', 'Clement', 'map_FollowTheWhiteRabbit.xml', 2 )
-
-    #jobs_resume += newMaps( 'GuiGui', 'Shuriken' )
-    #jobs_resume += newMaps('Merovingien', 'Clement', 2 )
-
-    #jobs_resume += newColors( 'GuiGui', 'Shuriken' )
-    #jobs_resume += newColors('Merovingien', 'Clement', 2 )
-
-    #jobs_resume += newPlayers( 'GuiGui' )
-    #jobs_resume += newPlayers( 'Clement', 2 )
-
-    #jobs_resume += newComplete(1)
-    #jobs_resume += newComplete(3)
-except AIwarError as e:
-    txt = 'Error when create new jobs. Stopping work.' + str(e)
-    logging.exception( txt )
-    print( txt )
-    exit()
-
-# Save to file the job's list
-with open(resumeFilename, 'w') as jobListFile:
-    json.dump(jobs_resume, jobListFile)
+    logging.debug( 'result_txt={}'.format(result_txt) )
+    logging.debug( 'result_int={}'.format(result_int) )
 
 
-# Add data used for manage job processing
-jobs_launcher = list()
-for enum, i in enumerate(jobs_resume):
-    jobs_launcher.append(
-        {
-            'number': enum,
-            'resume': i,
-            'popen': None,
-            'launching': None,
-            'ret': None,
-            'start' : 0,
-            'end' : 0,
-            'args': ( "AIWar",
-                      "--blue", i['blue'],
-                      "--red", i['red'],
-                      "--map", os.path.join(configMapDirectory, i['mapName']),
-                      "--renderer", "dummy" )
-        })
+    # Reading of arguments
+    #
+    # TROUVER MODULE DEDIE ET IMPLEMENTER
+    #
 
+    #############
+    # Build list of jobs
 
-#logging.debug( 'jobs_resume={}'.format(jobs_resume) )
-#logging.debug( 'jobs_launcher={}'.format(jobs_launcher) )
+    jobs_resume = list()
 
-txt = 'Resume file "{name}" completed : {jobs} job{plural}.'.format( name=resumeFilename, jobs=len(jobs_resume), plural='s' if len(jobs_resume) else '' )
-print(txt)
-#import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(jobs_resume)
-#import pprint; pp = pprint.PrettyPrinter(indent=4); print('jobs_launcher = '); pp.pprint(jobs_launcher)
-#exit()
-
-
-
-#############
-# Unstack a job to each core
-
-while [ j for j in jobs_launcher if j['popen'] is None or j['launching'] ]:
-    for i in jobs_launcher:
-        if i['popen'] is None:
-            # Launch job
-            logging.debug( 'i={}'.format(i) )
-            try:
-                verifyArgs(i['args'])
-            except AIwarError as e:
-                txt = 'job {number} : Error when launching job "{args}". Ignoring and go to next one.'.format( number=i['number'], args=" ".join( i['args'] ) )
-                logging.exception( txt )
-                print( txt )
-                i['popen'] = 0
-                i['launching'] = False
-                # TODO : Delete from jobs_launcher list
-                continue
-            i['popen'] = subprocess.Popen(i['args'])
-            i['launching'] = True
-            i['start'] = time.time()
-            logging.info( 'job {number} : Starting...'.format( number=i['number'] ) )
-            print('job {number} : Starting "{blue}" Vs "{red}" on map "{mapName}".'.format(
-                number=i['number'], blue=i['resume']['blue'], red=i['resume']['red'], mapName=i['resume']['mapName'] ))
-            # Sleep to randomize each game
-            time.sleep(1)
-            
-        if i['launching']:
-            logging.debug( 'i={} ### i["popen"].poll()={}'.format(i, i['popen'].poll()) )
-            if i['popen'].poll() is None:
-                # Job not over.
-                if int(time.time()-i['start']) % 10 == 0:
-                    logging.debug( "i['popen'].poll()={} ; i['popen'].returncode={}".format( i['popen'].poll(), i['popen'].returncode) )
-                    logging.info( 'job {number} : T={time} sec. : still fighting...'.format( number=i['number'], time=int(time.time()-i['start']) ) )
-            else:
-                i['launching'] = False
-                i['ret'] = i['popen'].returncode
-                i['end'] = time.time()
-                result_name = createResultName(blue=i['resume']['blue'], red=i['resume']['red'])
-                logging.debug( "i['popen'].returncode={}".format( i['popen'].poll(), i['popen'].returncode) )
-                logging.info( 'job {number} : T={time} sec. : {result}'.format( number=i['number'], result=result_name[ i['ret'] ], time=int(i['end']-i['start']) ) )
-                print('job {number} : T={time} sec. : {result}'.format( number=i['number'], result=result_name[ i['ret'] ], time=int(i['end']-i['start']) ) )
-                # TODO : Delete from "Resume file"
-                # TODO : Add to "Results file"
-    # Sleep each loop FOR
-    time.sleep(1)
-
-
-#############
-# Save result to file
-# Saved in filename (global) : Date
-# Saved in file : blue player name + params, red player name + params, map, result, match duration
-
-# Create results list to save
-jobs_results = list()
-resultsFilename = prefixFileName+'results-list-'+datetime.date.today().isoformat()+'.json'
-
-# Read results already saved from file
-if os.path.isfile(resultsFilename):
-    with open(resultsFilename, 'r') as resultsFileIO:
-        jobs_results = json.load(resultsFileIO)
-        txt = 'Result file "{name}" completed : {jobs} job{plural}.'.format( name=resultsFilename, jobs=len(jobs_results), plural='s' if len(jobs_results) else '' )
+    # Resume undone jobs from file
+    if os.path.isfile(resumeFilename):
+        with open(resumeFilename, 'r') as jobListFile:
+            jobs_resume = json.load(jobListFile)
+            txt = 'Resume file "{name}" : {jobs} job{plural}.'.format( name=resumeFilename, jobs=len(jobs_resume), plural='s' if len(jobs_resume) else '' )
+            logging.info( txt )
+            print(txt)
+            #import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(jobs_resume)
+    else:
+        txt = 'Resume file "{name}" : empty.'.format( name=resumeFilename )
         logging.info( txt )
-        print(txt)
-        #import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(jobs_resume)
-else:
-    txt = 'Result file "{name}" : empty.'.format( name=resultsFilename )
-    logging.info( txt )
-    print( txt )
-    
-for i in jobs_launcher:
-    # Filter jobs undone
-    if not i['popen'] is None and not i['launching'] and not i['ret'] is None :
-        jobs_results.append(
+        print( txt )
+        
+
+    try:
+        pass
+        jobs_resume += newRounds('GuiGui', 'Shuriken', 'map.xml', 1 )
+        jobs_resume += newRounds('Merovingien', 'Clement', 'map_FollowTheWhiteRabbit.xml', 2 )
+
+        #jobs_resume += newMaps( 'GuiGui', 'Shuriken' )
+        #jobs_resume += newMaps('Merovingien', 'Clement', 2 )
+
+        #jobs_resume += newColors( 'GuiGui', 'Shuriken' )
+        #jobs_resume += newColors('Merovingien', 'Clement', 2 )
+
+        #jobs_resume += newPlayers( 'GuiGui' )
+        #jobs_resume += newPlayers( 'Clement', 2 )
+
+        #jobs_resume += newComplete(1)
+        #jobs_resume += newComplete(3)
+    except AIwarError as e:
+        txt = 'Error when create new jobs. Stopping work.' + str(e)
+        logging.exception( txt )
+        print( txt )
+        exit()
+
+    # Save to file the job's list
+    with open(resumeFilename, 'w') as jobListFile:
+        json.dump(jobs_resume, jobListFile)
+
+
+    # Add data used for manage job processing
+    jobs_launcher = list()
+    for enum, i in enumerate(jobs_resume):
+        jobs_launcher.append(
             {
-                'blue': {'name': i['resume']['blue'], 'params': playerName_params[ i['resume']['blue'] ]},
-                'red': {'name': i['resume']['red'], 'params': playerName_params[ i['resume']['red'] ]},
-                'map': i['resume']['mapName'],
-                'result': result_txt[ i['ret'] ],
-                'start' : i['start'],
-                'end' : i['end'],
+                'number': enum,
+                'resume': i,
+                'popen': None,
+                'launching': None,
+                'ret': None,
+                'start' : 0,
+                'end' : 0,
+                'args': createArgs( i['blue'], i['red'], i['mapName'] )
             })
-        jobs_resume.remove(i['resume'])
 
-# Save to file results list
-with open(resultsFilename, 'w') as resultsFileIO:
-    json.dump(jobs_results, resultsFileIO)
-    txt = 'Result file "{name}" completed : {jobs} job{plural}.'.format( name=resultsFilename, jobs=len(jobs_results), plural='s' if len(jobs_results) else '' )
-    logging.info( txt )
-    print(txt)
 
-# Update to file the job's list
-with open(resumeFilename, 'w') as jobListFile:
-    json.dump(jobs_resume, jobListFile)
+    #logging.debug( 'jobs_resume={}'.format(jobs_resume) )
+    #logging.debug( 'jobs_launcher={}'.format(jobs_launcher) )
+
     txt = 'Resume file "{name}" completed : {jobs} job{plural}.'.format( name=resumeFilename, jobs=len(jobs_resume), plural='s' if len(jobs_resume) else '' )
     logging.info( txt )
     print(txt)
+    #import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(jobs_resume)
+    #import pprint; pp = pprint.PrettyPrinter(indent=4); print('jobs_launcher = '); pp.pprint(jobs_launcher)
+    #exit()
 
 
-#############
-# Build charts
+
+    #############
+    # Dispatch job to multiprocessing
+    m = multiprocessing.Manager()
+    mutexResumeFile = m.Lock()
+    mutexResultFile = m.Lock()
+    pool = multiprocessing.Pool(processes=nbProcesses)
+    # Add data used for manage job processing
+    jobs_launcher = list()
+    for enum, i in enumerate(jobs_resume):
+        jobs_launcher.append(
+            {
+                'number':           enum,
+                'mutexResumeFile':  mutexResumeFile,
+                'mutexResultFile':  mutexResultFile,
+                'blue':             i['blue'],
+                'red':              i['red'],
+                'mapName':          i['mapName']
+            })
+
+    
+    #print( pool.map(processJob, jobs_launcher) )
+    #pool.close()
+    #pool.join()
+    
+    if jobs_launcher:
+        for x in pool.imap_unordered(processJob, jobs_launcher):
+            print("Job {} is over.".format(x) )
+    
+    #exit()
+
+    #############
+    # Build charts
 
 
-
-print("fin")
+    txt = '...End'
+    logging.info( txt )
+    print(txt)
