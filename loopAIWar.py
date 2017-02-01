@@ -159,6 +159,7 @@ def allocateJob(jobs_resume):
     m = multiprocessing.Manager()
     mutexResumeFile = m.Lock()
     mutexResultFile = m.Lock()
+    mutexPrint = m.Lock()
     pool = multiprocessing.Pool(processes=nbProcesses)
     # Add data used for manage job processing
     jobs_launcher = list()
@@ -168,6 +169,7 @@ def allocateJob(jobs_resume):
                 'number':           enum,
                 'mutexResumeFile':  mutexResumeFile,
                 'mutexResultFile':  mutexResultFile,
+                'mutexPrint':       mutexPrint,
                 'blue':             i['blue'],
                 'red':              i['red'],
                 'mapName':          i['mapName']
@@ -204,7 +206,9 @@ def processJob( keywords ):
     txt = 'job {number} : Starting "{blue}" Vs "{red}" on map "{mapName}".'.format(
         number=keywords['number'], blue=keywords['blue'], red=keywords['red'], mapName=keywords['mapName'] )
     logging.info( txt )
+    keywords['mutexPrint'].acquire()
     print( txt )
+    keywords['mutexPrint'].release()
 
     # Wait end of fight
     while(not end):
@@ -215,7 +219,9 @@ def processJob( keywords ):
                 logging.debug( "popen.poll()={} ; popen.returncode={}".format( popen.poll(), popen.returncode) )
                 txt = 'job {number} : T={time} sec. : still fighting...'.format( number=keywords['number'], time=int(time.time()-start) )
                 logging.info( txt )
+                keywords['mutexPrint'].acquire()
                 print( txt )
+                keywords['mutexPrint'].release()
         else:
             returncode = popen.returncode
             end = time.time()
@@ -223,7 +229,9 @@ def processJob( keywords ):
             logging.debug( "popen.returncode={}".format( returncode ) )
             txt = 'job {number} : T={time} sec. : {result}'.format( number=keywords['number'], result=result_name[ returncode ], time=int(end-start) )
             logging.info( txt )
+            keywords['mutexPrint'].acquire()
             print( txt )
+            keywords['mutexPrint'].release()
         # Sleep each loop WHILE
         time.sleep(1)
 
@@ -282,7 +290,7 @@ def removeJobFromResumeFile( blue, red, mapName ):
         print(txt)
 
 def readJobFromResultFile():
-    "Read jobs of Result-file of the current day. Return list."
+    "Read jobs of Result-file of the current day. Return list and Result-file name."
     jobs_results = list()
     resultsFilename = prefixFileName+'results-list-'+datetime.date.today().isoformat()+'.json'
     # Read results already saved from file
@@ -294,10 +302,10 @@ def readJobFromResultFile():
             print(txt)
             #import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(jobs_resume)
     else:
-        txt = 'Result file "{name}" : empty.'.format( name=f )
+        txt = 'Result file "{name}" : empty.'.format( name=resultsFilename )
         logging.info( txt )
         print( txt )
-    return jobs_results
+    return jobs_results, resultsFilename
 
 def readJobFromAllResultFile():
     "Read jobs of all Result-file. Return list."
@@ -322,7 +330,7 @@ def readJobFromAllResultFile():
 def addJobToResultFile( blue, red, mapName, returncode, start, end ):
     "Add a job to Result-file. Return nothing"
     jobs_results = list()
-    jobs_results = readJobFromResultFile()
+    jobs_results, resultsFilename = readJobFromResultFile()
     # Update jobs_results
     jobs_results.append(
         {
@@ -368,11 +376,14 @@ playerName_params = {name: params for name, params in zip(players, playersParams
 if __name__ == '__main__':
     #############
     # Reading of arguments
-    parser = argparse.ArgumentParser(description="automation of AIWar game")
+    parser = argparse.ArgumentParser(description="Automation of AIWar game. \
+        This script is able to loop all combinations of games betwin players, maps and colors. \
+        [Tips] If you want to stop the current jobs processing, kill first the python script and after AIWar.exe launched. \
+        By this way, you prevent bad results to be register in Result-File")
 
     # Cancelled because defined just before launching the job
     #parser.add_argument("-g", "--gui", action="store_true", help="Show game on graphic user interface")
-    parser.add_argument("-p", "--processes", type=int, help="Number of processes to use")
+    parser.add_argument("-p", "--processes", type=int, help="Number of processes to use (maximum by default)")
     
     group1 = parser.add_mutually_exclusive_group()
     group1.add_argument("-v", "--verbose", action="store_true",
@@ -423,7 +434,7 @@ if __name__ == '__main__':
     parser_complete = sub_cmd.add_parser('loop-complete',
                                   help="equivalent to 'loop-players' option for each players " \
                                   "in the configuration file 'config.xml'")
-    parser_complete.add_argument("rounds",  type=int, help="number of round to play")
+    parser_complete.add_argument("-n", "--nb-rounds",  type=int, default=1, help="number of round to play")
     
     args = parser.parse_args()
 
