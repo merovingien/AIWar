@@ -101,7 +101,7 @@ def createArgs( blue, red, mapName ):
              "--red", red,
              "--map", os.path.join(configMapDirectory, mapName),
              "--renderer", "dummy" )
-             #"--renderer", "sdl" ) # To watch the game. Press "ESC" tu close window at end.
+             #"--renderer", "sdl" ) # To watch the game. Press "ESC" to close window at end.
     return args
 
 
@@ -292,17 +292,17 @@ def removeJobFromResumeFile( blue, red, mapName ):
 def readJobFromResultFile():
     "Read jobs of Result-file of the current day. Return list and Result-file name."
     jobs_results = list()
-    resultsFilename = prefixFileName+'results-list-'+datetime.date.today().isoformat()+'.json'
+    resultsFilename = os.path.join(rootPath, prefixFileName+'results-list-'+datetime.date.today().isoformat()+'.json')
     # Read results already saved from file
     if os.path.isfile(resultsFilename):
         with open(resultsFilename, 'r') as resultsFileIO:
             jobs_results = json.load(resultsFileIO)
-            txt = 'Result file "{name}" completed : {jobs} job{plural}.'.format( name=resultsFilename, jobs=len(jobs_results), plural='s' if len(jobs_results) else '' )
+            txt = 'Result file "{name}" completed : {jobs} job{plural}.'.format( name=os.path.basename(resultsFilename), jobs=len(jobs_results), plural='s' if len(jobs_results) else '' )
             logging.info( txt )
             print(txt)
             #import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(jobs_resume)
     else:
-        txt = 'Result file "{name}" : empty.'.format( name=resultsFilename )
+        txt = 'Result file "{name}" : empty.'.format( name=os.path.basename(resultsFilename) )
         logging.info( txt )
         print( txt )
     return jobs_results, resultsFilename
@@ -311,11 +311,13 @@ def readJobFromAllResultFile():
     "Read jobs of all Result-file. Return list."
     jobs_results = list()
     prefix = prefixFileName+'results-list-'
-    resultsFilename = tuple(m for m in os.listdir('.') if m[:len(prefix)] == prefix and m[-5:].lower() == '.json')
+    resultsFilename = tuple(m for m in os.listdir(rootPath)
+                            if m[:len(prefix)] == prefix
+                            and m[-5:].lower() == '.json')
     # Read results already saved from file
     for f in resultsFilename:
-        if os.path.isfile(f):
-            with open(f, 'r') as resultsFileIO:
+        if os.path.isfile( os.path.join(rootPath, f) ):
+            with open(os.path.join(rootPath, f), 'r') as resultsFileIO:
                 jobs_results += json.load(resultsFileIO)
                 txt = 'Result file "{name}" completed : {jobs} job{plural}.'.format( name=f, jobs=len(jobs_results), plural='s' if len(jobs_results) else '' )
                 logging.info( txt )
@@ -344,7 +346,7 @@ def addJobToResultFile( blue, red, mapName, returncode, start, end ):
     # Save to file results list
     with open(resultsFilename, 'w') as resultsFileIO:
         json.dump(jobs_results, resultsFileIO)
-        txt = 'Result file "{name}" completed : {jobs} job{plural}.'.format( name=resultsFilename, jobs=len(jobs_results), plural='s' if len(jobs_results) else '' )
+        txt = 'Result file "{name}" completed : {jobs} job{plural}.'.format( name=os.path.basename(resultsFilename), jobs=len(jobs_results), plural='s' if len(jobs_results) else '' )
         logging.info( txt )
         print(txt)
 # Multiprocessing function
@@ -354,15 +356,18 @@ def addJobToResultFile( blue, red, mapName, returncode, start, end ):
 
 #############
 # Init
+rootPath = os.path.join(os.getcwd(),'www', os.path.splitext(os.path.basename(sys.argv[0]))[0])
+if not os.path.isdir(rootPath):
+    os.makedirs(rootPath)
 configFile = 'config.xml'
 configMapDirectory = './maps'
 prefixFileName = os.path.splitext(os.path.basename(sys.argv[0]))[0]+'_'
-resumeFilename = prefixFileName+'job-list.json'
-logsFilename = prefixFileName+'logs-'+datetime.date.today().isoformat()+'.log'
+resumeFilename = os.path.join(rootPath, prefixFileName+'job-list.json')
+logsFilename = os.path.join(rootPath, prefixFileName+'logs-'+datetime.date.today().isoformat()+'.log')
 #logging.basicConfig(level=logging.DEBUG)
 #logging.basicConfig(level=logging.INFO)
-logging.basicConfig(filename=logsFilename, level=logging.INFO)
-#logging.basicConfig(filename=logsFilename, level=logging.ERROR)
+#logging.basicConfig(filename=logsFilename, level=logging.INFO)
+logging.basicConfig(filename=logsFilename, level=logging.ERROR)
 
 
 result_txt = {0: "draw", 1: "blue wins", 2: "red wins",
@@ -377,7 +382,7 @@ if __name__ == '__main__':
     #############
     # Reading of arguments
     parser = argparse.ArgumentParser(description="Automation of AIWar game. \
-        This script is able to loop all combinations of games betwin players, maps and colors. \
+        This script is able to loop all combinations of games between players, maps and colors. \
         [Tips] If you want to stop the current jobs processing, kill first the python script and after AIWar.exe launched. \
         By this way, you prevent bad results to be register in Result-File")
 
@@ -406,7 +411,7 @@ if __name__ == '__main__':
                                     help="update charts from 'Result-File'")
     
     parser_rounds = sub_cmd.add_parser('loop-rounds',
-                                    help="launch AIWar for many rounds betwin 2 players")
+                                    help="launch AIWar for many rounds between 2 players")
     parser_rounds.add_argument("-n", "--nb-rounds",  type=int, default=1, help="number of rounds to play")
     parser_rounds.add_argument("-b", "--blue",  type=str, help="name of the blue player (from 'config.xml' by default)")
     parser_rounds.add_argument("-r", "--red",   type=str, help="name of the red player (from 'config.xml' by default)")
@@ -455,8 +460,15 @@ if __name__ == '__main__':
     # info
     if args.subparser_name == 'info':
         # Resume-File size
-        size = len( readJobFromResumeFile() )
-        print('"Resume-File" size = {}'.format(size))
+        readJobFromResumeFile()
+        #size = len( readJobFromResumeFile() )
+        #print('"Resume-File" size = {}'.format(size))
+        
+        # Result-File size
+        readJobFromAllResultFile()
+        size = len( readJobFromAllResultFile() )
+        print('"Result-File" total size = {}'.format(size))
+        
         # Player number
         size = len( readConfig(configFile)[3] )
         print('Number of players = {}'.format(size))
