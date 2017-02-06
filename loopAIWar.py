@@ -11,6 +11,8 @@ import argparse     # ArgumentParser(), add_argument(), parse_args()
 
 import multiprocessing  # cpu_count()
 
+import PublishStatisticsAIWar # publish()
+
 class AIwarError(Exception):
     pass
 
@@ -172,7 +174,8 @@ def allocateJob(jobs_resume):
                 'mutexPrint':       mutexPrint,
                 'blue':             i['blue'],
                 'red':              i['red'],
-                'mapName':          i['mapName']
+                'mapName':          i['mapName'],
+                'timeout':          timeout
             })
     
     #print( pool.map(processJob, jobs_launcher) )
@@ -181,7 +184,9 @@ def allocateJob(jobs_resume):
     
     if jobs_launcher:
         for x in pool.imap_unordered(processJob, jobs_launcher):
+            mutexPrint.acquire()
             print("Job {} is over.".format(x) )
+            mutexPrint.release()
 
 def processJob( keywords ):
     "Launch a job, wait the end and update the Result-file. Return nothing"
@@ -222,6 +227,25 @@ def processJob( keywords ):
                 keywords['mutexPrint'].acquire()
                 print( txt )
                 keywords['mutexPrint'].release()
+            # Timeout : Terminate process + move job to end of Resume-File
+            if keywords['timeout'] and int(time.time()-start) >= keywords['timeout']:
+                # Terminate/Kill
+                popen.terminate()
+                if popen.poll() is None:
+                    popen.kill()
+                # Log
+                txt = 'job {number} : T={time} sec. : Timeout of {timeout} seconds expired.'.format(
+                    number=keywords['number'], time=int(time.time()-start), timeout=keywords['timeout'] )
+                logging.warning( txt )
+                keywords['mutexPrint'].acquire()
+                print( txt )
+                keywords['mutexPrint'].release()
+                # Delete and add to the end the job from "Resume file"
+                keywords['mutexResumeFile'].acquire()
+                removeJobFromResumeFile( keywords['blue'], keywords['red'], keywords['mapName'] )
+                addJobToResumeFile( keywords['blue'], keywords['red'], keywords['mapName'] )
+                keywords['mutexResumeFile'].release()
+                return keywords['number']
         else:
             returncode = popen.returncode
             end = time.time()
@@ -283,11 +307,27 @@ def removeJobFromResumeFile( blue, red, mapName ):
     # Update jobs_resume
     jobs_resume.remove( {'blue': blue, 'red': red, 'mapName': mapName} )
     # Write jobs_resume in file
-    with open(resumeFilename, 'w') as jobListFile:
-        json.dump(jobs_resume, jobListFile)
-        txt = 'Resume file "{name}" completed : {jobs} job{plural}.'.format( name=resumeFilename, jobs=len(jobs_resume), plural='s' if len(jobs_resume) else '' )
-        logging.info( txt )
-        print(txt)
+    writeJobToResumeFile(jobs_resume)
+    txt = 'Resume file "{name}" completed : {jobs} job{plural}.'.format( name=resumeFilename, jobs=len(jobs_resume), plural='s' if len(jobs_resume) else '' )
+    logging.info( txt )
+    print(txt)
+
+def addJobToResumeFile( blue, red, mapName ):
+    "Add a job to Resume-file. Return nothing"
+    # Initialize jobs_resume with file
+    jobs_resume = readJobFromResumeFile()
+    # Update jobs_resume
+    jobs_resume.append(
+        {
+            'blue': blue,
+            'red': red,
+            'mapName': mapName
+        })
+    # Write jobs_resume in file
+    writeJobToResumeFile(jobs_resume)
+    txt = 'Resume file "{name}" completed : {jobs} job{plural}.'.format( name=resumeFilename, jobs=len(jobs_resume), plural='s' if len(jobs_resume) else '' )
+    logging.info( txt )
+    print(txt)
 
 def readJobFromResultFile():
     "Read jobs of Result-file of the current day. Return list and Result-file name."
@@ -307,19 +347,26 @@ def readJobFromResultFile():
         print( txt )
     return jobs_results, resultsFilename
 
+def getListOfResultFile():
+    prefix = prefixFileName+'results-list-'
+    listOfRsultFile = tuple(m for m in os.listdir(rootPath)
+                            if m[:len(prefix)] == prefix
+                            and m[-5:].lower() == '.json')
+    return listOfRsultFile
+
 def readJobFromAllResultFile():
     "Read jobs of all Result-file. Return list."
     jobs_results = list()
-    prefix = prefixFileName+'results-list-'
-    resultsFilename = tuple(m for m in os.listdir(rootPath)
-                            if m[:len(prefix)] == prefix
-                            and m[-5:].lower() == '.json')
+    jobs_results_single = list()
+    resultsFilename = getListOfResultFile()
     # Read results already saved from file
     for f in resultsFilename:
         if os.path.isfile( os.path.join(rootPath, f) ):
             with open(os.path.join(rootPath, f), 'r') as resultsFileIO:
-                jobs_results += json.load(resultsFileIO)
-                txt = 'Result file "{name}" completed : {jobs} job{plural}.'.format( name=f, jobs=len(jobs_results), plural='s' if len(jobs_results) else '' )
+                jobs_results_single = json.load(resultsFileIO)
+                jobs_results += jobs_results_single
+                txt = 'Result file "{name}" completed : {jobs} job{plural}.'.format(
+                    name=f, jobs=len(jobs_results_single), plural='s' if len(jobs_results_single) else '' )
                 logging.info( txt )
                 print(txt)
                 #import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(jobs_resume)
@@ -389,6 +436,7 @@ if __name__ == '__main__':
     # Cancelled because defined just before launching the job
     #parser.add_argument("-g", "--gui", action="store_true", help="Show game on graphic user interface")
     parser.add_argument("-p", "--processes", type=int, help="Number of processes to use (maximum by default)")
+    parser.add_argument("-t", "--timeout", type=int, default=0, help="Time limit of a job in seconds (infinite by default)")
     
     group1 = parser.add_mutually_exclusive_group()
     group1.add_argument("-v", "--verbose", action="store_true",
@@ -457,6 +505,12 @@ if __name__ == '__main__':
     else:
         nbProcesses = multiprocessing.cpu_count()
 
+    # --timeout
+    if args.timeout:
+        timeout = args.timeout
+    else:
+        timeout = None
+
     # info
     if args.subparser_name == 'info':
         # Resume-File size
@@ -465,7 +519,6 @@ if __name__ == '__main__':
         #print('"Resume-File" size = {}'.format(size))
         
         # Result-File size
-        readJobFromAllResultFile()
         size = len( readJobFromAllResultFile() )
         print('"Result-File" total size = {}'.format(size))
         
@@ -509,11 +562,17 @@ if __name__ == '__main__':
         writeJobToResumeFile(jobs_resume)
 
     if args.subparser_name == 'update-charts':
-        jobs_resume = list()
-        # Read ResumeFile
-        jobs_resume = readJobFromAllResultFile()
         # update charts
         ################ TO DO - TO DO - TO DO - TO DO ##############
+        # Add path to result file
+        listOfResultFile = [os.path.join(rootPath, f) for f in getListOfResultFile()]
+            
+        publish_data = {'list-results-files': listOfResultFile,     \
+                        'list-players': readConfig(configFile)[3],  \
+                        'list-maps': readMaps(configMapDirectory),  \
+                        'statistics-path': rootPath                 \
+                        }
+        PublishStatisticsAIWar.publish(publish_data)
 
     if args.subparser_name == 'loop-rounds':
         # Read Resume-File
