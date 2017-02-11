@@ -73,7 +73,7 @@ def publish(args):
     #publishStatistics_maps(args, statistics)
     
     # Publish statistics : players
-    #statistics = createStatistics_players(args)
+    statistics = createStatistics_players(args)
     #publishStatistics_players(args, statistics)
 
 def TU_createStatistics_overview():
@@ -97,6 +97,18 @@ def TU_createStatistics_maps():
         'list-players': ('TEAM_DUMMY', 'PYTHON_TEAM', 'Merovingien-3', 'Merovingien-2', 'Antoine', 'Clement', 'Shuriken-0', 'GuiGui-6', 'GuiGui-1', 'GuiGui-2', 'GuiGui-3', 'GuiGui-4', 'GuiGui-5') \
         }
     result = createStatistics_maps(publish_data)
+    print(result)
+    return result
+    
+def TU_createStatistics_players():
+    listOfResultFile = ['H:\\Jeux\\AIWar_V0.4.0_win32\\www\\loopAIWar\\TESTS-loopAIWar_results-list.json']
+    publish_data = { \
+        'list-results-files': ['H:\\Jeux\\AIWar_V0.4.0_win32\\www\\loopAIWar\\TESTS-loopAIWar_results-list.json'], \
+        'statistics-path': 'H:\\Jeux\\AIWar_V0.4.0_win32\\www\\loopAIWar', \
+        'list-maps': ('map.xml', 'map_BackToBack.xml', 'map_FollowTheWhiteRabbit.xml', 'map_NoRulZ.xml', 'map_test.xml', 'map_ToInfinityAndBeyond.xml'), \
+        'list-players': ('TEAM_DUMMY', 'PYTHON_TEAM', 'Merovingien-3', 'Merovingien-2', 'Antoine', 'Clement', 'Shuriken-0', 'GuiGui-6', 'GuiGui-1', 'GuiGui-2', 'GuiGui-3', 'GuiGui-4', 'GuiGui-5') \
+        }
+    result = createStatistics_players(publish_data)
     print(result)
     return result
     
@@ -148,13 +160,6 @@ def createStatistics_overview(args):
     return overview
     
 
-##{
-##    "blue": {"params": null, "name": "TEAM_DUMMY"},
-##    "map": "map.xml",
-##    "end": 1485990803.371, "start": 1485990762.356,
-##    "result": "draw",
-##    "red": {"params": "embtest", "name": "PYTHON_TEAM"}
-##}
 
 def createStatistics_maps(args):
     "Create statistics 'maps'. return list of statistics."
@@ -227,7 +232,7 @@ def createStatistics_maps(args):
     for map_ in args['list-maps']:
         # {map:(rank, {name, win, lose, draw})}
         ranking[map_]['players'] = [(n, infos) for n, (name, infos) in enumerate(sorted(
-            sp[map_].items(),key=lambda kv: 10*kv[1]['win']+kv[1]['lose']+3*kv[1]['draw'],reverse=True), 1)]
+            sp[map_].items(),key=lambda kv: kv[1]['win']-kv[1]['lose']+(kv[1]['draw'])/(1+kv[1]['win']+kv[1]['lose']),reverse=True), 1)]
 
     # Write to file Statistics-Overview
     overview = {'ratio-blue-red': brRatio, 'duration': duration, 'ranking': ranking}
@@ -235,7 +240,134 @@ def createStatistics_maps(args):
     writeStatisticsOverview(statFile, overview)
     return overview
 
+def createStatistics_players(args):
+    "Create statistics 'players'. return list of statistics."
+    
+    # Blue/Red ratio winner
+    # {playerName, blue, red}
+    brRatio = dict()
+    
+    # Overview win/lose/draw ratio
+    # {playerName, win, draw, lose}
+    overRatio = dict()
+    
+    # Map win/lose/draw ratio
+    # {playerName, maps:[{playerName, mapName, win, draw, lose}]}
+    mapRatio = dict()
+    
+    # Player win/lose/draw ratio
+    # {playerName, players:[{playerName, opponentName, win, draw, lose}]}
+    playerRatio = dict()
+    
+    # Duration of game
+    # {playerName, samples:[{duration, number}]}
+    duration = dict()
+    
+    # Read each Result-File
+    for f in args['list-results-files']:
+        if f:
+            resultFile = readResultFile(f);
+            
+            # loop on each player
+            for playerName in args['list-players']:
+                if playerName not in brRatio.keys():
+                    brRatio[playerName] = {'playerName': playerName, 'blue':0, 'red':0}
+                if playerName not in overRatio.keys():
+                    overRatio[playerName] = {'playerName': playerName, 'win':0, 'lose':0, 'draw':0}
+                if playerName not in mapRatio.keys():
+                    mapRatio[playerName] = dict()
+                    # '[{playerName, mapName, win, draw, lose}]' added later
+                if playerName not in playerRatio.keys():
+                    playerRatio[playerName] = dict()
+                    # '[{playerName, opponentName, win, draw, lose}]' added later
+                if playerName not in duration.keys():
+                    duration[playerName] = {'playerName': playerName, 'samples': list()}
+                    # '[{duration, number}]' added later
+                
+                # Blue/Red ratio winner
+                brRatio[playerName]['blue'] += len([g for g in resultFile if g['blue']['name'] == playerName and (g['result'] == 'blue wins' or g['result'] == 'red error') ])
+                brRatio[playerName]['red'] += len([g for g in resultFile if g['red']['name'] == playerName and (g['result'] == 'red wins' or g['result'] == 'blue error') ])
+                
+                # Overview win/lose/draw ratio
+                # {playerName, win, draw, lose}
+                overRatio[playerName]['win'] += len([g for g in resultFile 
+                                                     if (g['blue']['name'] == playerName and (g['result'] == 'blue wins' or g['result'] == 'red error')) 
+                                                     or (g['red']['name'] == playerName and (g['result'] == 'red wins' or g['result'] == 'blue error')) ])
+                overRatio[playerName]['draw'] += len([g for g in resultFile if (g['red']['name'] == playerName or g['blue']['name'] == playerName) and g['result'] == 'draw' ])
+                overRatio[playerName]['lose'] += len([g for g in resultFile 
+                                                     if (g['blue']['name'] == playerName and (g['result'] == 'red wins' or g['result'] == 'blue error')) 
+                                                     or (g['red']['name'] == playerName and (g['result'] == 'blue wins' or g['result'] == 'red error')) ])
+                
+                # Duration of game
+                # {playerName, samples:[{duration, number}]}
+                durationList = [int(g['end']-g['start']) for g in resultFile if g['blue']['name'] == playerName or g['red']['name'] == playerName]
+                duration[playerName]['samples'] += [{'duration': d, 'number': durationList.count(d)} for d in set(durationList)]
+
+                # Player win/lose/draw ratio
+                # {playerName, players:[{playerName, opponentName, win, draw, lose}]}
+                for on in args['list-players']:
+                    if on != playerName:
+                        # Stats against other players
+                        w = len([g for g in resultFile 
+                                 if (g['blue']['name'] == playerName and g['red']['name'] == on and (g['result'] == 'blue wins' or g['result'] == 'red error')) 
+                                 or (g['red']['name'] == playerName and g['blue']['name'] == on and (g['result'] == 'red wins' or g['result'] == 'blue error')) ])
+                        d = len([g for g in resultFile 
+                                 if (g['blue']['name'] == playerName and g['red']['name'] == on and g['result'] == 'draw') 
+                                 or (g['red']['name'] == playerName and g['blue']['name'] == on and g['result'] == 'draw') ])
+                        l = len([g for g in resultFile 
+                                 if (g['blue']['name'] == playerName and g['red']['name'] == on and (g['result'] == 'red wins' or g['result'] == 'blue error')) 
+                                 or (g['red']['name'] == playerName and g['blue']['name'] == on and (g['result'] == 'blue wins' or g['result'] == 'red error')) ])
+                        if on not in playerRatio[playerName].keys():
+                            # add new player in list
+                            playerRatio[playerName][on] = {'playerName': playerName, 'opponentName': on, 'win': w, 'draw': d, 'lose': l}
+                        else:
+                            # update player in list
+                            playerRatio[playerName][on]['win'] += w
+                            playerRatio[playerName][on]['draw'] += d
+                            playerRatio[playerName][on]['lose'] += l
+                
+                # Map win/lose/draw ratio
+                # {playerName, maps:[{playerName, mapName, win, draw, lose}]}
+                for map_ in args['list-maps']:
+                    w = len([g for g in resultFile 
+                                                 if (g['blue']['name'] == playerName and g['map'] == map_ and (g['result'] == 'blue wins' or g['result'] == 'red error')) 
+                                                 or (g['red']['name'] == playerName and g['map'] == map_ and (g['result'] == 'red wins' or g['result'] == 'blue error')) ])
+                    d = len([g for g in resultFile 
+                                                 if (g['blue']['name'] == playerName and g['map'] == map_ and g['result'] == 'draw') 
+                                                 or (g['red']['name'] == playerName and g['map'] == map_ and g['result'] == 'draw') ])
+                    l = len([g for g in resultFile 
+                                                 if (g['blue']['name'] == playerName and g['map'] == map_ and (g['result'] == 'red wins' or g['result'] == 'blue error')) 
+                                                 or (g['red']['name'] == playerName and g['map'] == map_ and (g['result'] == 'blue wins' or g['result'] == 'red error')) ])
+                    if on not in mapRatio[playerName].keys():
+                        # add new map in list
+                        mapRatio[playerName][map_] = {'playerName': playerName, 'mapName': map_, 'win': w, 'draw': d, 'lose': l}
+                    else:
+                        # update map in list
+                        mapRatio[playerName][map_]['win'] += w
+                        mapRatio[playerName][map_]['draw'] += d
+                        mapRatio[playerName][map_]['lose'] += l
+    
+    for playerName in args['list-players']:
+        playerRatio[playerName] = [(n, infos) for n, (name, infos) in enumerate(sorted(
+            playerRatio[playerName].items(),key=lambda kv: kv[1]['win']-kv[1]['lose']+(kv[1]['draw'])/(1+kv[1]['win']+kv[1]['lose']),reverse=True), 1)]
+        mapRatio[playerName] = [(n, infos) for n, (name, infos) in enumerate(sorted(
+            mapRatio[playerName].items(),key=lambda kv: kv[1]['win']-kv[1]['lose']+(kv[1]['draw'])/(1+kv[1]['win']+kv[1]['lose']),reverse=True), 1)]
+        
+    # Write to file Statistics-Overview
+    overview = {'ratio-blue-red': brRatio, 'ratio-win-lose-draw': overRatio, 'ratio-maps': mapRatio, 'ratio-players': playerRatio, 'duration': duration}
+    statFile = os.path.join( args['statistics-path'], 'statistics-Players.json')
+    writeStatisticsOverview(statFile, overview)
+    return overview
+
+##{
+##    "blue": {"params": null, "name": "TEAM_DUMMY"},
+##    "map": "map.xml",
+##    "end": 1485990803.371, "start": 1485990762.356,
+##    "result": "draw",
+##    "red": {"params": "embtest", "name": "PYTHON_TEAM"}
+##}
 
 
 #TU_createStatistics_overview()
 #TU_createStatistics_maps()
+#TU_createStatistics_players()
