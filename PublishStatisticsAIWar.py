@@ -69,6 +69,14 @@ def writeStatisticsOverview(filepath, data):
         with open(filepath, 'w') as f:
             json.dump(data, f)
 
+def getPublishFile(args):
+    "Return filename of published statistics."
+    filename = os.path.join(args['output-path'],'RGraph_statistics-Overview.html')
+    if os.path.exists(filename):
+        return filename
+    else:
+        return None
+
 def publish(args):
     "Create all statistics. return nothing."
     #print('publish() : ',args)
@@ -82,14 +90,17 @@ def publish(args):
     #'output-path': output_path
     
     # Publish statistics : overview
+    print("Publishing 'overview' statistics :")
     statistics = createStatistics_overview(args)
     publishStatistics_overview(args, statistics)
     
     # Publish statistics : maps
+    print("Publishing 'maps' statistics :")
     statistics = createStatistics_maps(args)
     publishStatistics_maps(args, statistics)
     
     # Publish statistics : players
+    print("Publishing 'players' statistics :")
     statistics = createStatistics_players(args)
     publishStatistics_players(args, statistics)
 
@@ -224,8 +235,7 @@ def createStatistics_maps(args):
                 brRatio[map_]['red'] += len([g for g in resultFile if g['map'] == map_ and (g['result'] == 'red wins' or g['result'] == 'blue error') ])
                 
                 # Duration of game
-                durationList = [int(g['end']-g['start']) for g in resultFile if g['map'] == map_]
-                duration[map_]['samples'] += [{'duration': d, 'number': durationList.count(d)} for d in set(durationList)]
+                duration[map_]['samples'] += [int(g['end']-g['start']) for g in resultFile if g['map'] == map_]
                 
                 # loop on each player
                 for name in args['list-players']:
@@ -259,6 +269,11 @@ def createStatistics_maps(args):
         # {map:(rank, {name, win, lose, draw})}
         ranking[map_]['players'] = [(n, infos) for n, (name, infos) in enumerate(sorted(
             sp[map_].items(),key=lambda kv: kv[1]['win']-kv[1]['lose']+(kv[1]['draw'])/(1+kv[1]['win']+kv[1]['lose']),reverse=True), 1)]
+        # Duration of game : elminate duplications and count occurences
+        durationList = duration[map_]['samples']
+        simpleDurationList = list(set(durationList))
+        simpleDurationList.sort()
+        duration[map_]['samples'] = [{'duration': d, 'number': durationList.count(d)} for d in simpleDurationList]
 
     # Write to file Statistics-Overview
     overview = {'ratio-blue-red': brRatio, 'duration': duration, 'ranking': ranking}
@@ -326,8 +341,7 @@ def createStatistics_players(args):
                 
                 # Duration of game
                 # {playerName, samples:[{duration, number}]}
-                durationList = [int(g['end']-g['start']) for g in resultFile if g['blue']['name'] == playerName or g['red']['name'] == playerName]
-                duration[playerName]['samples'] += [{'duration': d, 'number': durationList.count(d)} for d in set(durationList)]
+                duration[playerName]['samples'] += [int(g['end']-g['start']) for g in resultFile if g['blue']['name'] == playerName or g['red']['name'] == playerName]
 
                 # Player win/lose/draw ratio
                 # {playerName, players:[{playerName, opponentName, win, draw, lose}]}
@@ -378,6 +392,13 @@ def createStatistics_players(args):
             playerRatio[playerName].items(),key=lambda kv: kv[1]['win']-kv[1]['lose']+(kv[1]['draw'])/(1+kv[1]['win']+kv[1]['lose']),reverse=True), 1)]
         mapRatio[playerName] = [(n, infos) for n, (name, infos) in enumerate(sorted(
             mapRatio[playerName].items(),key=lambda kv: kv[1]['win']-kv[1]['lose']+(kv[1]['draw'])/(1+kv[1]['win']+kv[1]['lose']),reverse=True), 1)]
+        # Duration of game : elminate duplications and count occurences
+        durationList = duration[playerName]['samples']
+        simpleDurationList = list(set(durationList))
+        simpleDurationList.sort()
+        duration[playerName]['samples'] = [{'duration': d, 'number': durationList.count(d)} for d in simpleDurationList]
+    
+        
         
     # Write to file Statistics-Overview
     overview = {'ratio-blue-red': brRatio, 'ratio-win-lose-draw': overRatio, 'ratio-maps': mapRatio, 'ratio-players': playerRatio, 'duration': duration}
@@ -393,9 +414,12 @@ def publishStatistics_overview(args, statistics):
     
     # Replace '##...##' by value in argument 'statistics'
     # '##heightHBAR##', '##PlayersList##', '##PlayersWinDrawLoseList##'
+    # ##MapsStatisticsLinks##   ##PlayersStatisticsLinks##
     template = template.replace('##heightHBAR##', str(int(len(statistics)*30+80)) )
     template = template.replace('##PlayersList##', json.dumps([infos['name'] for rank, infos in statistics]) )
     template = template.replace('##PlayersWinDrawLoseList##', json.dumps([ [infos['win'],infos['draw'],infos['lose']] for rank, infos in statistics ]) )
+    template = template.replace('##MapsStatisticsLinks##', ' - '.join(['<a href="RGraph_statistics-Maps-'+ os.path.splitext(map_)[0] +'.html">'+ os.path.splitext(map_)[0] +'</a>' for map_ in args['list-maps']]) )
+    template = template.replace('##PlayersStatisticsLinks##', ' - '.join(['<a href="RGraph_statistics-Players-'+ playerName +'.html">'+ playerName +'</a>' for playerName in args['list-players']]) )
     
     # Write to file
     writeFile( os.path.join(args['output-path'],'RGraph_statistics-Overview.html'), template)
@@ -411,7 +435,7 @@ def publishStatistics_maps(args, statistics):
         c = copy.deepcopy(template)
         # # Replace '##...##' by value in argument 'statistics'
         # ##MapName##   ##heightHBAR##   ##WinColor##   ##DurationList##   ##NumberList##   
-        # ##PlayersList##   ##PlayersWinDrawLoseList##
+        # ##DurationNumberList##   ##DurationMax##   ##PlayersList##   ##PlayersWinDrawLoseList##
         c = c.replace('##MapName##', os.path.splitext(map_)[0] )
         c = c.replace('##heightHBAR##', str(int(len(statistics['ranking'][map_]['players'])*30+80)) )
         c = c.replace('##WinColor##', json.dumps([statistics['ratio-blue-red'][map_]['blue'], statistics['ratio-blue-red'][map_]['red']]) )
@@ -422,6 +446,8 @@ def publishStatistics_maps(args, statistics):
             tmp_number.append(0)
         c = c.replace('##DurationList##', json.dumps(tmp_duration) )
         c = c.replace('##NumberList##', json.dumps(tmp_number) )
+        c = c.replace('##DurationNumberList##', json.dumps([ [sample['duration'], sample['number']] for sample in statistics['duration'][map_]['samples'] ]) )
+        c = c.replace('##DurationMax##', str(int(tmp_duration[-1])) )
         c = c.replace('##PlayersList##', json.dumps([player['name'] for rank, player in statistics['ranking'][map_]['players']]) )
         c = c.replace('##PlayersWinDrawLoseList##', json.dumps([ [player['win'],player['draw'],player['lose']] for rank, player in statistics['ranking'][map_]['players'] ]) )
         # # Write to file for this map
@@ -440,6 +466,7 @@ def publishStatistics_players(args, statistics):
         # ##PlayerName##   ##heightHBAR-Player##   ##heightHBAR-Maps##   
         # ##WinColor##   ##WinDrawLose##   ##PlayersList##   ##PlayersWinDrawLoseList##
         # ##MapsList##   ##MapsWinDrawLoseList##   ##DurationList##   ##NumberList##
+        # ##DurationNumberList##   ##DurationMax##
         c = c.replace('##PlayerName##', player )
         c = c.replace('##heightHBAR-Player##', str(int(len(statistics['ratio-players'][player])*30+80)) )
         c = c.replace('##heightHBAR-Maps##', str(int(len(statistics['ratio-maps'][player])*30+80)) )
@@ -456,10 +483,12 @@ def publishStatistics_players(args, statistics):
             tmp_number.append(0)
         c = c.replace('##DurationList##', json.dumps(tmp_duration) )
         c = c.replace('##NumberList##', json.dumps(tmp_number) )
+        c = c.replace('##DurationNumberList##', json.dumps([ [sample['duration'], sample['number']] for sample in statistics['duration'][player]['samples'] ]) )
+        c = c.replace('##DurationMax##', str(int(tmp_duration[-1])) )
         # # Write to file for this player
         writeFile( os.path.join(args['output-path'],'RGraph_statistics-Players-'+ player +'.html'), c)
     
 
-#TU_createStatistics_overview()
-#TU_createStatistics_maps()
-#TU_createStatistics_players()
+#TU_overview()
+#TU_maps()
+#TU_players()

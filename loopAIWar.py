@@ -11,7 +11,7 @@ import argparse     # ArgumentParser(), add_argument(), parse_args()
 
 import multiprocessing  # cpu_count()
 
-import PublishStatisticsAIWar # publish()
+import PublishStatisticsAIWar # publish(), getPublishFile()
 
 class AIwarError(Exception):
     pass
@@ -96,7 +96,7 @@ def newJob( blue, red, mapName ):
     
     return {'blue': blue, 'red':red, 'mapName': mapName}
 
-def createArgs( blue, red, mapName ):
+def createArgsAIWar( blue, red, mapName ):
     "Create list of args to launch 'AIWar' subprocess"
     args = ( "AIWar",
              "--blue", blue,
@@ -153,6 +153,19 @@ def createResultName( blue, red ):
     logging.debug( 'result_name={}'.format(name) )
     return name
 
+def getPublishArgs():
+    "Construct args to publish. return dict."
+    # Add path to results files
+    listOfResultFile = [os.path.join(rootPath, f) for f in getListOfResultFile()]
+        
+    return {'list-results-files': listOfResultFile,     \
+            'list-players': readConfig(configFile)[3],  \
+            'list-maps': readMaps(configMapDirectory),  \
+            'statistics-path': statistics,              \
+            'template-path': templatePath,              \
+            'output-path': outputPath                   \
+            }
+    
 
 #############
 # Multiprocessing function
@@ -193,7 +206,7 @@ def processJob( keywords ):
         
     # Init
     #logging = keywords['logging']
-    args    = createArgs( keywords['blue'], keywords['red'], keywords['mapName'] )
+    args    = createArgsAIWar( keywords['blue'], keywords['red'], keywords['mapName'] )
     try:
         verifyArgs(args)
     except AIwarError as e:
@@ -404,6 +417,9 @@ def addJobToResultFile( blue, red, mapName, returncode, start, end ):
 #############
 # Init
 rootPath = os.path.join(os.getcwd(),'www', os.path.splitext(os.path.basename(sys.argv[0]))[0])
+statistics = rootPath
+templatePath = os.path.join(rootPath,'..', 'template')
+outputPath = os.path.join(rootPath,'..', 'results')
 if not os.path.isdir(rootPath):
     os.makedirs(rootPath)
 configFile = 'config.xml'
@@ -546,6 +562,12 @@ if __name__ == '__main__':
         # Number of processes max
         np_max = multiprocessing.cpu_count()
         print('Number of processes max = {}'.format(np_max))
+        # Name of statistics file
+        sf = PublishStatisticsAIWar.getPublishFile( getPublishArgs() )
+        if sf:
+            print('Statistics available in file = {}'.format(sf))
+        else:
+            print('Statistics not available')
     
     if args.subparser_name == 'resume-jobs':
         jobs_resume = list()
@@ -563,16 +585,7 @@ if __name__ == '__main__':
 
     if args.subparser_name == 'update-charts':
         # update charts
-        ################ TO DO - TO DO - TO DO - TO DO ##############
-        # Add path to result file
-        listOfResultFile = [os.path.join(rootPath, f) for f in getListOfResultFile()]
-            
-        publish_data = {'list-results-files': listOfResultFile,     \
-                        'list-players': readConfig(configFile)[3],  \
-                        'list-maps': readMaps(configMapDirectory),  \
-                        'statistics-path': rootPath                 \
-                        }
-        PublishStatisticsAIWar.publish(publish_data)
+        PublishStatisticsAIWar.publish( getPublishArgs() )
 
     if args.subparser_name == 'loop-rounds':
         # Read Resume-File
@@ -606,7 +619,7 @@ if __name__ == '__main__':
         # launch jobs
         allocateJob(jobs_resume)
         # update charts
-        ################ TO DO - TO DO - TO DO - TO DO ##############
+        PublishStatisticsAIWar.publish( getPublishArgs() )
 
     if args.subparser_name == 'loop-maps':
         # Read Resume-File
@@ -635,7 +648,7 @@ if __name__ == '__main__':
         # launch jobs
         allocateJob(jobs_resume)
         # update charts
-        ################ TO DO - TO DO - TO DO - TO DO ##############
+        PublishStatisticsAIWar.publish( getPublishArgs() )
 
     if args.subparser_name == 'loop-colors':
         # Read Resume-File
@@ -664,7 +677,7 @@ if __name__ == '__main__':
         # launch jobs
         allocateJob(jobs_resume)
         # update charts
-        ################ TO DO - TO DO - TO DO - TO DO ##############
+        PublishStatisticsAIWar.publish( getPublishArgs() )
 
     if args.subparser_name == 'loop-players':
         # Read Resume-File
@@ -688,7 +701,7 @@ if __name__ == '__main__':
         # launch jobs
         allocateJob(jobs_resume)
         # update charts
-        ################ TO DO - TO DO - TO DO - TO DO ##############
+        PublishStatisticsAIWar.publish( getPublishArgs() )
 
     if args.subparser_name == 'loop-complete':
         # Read Resume-File
@@ -708,13 +721,7 @@ if __name__ == '__main__':
         # launch jobs
         allocateJob(jobs_resume)
         # update charts
-        ################ TO DO - TO DO - TO DO - TO DO ##############
-
-
-
-    #############
-    # Build charts
-
+        PublishStatisticsAIWar.publish( getPublishArgs() )
 
 
     txt = '...End'

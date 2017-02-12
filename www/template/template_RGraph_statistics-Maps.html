@@ -13,6 +13,9 @@
 		<script src="../lib/RGraph/libraries/RGraph.common.core.js"></script>
 		<script src="../lib/RGraph/libraries/RGraph.common.dynamic.js"></script>
 		<script src="../lib/RGraph/libraries/RGraph.line.js"></script>
+		<!-- RGraph.Scatter -->
+		<script src="../lib/RGraph/libraries/RGraph.common.core.js"></script>
+		<script src="../lib/RGraph/libraries/RGraph.scatter.js"></script>
 		
 		<title>AIWar : Maps statistics (##MapName##)</title>
 		<meta name="description" content="AIWar : Maps statistics">
@@ -22,7 +25,9 @@
 		<h1>AIWar : Maps statistics (##MapName##)</h1>
 		<center><canvas id="id_pie_winColor" width="400" height="300">[No canvas support]</canvas></center>
 		<br/><br/><br/>
-		<center><canvas id="id_line_duration" width="600" height="250">[No canvas support]</canvas></center>
+		<!-- <center><canvas id="id_line_duration" width="600" height="250">[No canvas support]</canvas></center> -->
+		<!-- <br /><br /><br /> -->
+		<center><canvas id="id_scatter_duration" width="600" height="250">[No canvas support]</canvas></center>
 		<br /><br /><br />
 		<!-- hbar.height = 30 x line + 80 -->
 		<center><canvas id="id_hbar_ranking" width="600" height="##heightHBAR##">[No canvas support]</canvas></center>
@@ -46,28 +51,52 @@
 					}
 				}).grow()
 							
-				var line_duration = ##DurationList##;
-				var line_games = ##NumberList##;
+				<!-- var line_duration = ##DurationList##; -->
+				<!-- var line_games = ##NumberList##; -->
 				
-				line = new RGraph.Line({
-					id:'id_line_duration',
-					data: line_games,
+				<!-- line = new RGraph.Line({ -->
+					<!-- id:'id_line_duration', -->
+					<!-- data: line_games, -->
+					<!-- options: { -->
+						<!-- labels: line_duration, -->
+						<!-- gutterLeft: 35, -->
+						<!-- gutterBottom: 35, -->
+						<!-- linewidth: 2, -->
+						<!-- hmargin: 10, -->
+						<!-- shadow: true, -->
+						<!-- title: 'Duration of games', -->
+						<!-- titleYaxis: 'games', -->
+						<!-- titleXaxis: 'seconds', -->
+						<!-- spline: true, -->
+						<!-- tickmarks: 'circle', -->
+						<!-- ticksize: 2 -->
+					<!-- } -->
+				<!-- }).draw(); -->
+				
+				var scatter_duration = ##DurationNumberList##;
+				
+				new RGraph.Scatter({
+					id: 'id_scatter_duration',
+					data: scatter_duration,
 					options: {
-						labels: line_duration,
-						gutterLeft: 35,
-						gutterBottom: 35,
-						linewidth: 2,
-						hmargin: 10,
-						shadow: true,
 						title: 'Duration of games',
-						titleYaxis: 'games',
-						titleXaxis: 'seconds',
-						spline: true,
-						tickmarks: 'circle',
-						ticksize: 2
+						titleXaxis: 'Duration (in seconds)',
+						titleYaxis: 'Number of games',
+						gutterLeft: 40,
+						gutterBottom: 40,
+						line: true,
+						xmax: ##DurationMax##,
+						xscale: true,
+						backgroundVbars: [
+							[0,300,'rgba(0,255,0,0.2)'],
+							[300,300,'rgba(0,200,0,0.2)'],
+							[600,300,'rgba(255,255,0,0.2)'],
+							[900,300,'rgba(200,0,0,0.2)'],
+							[1200,300,'rgba(255,0,0,0.2)']
+						]
 					}
 				}).draw();
-				
+
 				var hbar_playersList = ##PlayersList##;
 				var hbar_data = ##PlayersWinDrawLoseList##;
 				
