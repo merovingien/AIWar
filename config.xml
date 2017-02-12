@@ -2,7 +2,7 @@
 <aiwar>
   <options>
     <debug>false</debug>
-    <manual>true</manual>
+    <manual>false</manual>
     <map>maps/map.xml</map>
     <blue>PYTHON_TEAM</blue>
     <red>Example</red>
@@ -25,14 +25,14 @@
       <params/>
     </player>
     <player>
-      <name>Merovingien</name>
+      <name>Merovingien-3</name>
       <handler>python</handler>
-      <params>mero</params>
+      <params>mero_V3</params>
     </player>
     <player>
-      <name>GuiGui</name>
+      <name>Merovingien-2</name>
       <handler>python</handler>
-      <params>AIWar_GuiGui_05</params>
+      <params>mero_V2</params>
     </player>
     <player>
       <name>Antoine</name>
@@ -42,12 +42,42 @@
     <player>
       <name>Clement</name>
       <handler>python</handler>
-      <params>sdt2_(360edition)_03022013</params>
+      <params>Clement_03022013</params>
     </player>
     <player>
-      <name>print_config</name>
+      <name>Shuriken-0</name>
       <handler>python</handler>
-      <params>print_config</params>
+      <params>AIWar_Shuriken_00</params>
+    </player>
+    <player>
+      <name>GuiGui-6</name>
+      <handler>python</handler>
+      <params>AIWar_GuiGui_06</params>
+    </player>
+    <player>
+      <name>GuiGui-1</name>
+      <handler>python</handler>
+      <params>AIWar_GuiGui_01</params>
+    </player>
+    <player>
+      <name>GuiGui-2</name>
+      <handler>python</handler>
+      <params>AIWar_GuiGui_02</params>
+    </player>
+    <player>
+      <name>GuiGui-3</name>
+      <handler>python</handler>
+      <params>AIWar_GuiGui_03</params>
+    </player>
+    <player>
+      <name>GuiGui-4</name>
+      <handler>python</handler>
+      <params>AIWar_GuiGui_04</params>
+    </player>
+    <player>
+      <name>GuiGui-5</name>
+      <handler>python</handler>
+      <params>AIWar_GuiGui_05</params>
     </player>
   </players>
   <renderers>
