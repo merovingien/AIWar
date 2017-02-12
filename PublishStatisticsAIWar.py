@@ -4,12 +4,27 @@ import subprocess   # Popen()
 import logging
 import json         # dump(), load()
 import datetime     # date.today().isoformat()
+import copy         # deepcopy()
 
 
 class AIwarError(Exception):
     pass
 
 def readFile(filepath):
+    "Read file"
+    data = list()
+    if filepath and os.path.isfile(filepath):
+        with open(filepath, 'r') as rf:
+            data = rf.read()
+    return data
+    
+def writeFile(filepath, data):
+    "Write file"
+    if filepath and os.path.exists(os.path.dirname(filepath)):
+        with open(filepath, 'w') as rf:
+            rf.write(data)
+    
+def readJSONFile(filepath):
     data = list()
     # Read file
     if filepath and os.path.isfile(filepath):
@@ -22,7 +37,7 @@ def readResultFile(filepath):
     jobs_results = list()
     # Read results already saved from file
     if filepath and os.path.isfile(filepath):
-        jobs_results = readFile(filepath)
+        jobs_results = readJSONFile(filepath)
         txt = 'Result file "{name}" : {jobs} job{plural}.'.format( name=os.path.basename(filepath), jobs=len(jobs_results), plural='s' if len(jobs_results) else '' )
         #logging.info( txt )
         print(txt)
@@ -37,7 +52,7 @@ def readStatisticsFile(filepath):
     statistics = list()
     # Read results already saved from file
     if filepath and os.path.isfile(filepath):
-        statistics = readFile(filepath)
+        statistics = readJSONFile(filepath)
         txt = 'Statistics file "{name}" : {jobs} data{plural}.'.format( name=os.path.basename(filepath), jobs=len(statistics), plural='s' if len(statistics) else '' )
         #logging.info( txt )
         print(txt)
@@ -63,54 +78,65 @@ def publish(args):
     #'list-players': list_players
     #'list-maps': list_maps
     #'statistics-path': statistics_path
+    #'template-path': template_path
+    #'output-path': output_path
     
     # Publish statistics : overview
     statistics = createStatistics_overview(args)
-    #publishStatistics_overview(args, statistics)
+    publishStatistics_overview(args, statistics)
     
     # Publish statistics : maps
     statistics = createStatistics_maps(args)
-    #publishStatistics_maps(args, statistics)
+    publishStatistics_maps(args, statistics)
     
     # Publish statistics : players
     statistics = createStatistics_players(args)
-    #publishStatistics_players(args, statistics)
+    publishStatistics_players(args, statistics)
 
-def TU_createStatistics_overview():
+def TU_overview():
     listOfResultFile = ['H:\\Jeux\\AIWar_V0.4.0_win32\\www\\loopAIWar\\TESTS-loopAIWar_results-list.json']
-    publish_data = { \
+    args = { \
         'list-results-files': ['H:\\Jeux\\AIWar_V0.4.0_win32\\www\\loopAIWar\\TESTS-loopAIWar_results-list.json'], \
         'statistics-path': 'H:\\Jeux\\AIWar_V0.4.0_win32\\www\\loopAIWar', \
+        'template-path': 'H:\\Jeux\\AIWar_V0.4.0_win32\\www\\template', \
+        'output-path': 'H:\\Jeux\\AIWar_V0.4.0_win32\\www\\results', \
         'list-maps': ('map.xml', 'map_BackToBack.xml', 'map_FollowTheWhiteRabbit.xml', 'map_NoRulZ.xml', 'map_test.xml', 'map_ToInfinityAndBeyond.xml'), \
         'list-players': ('TEAM_DUMMY', 'PYTHON_TEAM', 'Merovingien-3', 'Merovingien-2', 'Antoine', 'Clement', 'Shuriken-0', 'GuiGui-6', 'GuiGui-1', 'GuiGui-2', 'GuiGui-3', 'GuiGui-4', 'GuiGui-5') \
         }
-    result = createStatistics_overview(publish_data)
-    print(result)
-    return result
+    statistics = createStatistics_overview(args)
+    print(statistics)
+    publishStatistics_overview(args, statistics)
+    return statistics
     
-def TU_createStatistics_maps():
+def TU_maps():
     listOfResultFile = ['H:\\Jeux\\AIWar_V0.4.0_win32\\www\\loopAIWar\\TESTS-loopAIWar_results-list.json']
-    publish_data = { \
+    args = { \
         'list-results-files': ['H:\\Jeux\\AIWar_V0.4.0_win32\\www\\loopAIWar\\TESTS-loopAIWar_results-list.json'], \
         'statistics-path': 'H:\\Jeux\\AIWar_V0.4.0_win32\\www\\loopAIWar', \
+        'template-path': 'H:\\Jeux\\AIWar_V0.4.0_win32\\www\\template', \
+        'output-path': 'H:\\Jeux\\AIWar_V0.4.0_win32\\www\\results', \
         'list-maps': ('map.xml', 'map_BackToBack.xml', 'map_FollowTheWhiteRabbit.xml', 'map_NoRulZ.xml', 'map_test.xml', 'map_ToInfinityAndBeyond.xml'), \
         'list-players': ('TEAM_DUMMY', 'PYTHON_TEAM', 'Merovingien-3', 'Merovingien-2', 'Antoine', 'Clement', 'Shuriken-0', 'GuiGui-6', 'GuiGui-1', 'GuiGui-2', 'GuiGui-3', 'GuiGui-4', 'GuiGui-5') \
         }
-    result = createStatistics_maps(publish_data)
-    print(result)
-    return result
+    statistics = createStatistics_maps(args)
+    print(statistics)
+    publishStatistics_maps(args, statistics)
+    return statistics
     
-def TU_createStatistics_players():
+def TU_players():
     listOfResultFile = ['H:\\Jeux\\AIWar_V0.4.0_win32\\www\\loopAIWar\\TESTS-loopAIWar_results-list.json']
-    publish_data = { \
+    args = { \
         'list-results-files': ['H:\\Jeux\\AIWar_V0.4.0_win32\\www\\loopAIWar\\TESTS-loopAIWar_results-list.json'], \
         'statistics-path': 'H:\\Jeux\\AIWar_V0.4.0_win32\\www\\loopAIWar', \
+        'template-path': 'H:\\Jeux\\AIWar_V0.4.0_win32\\www\\template', \
+        'output-path': 'H:\\Jeux\\AIWar_V0.4.0_win32\\www\\results', \
         'list-maps': ('map.xml', 'map_BackToBack.xml', 'map_FollowTheWhiteRabbit.xml', 'map_NoRulZ.xml', 'map_test.xml', 'map_ToInfinityAndBeyond.xml'), \
         'list-players': ('TEAM_DUMMY', 'PYTHON_TEAM', 'Merovingien-3', 'Merovingien-2', 'Antoine', 'Clement', 'Shuriken-0', 'GuiGui-6', 'GuiGui-1', 'GuiGui-2', 'GuiGui-3', 'GuiGui-4', 'GuiGui-5') \
         }
-    result = createStatistics_players(publish_data)
-    print(result)
-    return result
+    statistics = createStatistics_players(args)
+    print(statistics)
+    publishStatistics_players(args, statistics)
+    return statistics
     
 def createStatistics_overview(args):
     "Create statistics 'overview'. return list of statistics."
@@ -338,7 +364,7 @@ def createStatistics_players(args):
                     l = len([g for g in resultFile 
                                                  if (g['blue']['name'] == playerName and g['map'] == map_ and (g['result'] == 'red wins' or g['result'] == 'blue error')) 
                                                  or (g['red']['name'] == playerName and g['map'] == map_ and (g['result'] == 'blue wins' or g['result'] == 'red error')) ])
-                    if on not in mapRatio[playerName].keys():
+                    if map_ not in mapRatio[playerName].keys():
                         # add new map in list
                         mapRatio[playerName][map_] = {'playerName': playerName, 'mapName': map_, 'win': w, 'draw': d, 'lose': l}
                     else:
@@ -359,14 +385,80 @@ def createStatistics_players(args):
     writeStatisticsOverview(statFile, overview)
     return overview
 
-##{
-##    "blue": {"params": null, "name": "TEAM_DUMMY"},
-##    "map": "map.xml",
-##    "end": 1485990803.371, "start": 1485990762.356,
-##    "result": "draw",
-##    "red": {"params": "embtest", "name": "PYTHON_TEAM"}
-##}
 
+def publishStatistics_overview(args, statistics):
+    "Create HTML output of 'overview' statistics. return nothing."
+    # Read 'overview' template File
+    template = readFile( os.path.join(args['template-path'],'template_RGraph_statistics-Overview.html') )
+    
+    # Replace '##...##' by value in argument 'statistics'
+    # '##heightHBAR##', '##PlayersList##', '##PlayersWinDrawLoseList##'
+    template = template.replace('##heightHBAR##', str(int(len(statistics)*30+80)) )
+    template = template.replace('##PlayersList##', json.dumps([infos['name'] for rank, infos in statistics]) )
+    template = template.replace('##PlayersWinDrawLoseList##', json.dumps([ [infos['win'],infos['draw'],infos['lose']] for rank, infos in statistics ]) )
+    
+    # Write to file
+    writeFile( os.path.join(args['output-path'],'RGraph_statistics-Overview.html'), template)
+    
+def publishStatistics_maps(args, statistics):
+    "Create HTML output of 'maps' statistics. return nothing."
+    # Read 'maps' template File
+    template = readFile( os.path.join(args['template-path'],'template_RGraph_statistics-Maps.html') )
+    
+    # Iterate on all maps in argument 'statistics'
+    for map_ in args['list-maps']:
+        # # Copy deeply template in local variable
+        c = copy.deepcopy(template)
+        # # Replace '##...##' by value in argument 'statistics'
+        # ##MapName##   ##heightHBAR##   ##WinColor##   ##DurationList##   ##NumberList##   
+        # ##PlayersList##   ##PlayersWinDrawLoseList##
+        c = c.replace('##MapName##', os.path.splitext(map_)[0] )
+        c = c.replace('##heightHBAR##', str(int(len(statistics['ranking'][map_]['players'])*30+80)) )
+        c = c.replace('##WinColor##', json.dumps([statistics['ratio-blue-red'][map_]['blue'], statistics['ratio-blue-red'][map_]['red']]) )
+        # RGraph.Line bugs if data are void list '[]', so I add '[0]' to fix it.
+        tmp_duration, tmp_number = [sample['duration'] for sample in statistics['duration'][map_]['samples']], [sample['number'] for sample in statistics['duration'][map_]['samples']]
+        if not len(tmp_duration):
+            tmp_duration.append(0)
+            tmp_number.append(0)
+        c = c.replace('##DurationList##', json.dumps(tmp_duration) )
+        c = c.replace('##NumberList##', json.dumps(tmp_number) )
+        c = c.replace('##PlayersList##', json.dumps([player['name'] for rank, player in statistics['ranking'][map_]['players']]) )
+        c = c.replace('##PlayersWinDrawLoseList##', json.dumps([ [player['win'],player['draw'],player['lose']] for rank, player in statistics['ranking'][map_]['players'] ]) )
+        # # Write to file for this map
+        writeFile( os.path.join(args['output-path'],'RGraph_statistics-Maps-'+ os.path.splitext(map_)[0] +'.html'), c)
+        
+def publishStatistics_players(args, statistics):
+    "Create HTML output of 'players' statistics. return nothing."
+    # Read 'players' template File
+    template = readFile( os.path.join(args['template-path'],'template_RGraph_statistics-Players.html') )
+    
+    # Iterate on all players in argument 'statistics'
+    for player in args['list-players']:
+        # # Copy deeply template in local variable
+        c = copy.deepcopy(template)
+        # # Replace '##...##' by value in argument 'statistics'
+        # ##PlayerName##   ##heightHBAR-Player##   ##heightHBAR-Maps##   
+        # ##WinColor##   ##WinDrawLose##   ##PlayersList##   ##PlayersWinDrawLoseList##
+        # ##MapsList##   ##MapsWinDrawLoseList##   ##DurationList##   ##NumberList##
+        c = c.replace('##PlayerName##', player )
+        c = c.replace('##heightHBAR-Player##', str(int(len(statistics['ratio-players'][player])*30+80)) )
+        c = c.replace('##heightHBAR-Maps##', str(int(len(statistics['ratio-maps'][player])*30+80)) )
+        c = c.replace('##WinColor##', json.dumps([statistics['ratio-blue-red'][player]['blue'], statistics['ratio-blue-red'][player]['red']]) )
+        c = c.replace('##WinDrawLose##', json.dumps([statistics['ratio-win-lose-draw'][player]['win'], statistics['ratio-win-lose-draw'][player]['draw'], statistics['ratio-win-lose-draw'][player]['lose']]) )
+        c = c.replace('##PlayersList##', json.dumps([infos['opponentName'] for rank, infos in statistics['ratio-players'][player]]) )
+        c = c.replace('##PlayersWinDrawLoseList##', json.dumps([ [infos['win'],infos['draw'],infos['lose']] for rank, infos in statistics['ratio-players'][player]]) )
+        c = c.replace('##MapsList##', json.dumps([infos['mapName'] for rank, infos in statistics['ratio-maps'][player]]) )
+        c = c.replace('##MapsWinDrawLoseList##', json.dumps([ [infos['win'],infos['draw'],infos['lose']] for rank, infos in statistics['ratio-maps'][player]]) )
+        # RGraph.Line bugs if data are void list '[]', so I add '[0]' to fix it.
+        tmp_duration, tmp_number = [sample['duration'] for sample in statistics['duration'][player]['samples']], [sample['number'] for sample in statistics['duration'][player]['samples']]
+        if not len(tmp_duration):
+            tmp_duration.append(0)
+            tmp_number.append(0)
+        c = c.replace('##DurationList##', json.dumps(tmp_duration) )
+        c = c.replace('##NumberList##', json.dumps(tmp_number) )
+        # # Write to file for this player
+        writeFile( os.path.join(args['output-path'],'RGraph_statistics-Players-'+ player +'.html'), c)
+    
 
 #TU_createStatistics_overview()
 #TU_createStatistics_maps()

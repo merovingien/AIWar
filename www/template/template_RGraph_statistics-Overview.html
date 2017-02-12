@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<!-- RGraph.HBar -->
+		<script src="../lib/RGraph/libraries/RGraph.common.core.js"></script>
+		<script src="../lib/RGraph/libraries/RGraph.common.key.js"></script>
+		<script src="../lib/RGraph/libraries/RGraph.hbar.js"></script>
+		
+		<title>AIWar : Overview statistics</title>
+		<meta name="description" content="AIWar : Overview statistics">
+	</head>
+	
+	<body>
+		<h1>AIWar : Overview statistics</h1>
+		<!-- hbar.height = 30 x line + 80 -->
+		<center><canvas id="id_hbar_overview" width="600" height="##heightHBAR##">[No canvas support]</canvas></center>
+
+		<script>
+			var joueurs = ##PlayersList##;
+			var datas1 = ##PlayersWinDrawLoseList##;
+			
+			var hbar = new RGraph.HBar({
+				id: 'id_hbar_overview',
+				data: datas1,
+				options: {
+					grouping: 'stacked',
+					hmargin: 20,
+					title: 'Ranking',
+					titleXaxis: 'games',
+					titleXaxisBold: false,
+					labels: joueurs,
+					key: ['Win','Draw','Lose'],
+					keyPosition: 'gutter',
+					keyPositionGutterBoxed: false,
+					keyColors: ['#00ff00','#bbbbbb','#ff0000'],
+					keyTextSize: 16,
+					colors: [
+						'Gradient(#008000:#00ff00:#008000)',
+						'Gradient(#888888:#bbbbbb:#888888)',
+						'Gradient(#800000:#ff0000:#800000)'
+					],
+					backgroundColor : 'Gradient(#ffffdd:#eeee60:#ffffdd)',
+					scaleZerostart: true,
+					noxaxis: true,
+					axisColor: '#999',
+					textSize: 18,
+					gutterTop: 30,
+					gutterBottom: 20,
+					gutterLeft: 120,
+					gutterRight: 25,
+					textAccessible: true
+				}
+			}).grow();
+		</script>
+		<br/><br/><br/>
+		<center><a href="http://www.rgraph.net/"><img src="../lib/img/RGraph_title.png"/></a></center>
+	</body>
+</html>

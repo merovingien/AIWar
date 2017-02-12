@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+		<!-- RGraph.HBar -->
+		<script src="../lib/RGraph/libraries/RGraph.common.core.js"></script>
+		<script src="../lib/RGraph/libraries/RGraph.common.key.js"></script>
+		<script src="../lib/RGraph/libraries/RGraph.hbar.js"></script>
+		<!-- RGraph.Pie -->
+		<script src="../lib/RGraph/libraries/RGraph.common.core.js"></script>
+		<script src="../lib/RGraph/libraries/RGraph.pie.js"></script>
+		<!-- RGraph.Line -->
+		<script src="../lib/RGraph/libraries/RGraph.common.core.js"></script>
+		<script src="../lib/RGraph/libraries/RGraph.common.dynamic.js"></script>
+		<script src="../lib/RGraph/libraries/RGraph.line.js"></script>
+		
+		<title>AIWar : Maps statistics (##MapName##)</title>
+		<meta name="description" content="AIWar : Maps statistics">
+	</head>
+	
+	<body>
+		<h1>AIWar : Maps statistics (##MapName##)</h1>
+		<center><canvas id="id_pie_winColor" width="400" height="300">[No canvas support]</canvas></center>
+		<br/><br/><br/>
+		<center><canvas id="id_line_duration" width="600" height="250">[No canvas support]</canvas></center>
+		<br /><br /><br />
+		<!-- hbar.height = 30 x line + 80 -->
+		<center><canvas id="id_hbar_ranking" width="600" height="##heightHBAR##">[No canvas support]</canvas></center>
+		<br /><br /><br />
+		<script>
+			window.onload = function ()
+			{
+				var pie_data = ##WinColor##;
+				
+				var pie = new RGraph.Pie({
+					id: 'id_pie_winColor',
+					data: pie_data,
+					options: {
+						title: 'Color of winners',
+						colors: ['#0000ff', '#ff0000'],
+						textAccessible: true,
+						exploded: [15],
+						labels: ['blue','red'],
+						labelsIngraph: true,
+						labelsIngraphBoundingFill: '#dddddd'
+					}
+				}).grow()
+							
+				var line_duration = ##DurationList##;
+				var line_games = ##NumberList##;
+				
+				line = new RGraph.Line({
+					id:'id_line_duration',
+					data: line_games,
+					options: {
+						labels: line_duration,
+						gutterLeft: 35,
+						gutterBottom: 35,
+						linewidth: 2,
+						hmargin: 10,
+						shadow: true,
+						title: 'Duration of games',
+						titleYaxis: 'games',
+						titleXaxis: 'seconds',
+						spline: true,
+						tickmarks: 'circle',
+						ticksize: 2
+					}
+				}).draw();
+				
+				var hbar_playersList = ##PlayersList##;
+				var hbar_data = ##PlayersWinDrawLoseList##;
+				
+				var hbar = new RGraph.HBar({
+					id: 'id_hbar_ranking',
+					data: hbar_data,
+					options: {
+						grouping: 'stacked',
+						hmargin: 20,
+						title: 'Ranking',
+						titleXaxis: 'games',
+						titleXaxisBold: false,
+						labels: hbar_playersList,
+						key: ['Win','Draw','Lose'],
+						keyPosition: 'gutter',
+						keyPositionGutterBoxed: false,
+						keyColors: ['#00ff00','#bbbbbb','#ff0000'],
+						keyTextSize: 16,
+						colors: [
+							'Gradient(#008000:#00ff00:#008000)',
+							'Gradient(#888888:#bbbbbb:#888888)',
+							'Gradient(#800000:#ff0000:#800000)'
+						],
+						backgroundColor : 'Gradient(#ffffdd:#eeee60:#ffffdd)',
+						scaleZerostart: true,
+						noxaxis: true,
+						axisColor: '#999',
+						textSize: 18,
+						gutterTop: 30,
+						gutterBottom: 20,
+						gutterLeft: 120,
+						gutterRight: 25,
+						textAccessible: true
+					}
+				}).grow();
+			};
+		</script>
+		<br/><br/><br/>
+		<center><a href="http://www.rgraph.net/"><img src="../lib/img/RGraph_title.png"/></a></center>
+	</body>
+</html>
