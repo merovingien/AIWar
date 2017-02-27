@@ -16,15 +16,12 @@ import PublishStatisticsAIWar # publish(), getPublishFile()
 class AIwarError(Exception):
     pass
 
-# Reading 'config.xml' to extract blue/red players and map name.
-# Use global var 'readConfig_static' to prevent multiple XML parsing
-readConfig_static = None
 def readConfig( config ):
     "Read the config file to return players and map name as a tuple."
-    global readConfig_static
     tree = ET.parse(config)
     root = tree.getroot()
-    if(readConfig_static == None or readConfig_static['ref'] != config):
+    if( not hasattr(readConfig, '_static') or readConfig._static['ref'] != config):
+        # Create var 'readConfig._static' to prevent multiple XML parsing
         blue = root.find("options/blue").text
         red = root.find("options/red").text
         mapName = root.find("options/map").text
@@ -37,27 +34,25 @@ def readConfig( config ):
         logging.info(
             'Reading config file "{config}" : list of players "{players}".'.format(
             config=config, players=players ) )
-        readConfig_static = dict()
-        readConfig_static['ref'] = config
-        readConfig_static['data'] = (blue, red, mapName, players, playersParams, renderers)
-    return readConfig_static['data']
+        readConfig._static = dict()
+        readConfig._static['ref'] = config
+        readConfig._static['data'] = (blue, red, mapName, players, playersParams, renderers)
+    return readConfig._static['data']
 
-# Use global var 'readMaps_static' to prevent multiple os.listdir()
-readMaps_static = None
 def readMaps( mapDirectory ):
     "Read the list of map and return as a tuple."
-    global readMaps_static
-    if(readMaps_static == None or readMaps_static['ref'] != mapDirectory):
-        readMaps_static = dict()
-        readMaps_static['ref'] = mapDirectory
-        readMaps_static['data'] = tuple(m for m in os.listdir(mapDirectory) if m[-4:].lower() == '.xml')
+    if(not hasattr(readMaps, '_static') or readMaps._static['ref'] != mapDirectory):
+        # Create var 'readMaps._static' to prevent multiple os.listdir()
+        readMaps._static = dict()
+        readMaps._static['ref'] = mapDirectory
+        readMaps._static['data'] = tuple(m for m in os.listdir(mapDirectory) if m[-4:].lower() == '.xml')
         logging.info( 'Reading list of maps : {}'.format(mapDirectory) )
-        logging.info( 'Map directory : {}'.format(readMaps_static['ref']) )
-        for i, m in enumerate(readMaps_static['data']):
+        logging.info( 'Map directory : {}'.format(readMaps._static['ref']) )
+        for i, m in enumerate(readMaps._static['data']):
             logging.info( 
                 'Map {index} : {mapName}.'.format(
                 index=i, mapName=m ) )
-    return readMaps_static['data']
+    return readMaps._static['data']
 
 def verifyArgs( args ):
     "Verify arguments to launch a job. Raise exception if error."
@@ -435,7 +430,6 @@ logging.basicConfig(filename=logsFilename, level=logging.ERROR)
 
 result_txt = {0: "draw", 1: "blue wins", 2: "red wins",
               11: "blue error", 12: "red error", 255: "error"}
-result_int = {value: key for (key, value) in result_txt.iteritems()}
 result_int = {value: key for (key, value) in result_txt.iteritems()}
 
 bluePlayer, redPlayer, mapName, players, playersParams, _ = readConfig(configFile)
