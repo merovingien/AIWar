@@ -441,7 +441,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Automation of AIWar game. \
         This script is able to loop all combinations of games between players, maps and colors. \
         [Tips] If you want to stop the current jobs processing, kill first the python script and after AIWar.exe launched. \
-        By this way, you prevent bad results to be register in Result-File")
+        By this way, you prevent bad results to be register in Result-File",
+                                     epilog="Usage exemple: \
+                                     'python loopAIWar.py -t 600 -p 4 resume-jobs' - \
+                                     'python loopAIWar.py -t 600 resume-jobs' - \
+                                     'python loopAIWar.py update-charts'")
 
     # Cancelled because defined just before launching the job
     #parser.add_argument("-g", "--gui", action="store_true", help="Show game on graphic user interface")
